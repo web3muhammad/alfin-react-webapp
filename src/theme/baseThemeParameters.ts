@@ -10,12 +10,19 @@ export const baseThemeParameters = createTheme({
       styleOverrides: {
         root: ({ theme }) => ({
           fontFamily: "Inter",
-          fontSize: 13.25,
+          fontSize: 14,
           color:
             theme.palette.mode === "dark"
               ? theme.palette.text.primary // White text for dark mode
               : theme.palette.text.primary, // Dark text for light mode
         }),
+      },
+    },
+    MuiIcon: {
+      styleOverrides: {
+        root: {
+          color: "#fff !important",
+        },
       },
     },
   },

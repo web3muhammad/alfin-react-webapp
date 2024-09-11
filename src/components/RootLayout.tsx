@@ -2,10 +2,11 @@ import { Box, ThemeProvider, Typography } from "@mui/material";
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useTelegram, useTelegramTheme } from "../hooks";
+import { UserWelcomeBanner } from "./user-welcome-banner/UserWelcomeBanner";
 
 export function RootLayout() {
   const theme = useTelegramTheme();
-  const { tg, user } = useTelegram();
+  const { tg } = useTelegram();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,17 +30,13 @@ export function RootLayout() {
         <Box
           sx={{
             width: "100%",
-            maxWidth: "360px",
+            maxWidth: "393px",
             margin: "0 auto",
-            padding: "10px",
+            padding: "15px",
           }}
         >
+          <UserWelcomeBanner />
           <Outlet />
-          <Typography
-            sx={{ fontSize: "24px", fontWeight: "600", textAlign: "center" }}
-          >
-            Добро пожаловать, {user?.first_name}
-          </Typography>
         </Box>
       </Box>
     </ThemeProvider>
