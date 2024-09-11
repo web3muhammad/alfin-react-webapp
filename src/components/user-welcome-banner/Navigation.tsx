@@ -1,5 +1,4 @@
 import { Box, Icon, SvgIcon, Typography } from "@mui/material";
-import { IoChatbubbleEllipsesSharp } from "react-icons/io5";
 
 import { CustomIconButton } from "../buttons/CustomIconButton";
 import {
