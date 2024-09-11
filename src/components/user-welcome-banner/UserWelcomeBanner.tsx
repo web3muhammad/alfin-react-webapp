@@ -38,7 +38,9 @@ export function UserWelcomeBanner() {
         </Typography>
         <DiscountBadge discount={getDiscount()} />
       </Box>
+
       <SegmentedProgressBar value={moneyValue} />
+
       <Navigation />
     </Box>
   );
