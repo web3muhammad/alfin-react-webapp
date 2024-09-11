@@ -1,10 +1,21 @@
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { RootLayout } from "./components/RootLayout";
+import { Typography } from "@mui/material";
 
 function App() {
-  return (
-    <div>
-      <h1>Hayat Crypto</h1>
-    </div>
-  );
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <RootLayout />,
+      children: [
+        {
+          path: "/",
+          element: <></>,
+        },
+      ],
+    },
+  ]);
+  return <RouterProvider router={router}></RouterProvider>;
 }
 
 export default App;
