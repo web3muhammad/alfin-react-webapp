@@ -37,6 +37,52 @@ export function RootLayout() {
         >
           <UserWelcomeBanner />
           <Outlet />
+          <Box sx={{ display: "grid", gap: "25px", marginTop: "30px" }}>
+            <Box
+              sx={{
+                width: "100%",
+                height: "210px",
+                backgroundColor: "secondary.main",
+                borderRadius: "16px",
+              }}
+            />
+
+            <Box
+              sx={{
+                width: "100%",
+                height: "110px",
+                backgroundColor: "secondary.main",
+                borderRadius: "16px",
+              }}
+            />
+
+            <Box
+              sx={{
+                width: "100%",
+                height: "300px",
+                backgroundColor: "secondary.main",
+                borderRadius: "16px",
+              }}
+            />
+
+            <Box
+              sx={{
+                width: "100%",
+                height: "380px",
+                backgroundColor: "secondary.main",
+                borderRadius: "16px",
+              }}
+            />
+
+            <Box
+              sx={{
+                width: "100%",
+                height: "260px",
+                backgroundColor: "secondary.main",
+                borderRadius: "16px",
+              }}
+            />
+          </Box>
         </Box>
       </Box>
     </ThemeProvider>
