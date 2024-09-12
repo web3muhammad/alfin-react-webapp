@@ -1,11 +1,11 @@
-import { Box, Icon, SvgIcon, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
-import { CustomIconButton } from "../buttons/CustomIconButton";
 import {
   FormatListBulletedRounded,
   Person,
   SmsRounded,
 } from "@mui/icons-material";
+import { CustomIconButton } from "../../shared/";
 export function Navigation() {
   return (
     <Box

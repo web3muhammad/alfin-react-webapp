@@ -1,8 +1,8 @@
 import { Box, ThemeProvider, Typography } from "@mui/material";
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useTelegram, useTelegramTheme } from "../hooks";
-import { UserWelcomeBanner } from "./user-welcome-banner/UserWelcomeBanner";
+import { useTelegram, useTelegramTheme } from "../../hooks";
+import { UserWelcomeBanner } from "../user-welcome-banner";
 
 export function RootLayout() {
   const theme = useTelegramTheme();
@@ -37,25 +37,8 @@ export function RootLayout() {
         >
           <UserWelcomeBanner />
           <Outlet />
-          <Box sx={{ display: "grid", gap: "25px", marginTop: "30px" }}>
-            <Box
-              sx={{
-                width: "100%",
-                height: "210px",
-                backgroundColor: "secondary.main",
-                borderRadius: "16px",
-              }}
-            />
 
-            <Box
-              sx={{
-                width: "100%",
-                height: "110px",
-                backgroundColor: "secondary.main",
-                borderRadius: "16px",
-              }}
-            />
-
+          {/* 
             <Box
               sx={{
                 width: "100%",
@@ -81,8 +64,7 @@ export function RootLayout() {
                 backgroundColor: "secondary.main",
                 borderRadius: "16px",
               }}
-            />
-          </Box>
+            /> */}
         </Box>
       </Box>
     </ThemeProvider>

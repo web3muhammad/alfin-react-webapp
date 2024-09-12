@@ -4,7 +4,7 @@ interface DiscountBadgeProps {
   discount: string;
 }
 
-const DiscountBadge: React.FC<DiscountBadgeProps> = ({ discount }) => (
+export const DiscountBadge: React.FC<DiscountBadgeProps> = ({ discount }) => (
   <Box
     sx={{
       background: "rgba(0, 202, 72, 0.16)",
@@ -17,5 +17,3 @@ const DiscountBadge: React.FC<DiscountBadgeProps> = ({ discount }) => (
     </Typography>
   </Box>
 );
-
-export default DiscountBadge;

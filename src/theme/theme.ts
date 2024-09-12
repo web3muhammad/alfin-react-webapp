@@ -11,6 +11,7 @@ const lightTheme = createTheme({
     },
     secondary: {
       main: "rgba(255, 255, 255, 1)",
+      light: "#EFEFF3",
     },
     background: {
       default: "rgba(239, 239, 243, 1)", // Light theme background color
@@ -34,6 +35,7 @@ const darkTheme = createTheme({
     },
     secondary: {
       main: "rgba(33, 48, 63, 1)",
+      light: "rgba(42, 61, 80, 1)",
     },
     text: {
       primary: "#FFFFFF", // Dark theme text color

@@ -11,6 +11,7 @@ export const baseThemeParameters = createTheme({
         root: ({ theme }) => ({
           fontFamily: "Inter",
           fontSize: 14,
+          letterSpacing: "-0,5px",
           color:
             theme.palette.mode === "dark"
               ? theme.palette.text.primary // White text for dark mode

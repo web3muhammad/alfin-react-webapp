@@ -6,13 +6,13 @@ import {
   getFillStyle,
   textValues,
   getOpacity,
-} from "./ProgressBarStyles";
+} from "./styles";
 
 interface SegmentedProgressBarProps {
   value: number; // Value from the server
 }
 
-const SegmentedProgressBar: React.FC<SegmentedProgressBarProps> = ({
+export const SegmentedProgressBar: React.FC<SegmentedProgressBarProps> = ({
   value,
 }) => {
   const theme = useTheme();
@@ -79,5 +79,3 @@ const SegmentedProgressBar: React.FC<SegmentedProgressBarProps> = ({
     </Box>
   );
 };
-
-export default SegmentedProgressBar;
