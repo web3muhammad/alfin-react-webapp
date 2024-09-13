@@ -1,4 +1,4 @@
-import React, { useMemo, useReducer } from "react";
+import React, { useMemo, useReducer, useState } from "react";
 import {
   Box,
   TextField,
@@ -8,10 +8,11 @@ import {
   MenuItem,
   ListItemIcon,
   Divider,
+  Fade,
 } from "@mui/material";
 import { currencies } from "./data";
 import { Button } from "../../shared/Button";
-import { SwapVertRounded, UnfoldMore } from "@mui/icons-material";
+import { SwapVertRounded } from "@mui/icons-material";
 import { Action, State } from "./types";
 import { useTelegramTheme } from "../../../hooks";
 
@@ -49,16 +50,17 @@ function reducer(state: State, action: Action): State {
 
 export const CurrencyExchangeWidget: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [isRotated, setIsRotated] = useState(false);
   const isDark = Telegram.WebApp.colorScheme === "dark";
   const theme = useTelegramTheme();
 
   // Memoized calculation of the amount based on buying/selling
   const calculatedAmount = useMemo(() => {
-    const amountString = String(state.amount).replace(/\s/g, ""); 
-    const amount = Number(amountString); 
+    const amountString = String(state.amount).replace(/\s/g, "");
+    const amount = Number(amountString);
     return state.isBuying
-      ? (amount * state.exchangeRate).toFixed(0) 
-      : (amount / state.exchangeRate).toFixed(0); 
+      ? (amount * state.exchangeRate).toFixed(0)
+      : (amount / state.exchangeRate).toFixed(0);
   }, [state.amount, state.exchangeRate, state.isBuying]);
 
   // Handle input change with digit limit
@@ -67,6 +69,11 @@ export const CurrencyExchangeWidget: React.FC = () => {
     if (input.length <= 10) {
       dispatch({ type: "SET_AMOUNT", payload: input });
     }
+  };
+
+  const handleSwapClick = () => {
+    dispatch({ type: "TOGGLE_BUY_SELL" });
+    setIsRotated(!isRotated);
   };
 
   return (
@@ -85,7 +92,6 @@ export const CurrencyExchangeWidget: React.FC = () => {
       {state.isBuying ? (
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Typography sx={{ paddingRight: "4px" }}>Вы получите</Typography>
-
           <Typography
             sx={{
               cursor: "pointer",
@@ -134,7 +140,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
           </svg>
         </Box>
       ) : (
-        <Typography>Вы платите</Typography>
+        <Fade in>
+          <Typography>Вы платите</Typography>
+        </Fade>
       )}
 
       {/* Input section */}
@@ -159,7 +167,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
                 fontWeight: "medium",
                 padding: "0",
               },
-              "& fieldset": { border: "none" }, 
+              "& fieldset": { border: "none" },
             }}
           />
         </Box>
@@ -190,8 +198,10 @@ export const CurrencyExchangeWidget: React.FC = () => {
             ":hover": {
               backgroundColor: "secondary.main",
             },
+            transition: "transform 0.25s ease-in-out",
+            transform: isRotated ? "rotate(180deg)" : "rotate(0deg)",
           }}
-          onClick={() => dispatch({ type: "TOGGLE_BUY_SELL" })}
+          onClick={handleSwapClick}
         >
           <SwapVertRounded color="primary" />
         </IconButton>
