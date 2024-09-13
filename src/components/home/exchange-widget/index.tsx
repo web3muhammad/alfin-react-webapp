@@ -18,7 +18,7 @@ import { useTelegramTheme } from "../../../hooks";
 
 // Define the initial state
 const initialState = {
-  amount: 15000,
+  amount: "",
   selectedCurrency: "TRY",
   exchangeRate: 2.89,
   isBuying: false,
@@ -48,6 +48,11 @@ function reducer(state: State, action: Action): State {
   }
 }
 
+// Helper function to format numbers with spaces
+const formatNumber = (value: string) => {
+  return value.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+};
+
 export const CurrencyExchangeWidget: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [isRotated, setIsRotated] = useState(false);
@@ -59,15 +64,27 @@ export const CurrencyExchangeWidget: React.FC = () => {
     const amountString = String(state.amount).replace(/\s/g, "");
     const amount = Number(amountString);
     return state.isBuying
-      ? (amount * state.exchangeRate).toFixed(0)
-      : (amount / state.exchangeRate).toFixed(0);
+      ? (amount * state.exchangeRate).toFixed(2)
+      : (amount / state.exchangeRate).toFixed(2);
   }, [state.amount, state.exchangeRate, state.isBuying]);
 
-  // Handle input change with digit limit
+  const isDisabled =
+    state.amount === ("" || "0") ||
+    calculatedAmount === "0" ||
+    (!state.isBuying && state.exchangeRate > Number(state.amount));
+
+  // Handle input change with digit limit and formatting
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value.replace(/\D/g, "");
+    let input = e.target.value.replace(/\D/g, "");
+
+    // Prevent typing a leading zero (unless it's just "0")
+    if (input.length > 1 && input.startsWith("0")) {
+      input = input.substring(1);
+    }
+
     if (input.length <= 10) {
-      dispatch({ type: "SET_AMOUNT", payload: input });
+      const formattedInput = formatNumber(input);
+      dispatch({ type: "SET_AMOUNT", payload: formattedInput });
     }
   };
 
@@ -219,7 +236,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
         <Typography>
           {state.isBuying
             ? `Вы платите ${state.amount} ${state.selectedCurrency}`
-            : `Вы получите ${calculatedAmount}`}
+            : `Вы получите ${formatNumber(calculatedAmount)}`}
         </Typography>
 
         {!state.isBuying && (
@@ -281,12 +298,18 @@ export const CurrencyExchangeWidget: React.FC = () => {
       </Box>
 
       {/* Action button */}
-      <Button sx={{ marginTop: "16px" }}>
-        {!state.isBuying
-          ? `Купить ${calculatedAmount} ${state.selectedCurrency} за ${state.amount} RUB`
+      <Button disabled={isDisabled} sx={{ marginTop: "16px" }}>
+        {isDisabled
+          ? !state.isBuying
+            ? "Купить"
+            : "Продать"
+          : !state.isBuying
+          ? `Купить ${formatNumber(calculatedAmount)} ${
+              state.selectedCurrency
+            } за ${state.amount || 0} RUB`
           : `Продать ${state.amount || 0} ${
               state.selectedCurrency
-            } за ${calculatedAmount} RUB`}
+            } за ${formatNumber(calculatedAmount)} RUB`}
       </Button>
 
       {/* Currency Selection Menu */}

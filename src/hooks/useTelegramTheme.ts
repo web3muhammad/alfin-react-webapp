@@ -26,10 +26,8 @@ export const useTelegramTheme = (): Theme => {
       setTelegramThemeParams(isDarkMode);
     };
 
-    // Initial theme setup
     handleThemeChange();
 
-    // Listen for Telegram theme changes
     Telegram.WebApp.onEvent("themeChanged", handleThemeChange);
 
     // Cleanup the event listener when the component unmounts

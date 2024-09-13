@@ -7,7 +7,7 @@ import { DiscountBadge, Navigation } from "./components";
 
 export function UserWelcomeBanner() {
   const { user } = useTelegram();
-  const moneyValue = 600000;
+  const moneyValue = 750000;
 
   const getDiscount = () => {
     if (moneyValue >= 1000000) return "-10";
@@ -23,19 +23,40 @@ export function UserWelcomeBanner() {
       >
         Добро пожаловать, {user?.first_name}
       </Typography>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: ".5rem",
-        }}
-      >
-        <Typography sx={{ fontSize: "14px", fontWeight: 400 }}>
-          Вы обернули {moneyValue.toLocaleString()}₽
+
+      {moneyValue <= 0 && (
+        <Typography
+          sx={{
+            fontSize: "13px",
+            maxWidth: "70%",
+            margin: "0 auto",
+            fontWeight: 400,
+            textAlign: "center",
+            opacity: ".5",
+          }}
+        >
+          Начните обменивать валюту, чтобы получить персональную скидку
         </Typography>
-        <DiscountBadge discount={getDiscount()} />
-      </Box>
+      )}
+
+      {moneyValue > 0 && (
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: ".5rem",
+          }}
+        >
+          <Typography
+            sx={{ fontSize: "14px", fontWeight: 400, textAlign: "center" }}
+          >
+            Вы обернули {moneyValue.toLocaleString()}₽
+          </Typography>
+
+          <DiscountBadge discount={getDiscount()} />
+        </Box>
+      )}
 
       <SegmentedProgressBar value={moneyValue} />
 

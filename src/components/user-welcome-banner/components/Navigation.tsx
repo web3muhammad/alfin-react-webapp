@@ -13,7 +13,7 @@ export function Navigation() {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        marginTop: "2.5rem",
+        marginTop: "2rem",
       }}
     >
       <Box sx={{ width: "33.333%", display: "grid", placeItems: "center" }}>

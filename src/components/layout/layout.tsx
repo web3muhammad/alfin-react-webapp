@@ -35,36 +35,7 @@ export function RootLayout() {
             padding: "15px",
           }}
         >
-          <UserWelcomeBanner />
           <Outlet />
-
-          {/* 
-            <Box
-              sx={{
-                width: "100%",
-                height: "300px",
-                backgroundColor: "secondary.main",
-                borderRadius: "16px",
-              }}
-            />
-
-            <Box
-              sx={{
-                width: "100%",
-                height: "380px",
-                backgroundColor: "secondary.main",
-                borderRadius: "16px",
-              }}
-            />
-
-            <Box
-              sx={{
-                width: "100%",
-                height: "260px",
-                backgroundColor: "secondary.main",
-                borderRadius: "16px",
-              }}
-            /> */}
         </Box>
       </Box>
     </ThemeProvider>

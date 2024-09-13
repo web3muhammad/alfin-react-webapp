@@ -48,7 +48,7 @@ export function ApplePayBlock() {
             Аренда карты Apple Pay
           </Typography>
           <Typography sx={{ fontWeight: "300" }}>
-            Пользуйтесь зарубежными картамис поддержкой Apple Pay без лимитов на
+            Пользуйтесь зарубежными картами с поддержкой Apple Pay без лимитов на
             вывод и пополнением баланса в любое время
           </Typography>
         </Box>

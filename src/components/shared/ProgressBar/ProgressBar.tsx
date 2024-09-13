@@ -25,22 +25,27 @@ export const SegmentedProgressBar: React.FC<SegmentedProgressBarProps> = ({
     "rgba(117, 0, 235, 1)", // Color for third segment
     "rgba(188, 47, 94, 1)", // Color for fourth segment
   ];
-  const widths = [87, 87, 87, 87]; // Widths of each segment in pixels
 
-  // Calculate the proportional fill for each segment
   const getSegmentFill = (index: number) => {
     if (index === 0) {
-      return 1; // First segment is always filled
+      if (value <= 0) {
+        return 0.15; // Filling first segment by 15% by default
+      }
+      return Math.min(value / thresholds[0], 1);
     }
+
     if (value <= thresholds[index - 1]) {
       return 0;
     }
+
     if (value > thresholds[index - 1] && value <= thresholds[index]) {
+      // Proportionally filling the current segment
       return (
         (value - thresholds[index - 1]) /
         (thresholds[index] - thresholds[index - 1])
       );
     }
+
     return 1;
   };
 
