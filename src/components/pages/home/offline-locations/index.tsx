@@ -8,16 +8,11 @@ import {
 } from "@mui/material";
 import { services } from "./data";
 import { ChevronRight } from "@mui/icons-material";
+import { Block } from "../../../shared";
 
 export function OfflineExchangeLocationsCard() {
   return (
-    <Box
-      sx={{
-        backgroundColor: "secondary.main",
-        borderRadius: "16px",
-        padding: "16px",
-      }}
-    >
+    <Block>
       <Typography
         sx={{
           fontSize: "20px",
@@ -96,6 +91,6 @@ export function OfflineExchangeLocationsCard() {
           </ListItem>
         ))}
       </List>
-    </Box>
+    </Block>
   );
 }

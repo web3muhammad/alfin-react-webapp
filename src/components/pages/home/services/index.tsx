@@ -8,17 +8,11 @@ import {
 } from "@mui/material";
 import { services } from "./data";
 import { ChevronRight } from "@mui/icons-material";
+import { Block } from "../../../shared";
 
 export function AdditionalServicesCard() {
-
   return (
-    <Box
-      sx={{
-        backgroundColor: "secondary.main",
-        borderRadius: "16px",
-        padding: "16px",
-      }}
-    >
+    <Block>
       <Typography
         sx={{
           fontSize: "20px",
@@ -101,6 +95,6 @@ export function AdditionalServicesCard() {
           </ListItem>
         ))}
       </List>
-    </Box>
+    </Block>
   );
 }

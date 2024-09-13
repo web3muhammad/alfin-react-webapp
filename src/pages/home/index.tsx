@@ -5,8 +5,9 @@ import {
   CurrencyExchangeWidget,
   OfflineExchangeLocationsCard,
   RatesBlock,
-} from "../../components/home";
+} from "../../components/pages/home";
 import { UserWelcomeBanner } from "../../components/user-welcome-banner";
+import { useTelegram } from "../../hooks";
 
 export function Home() {
   return (

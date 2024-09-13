@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import { RateCard } from "./components/RateCard";
+import { Block } from "../../../shared";
 
 export function RatesBlock() {
   const rateData = [
@@ -10,12 +11,8 @@ export function RatesBlock() {
     { code: "SAR", name: "Риал", color: "#2FBC2F", value: 26.32 },
   ];
   return (
-    <Box
+    <Block
       sx={{
-        width: "100%",
-        backgroundColor: "secondary.main",
-        borderRadius: "16px",
-        padding: "16px",
         display: "grid",
         gridTemplateColumns: "50% 50%",
         columnGap: "10px",
@@ -31,6 +28,6 @@ export function RatesBlock() {
           color={rate.color}
         />
       ))}
-    </Box>
+    </Block>
   );
 }

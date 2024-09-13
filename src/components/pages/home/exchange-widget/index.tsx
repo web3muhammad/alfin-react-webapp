@@ -11,11 +11,12 @@ import {
   Fade,
 } from "@mui/material";
 import { currencies } from "./data";
-import { Button } from "../../shared/Button";
 import { SwapVertRounded } from "@mui/icons-material";
 import { Action, State } from "./types";
-import { useTelegramTheme } from "../../../hooks";
 import { useNavigate } from "react-router-dom";
+import { Button } from "../../../shared/Button";
+import { useTelegramTheme } from "../../../../hooks";
+import { Block } from "../../../shared";
 
 // Define the initial state
 const initialState = {
@@ -104,16 +105,10 @@ export const CurrencyExchangeWidget: React.FC = () => {
   };
 
   return (
-    <Box
+    <Block
       sx={{
         display: "flex",
         flexDirection: "column",
-        backgroundColor: "secondary.main",
-        padding: "16px",
-        borderRadius: "16px",
-        width: "100%",
-        maxWidth: "400px",
-        margin: "0 auto",
       }}
     >
       {state.isBuying ? (
@@ -416,6 +411,6 @@ export const CurrencyExchangeWidget: React.FC = () => {
           </React.Fragment>
         ))}
       </Menu>
-    </Box>
+    </Block>
   );
 };

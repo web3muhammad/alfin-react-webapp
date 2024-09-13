@@ -6,7 +6,14 @@ import {
   SmsRounded,
 } from "@mui/icons-material";
 import { CustomIconButton } from "../../shared/";
+import { useNavigate } from "react-router-dom";
+import { useTelegram } from "../../../hooks";
 export function Navigation() {
+  const { tg } = useTelegram();
+  const navigate = useNavigate();
+
+  tg.BackButton.show();
+
   return (
     <Box
       sx={{
@@ -30,7 +37,7 @@ export function Navigation() {
           placeItems: "center",
         }}
       >
-        <CustomIconButton>
+        <CustomIconButton onClick={() => navigate("/profile")}>
           <Person sx={{ width: "20px" }} />
         </CustomIconButton>
         <Typography sx={{ paddingTop: ".25rem" }}>Профиль</Typography>

@@ -1,15 +1,11 @@
 import { Box, Typography } from "@mui/material";
-import { Button } from "../../shared/Button";
+import { Button } from "../../../shared/Button";
+import { Block } from "../../../shared";
 
 export function ApplePayBlock() {
   return (
-    <Box
+    <Block
       sx={{
-        width: "100%",
-        backgroundColor: "secondary.main",
-        borderRadius: "16px",
-        padding: "16px",
-
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -73,6 +69,6 @@ export function ApplePayBlock() {
           Поддержка 24/7 и время выполнения до 20 минут
         </Typography>
       </Box>
-    </Box>
+    </Block>
   );
 }
