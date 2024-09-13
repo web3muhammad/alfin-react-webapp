@@ -1,4 +1,4 @@
-import React, { useMemo, useReducer, useState } from "react";
+import React, { useMemo, useReducer, useRef, useState } from "react";
 import {
   Box,
   TextField,
@@ -15,6 +15,7 @@ import { Button } from "../../shared/Button";
 import { SwapVertRounded } from "@mui/icons-material";
 import { Action, State } from "./types";
 import { useTelegramTheme } from "../../../hooks";
+import { useNavigate } from "react-router-dom";
 
 // Define the initial state
 const initialState = {
@@ -56,6 +57,9 @@ const formatNumber = (value: string) => {
 export const CurrencyExchangeWidget: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [isRotated, setIsRotated] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+
   const isDark = Telegram.WebApp.colorScheme === "dark";
   const theme = useTelegramTheme();
 
@@ -89,8 +93,14 @@ export const CurrencyExchangeWidget: React.FC = () => {
   };
 
   const handleSwapClick = () => {
+    dispatch({ type: "SET_AMOUNT", payload: "" });
     dispatch({ type: "TOGGLE_BUY_SELL" });
     setIsRotated(!isRotated);
+
+    // Focus the input field
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
   return (
@@ -166,6 +176,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
       <Box sx={{ display: "flex", alignItems: "center", marginTop: "8px" }}>
         <Box sx={{ position: "relative", flex: 1 }}>
           <TextField
+            inputRef={inputRef}
             placeholder="0"
             type="tel"
             value={state.amount}
@@ -298,7 +309,19 @@ export const CurrencyExchangeWidget: React.FC = () => {
       </Box>
 
       {/* Action button */}
-      <Button disabled={isDisabled} sx={{ marginTop: "16px" }}>
+      <Button
+        disabled={isDisabled}
+        // onClick={() => {
+        //   navigate("/payment", {
+        //     state: {
+        //       amount: state.amount,
+        //       selectedCurrency: state.selectedCurrency,
+        //       calculatedAmount: calculatedAmount,
+        //     },
+        //   });
+        // }}
+        sx={{ marginTop: "16px" }}
+      >
         {isDisabled
           ? !state.isBuying
             ? "Купить"
