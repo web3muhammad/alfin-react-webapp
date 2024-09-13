@@ -70,7 +70,13 @@ export function OfflineExchangeLocationsCard() {
                 justifyContent: "space-between",
                 flexGrow: 1,
                 borderBottom:
-                  index !== services.length - 1 ? "1px solid #e0e0e0" : "none",
+                  index !== services.length - 1
+                    ? `1px solid ${
+                        Telegram.WebApp.colorScheme === "dark"
+                          ? "rgba(56, 76, 96, 1)"
+                          : "rgba(239, 239, 243, 1)"
+                      }`
+                    : "none",
                 paddingBottom: "8px",
               }}
             >

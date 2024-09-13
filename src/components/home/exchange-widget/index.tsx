@@ -316,6 +316,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
       <Menu
         MenuListProps={{
           sx: {
+            backgroundColor: "secondary.main",
             paddingBlock: "0 !important",
           },
         }}
