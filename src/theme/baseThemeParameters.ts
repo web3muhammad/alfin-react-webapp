@@ -9,7 +9,7 @@ export const baseThemeParameters = createTheme({
     MuiTypography: {
       styleOverrides: {
         root: ({ theme }) => ({
-          fontFamily: "Inter",
+          fontFamily: `"Inter", system-ui`,
           fontSize: 14,
           letterSpacing: "-0,5px",
           color:

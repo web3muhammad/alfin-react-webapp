@@ -1,4 +1,5 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import { Button } from "../../shared/Button";
 
 export function ApplePayBlock() {
   return (
