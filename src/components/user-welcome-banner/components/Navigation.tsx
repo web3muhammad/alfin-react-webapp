@@ -12,8 +12,6 @@ export function Navigation() {
   const { tg } = useTelegram();
   const navigate = useNavigate();
 
-  tg.BackButton.show();
-
   return (
     <Box
       sx={{

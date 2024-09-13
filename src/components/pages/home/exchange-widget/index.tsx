@@ -8,7 +8,6 @@ import {
   MenuItem,
   ListItemIcon,
   Divider,
-  Fade,
 } from "@mui/material";
 import { currencies } from "./data";
 import { SwapVertRounded } from "@mui/icons-material";
@@ -162,9 +161,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
           </svg>
         </Box>
       ) : (
-        <Fade in>
-          <Typography>Вы платите</Typography>
-        </Fade>
+        <Typography>Вы платите</Typography>
       )}
 
       {/* Input section */}

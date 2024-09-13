@@ -14,10 +14,10 @@ export function RootLayout() {
     tg.expand();
 
     tg.onEvent("backButtonClicked", () => {
-      navigate("/");
       tg.BackButton.hide();
+      navigate("/");
     });
-  }, [navigate, tg]);
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
