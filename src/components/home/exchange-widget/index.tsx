@@ -18,7 +18,7 @@ import { useTelegramTheme } from "../../../hooks";
 
 // Define the initial state
 const initialState = {
-  amount: "",
+  amount: "15 000",
   selectedCurrency: "TRY",
   exchangeRate: 2.89,
   isBuying: false,
@@ -64,8 +64,8 @@ export const CurrencyExchangeWidget: React.FC = () => {
     const amountString = String(state.amount).replace(/\s/g, "");
     const amount = Number(amountString);
     return state.isBuying
-      ? (amount * state.exchangeRate).toFixed(2)
-      : (amount / state.exchangeRate).toFixed(2);
+      ? (amount * state.exchangeRate).toFixed(0)
+      : (amount / state.exchangeRate).toFixed(0);
   }, [state.amount, state.exchangeRate, state.isBuying]);
 
   const isDisabled =
