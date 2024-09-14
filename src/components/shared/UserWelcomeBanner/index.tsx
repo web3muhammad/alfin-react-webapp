@@ -7,7 +7,7 @@ import { SegmentedProgressBar, Title } from "..";
 
 export function UserWelcomeBanner() {
   const { user } = useTelegram();
-  const moneyValue = 750000;
+  const moneyValue = 600000;
 
   const getDiscount = () => {
     if (moneyValue >= 1000000) return "-10";

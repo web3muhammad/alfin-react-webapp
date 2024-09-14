@@ -132,20 +132,20 @@ export const CurrencyExchangeWidget: React.FC = () => {
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <g clip-path="url(#clip0_1_1508)">
+            <g clipPath="url(#clip0_1_1508)">
               <path
                 d="M2.5 8.25L6 11.25L9.5 8.25"
                 stroke={theme.palette.primary.main}
-                stroke-width="1.66667"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.66667"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path
                 d="M2.5 4.75L6 1.75L9.5 4.75"
                 stroke={theme.palette.primary.main}
-                stroke-width="1.66667"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.66667"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </g>
             <defs>
@@ -269,20 +269,20 @@ export const CurrencyExchangeWidget: React.FC = () => {
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <g clip-path="url(#clip0_1_1508)">
+              <g clipPath="url(#clip0_1_1508)">
                 <path
                   d="M2.5 8.25L6 11.25L9.5 8.25"
                   stroke={theme.palette.primary.main}
-                  stroke-width="1.66667"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="1.66667"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
                 <path
                   d="M2.5 4.75L6 1.75L9.5 4.75"
                   stroke={theme.palette.primary.main}
-                  stroke-width="1.66667"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="1.66667"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </g>
               <defs>
@@ -356,7 +356,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
         }}
       >
         {currencies.map((currency, index) => (
-          <React.Fragment key={currency.code}>
+          <Box key={currency.code}>
             <MenuItem
               sx={{
                 paddingBlock: "0",
@@ -405,7 +405,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
                 }}
               />
             )}
-          </React.Fragment>
+          </Box>
         ))}
       </Menu>
     </Block>

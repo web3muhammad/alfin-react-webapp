@@ -23,7 +23,7 @@ export function Navigation() {
       }}
     >
       <Box sx={{ width: "33.333%", display: "grid", placeItems: "center" }}>
-        <CustomIconButton>
+        <CustomIconButton onClick={() => navigate("/history")}>
           <FormatListBulletedRounded sx={{ width: "20px" }} />
         </CustomIconButton>
         <Typography sx={{ paddingTop: ".25rem" }}>История</Typography>

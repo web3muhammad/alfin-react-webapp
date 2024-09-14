@@ -4,7 +4,7 @@ import { Button } from "../../../shared/Button";
 import { useTelegram } from "../../../../hooks";
 import { useNavigate } from "react-router-dom";
 
-const testData = { friends: 5, constantDiscount: 0.25, oneTimeDiscount: 0.5 };
+const testData = { friends: 0, constantDiscount: 0, oneTimeDiscount: 0 };
 
 export function ReferralProgramBlock() {
   const navigate = useNavigate()
