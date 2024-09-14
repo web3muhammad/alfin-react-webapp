@@ -132,7 +132,7 @@ export const TransactionCard: React.FC<TransactionProps> = ({
           sx={{
             // backgroundColor: "primary.main",
             backgroundColor: "secondary.light",
-            color: "unset",
+            color: Telegram.WebApp.colorScheme === "dark" ? "#fff" : "unset",
             marginTop: "1rem",
           }}
         >
