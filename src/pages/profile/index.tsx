@@ -10,7 +10,6 @@ import { UserWelcomeBanner } from "../../components/shared";
 
 export function ProfilePage() {
   const { tg } = useTelegram();
-  tg.BackButton.show();
   return (
     <>
       <UserWelcomeBanner />

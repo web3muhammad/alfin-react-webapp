@@ -7,16 +7,20 @@ export function RootLayout() {
   const theme = useTelegramTheme();
   const { tg } = useTelegram();
   const navigate = useNavigate();
-  const location = useLocation(); // to track the route changes
+  const location = useLocation();
 
   useEffect(() => {
     tg.ready();
     tg.expand();
-    tg.BackButton.show();
+
+    if (location.pathname !== "/") {
+      tg.BackButton.show();
+    } else {
+      tg.BackButton.hide();
+    }
 
     const handleBackButtonClick = () => {
       navigate(-1);
-      tg.BackButton.hide();
     };
 
     tg.onEvent("backButtonClicked", handleBackButtonClick);
@@ -24,9 +28,9 @@ export function RootLayout() {
     return () => {
       tg.offEvent("backButtonClicked", handleBackButtonClick);
     };
-  }, [tg, navigate]);
+  }, [tg, navigate, location.pathname]);
 
-  // Scrolling to top after user being redirected anywhere
+  // Scroll to the top after navigating
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
