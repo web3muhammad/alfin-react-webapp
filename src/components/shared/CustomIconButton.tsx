@@ -15,6 +15,7 @@ export const CustomIconButton: React.FC<IButtonProps> = (props) => {
         background: "primary.main",
         boxShadow: "none",
         ":hover": {
+          boxShadow: "none",
           background: "primary.main",
         },
         ...props.sx,
