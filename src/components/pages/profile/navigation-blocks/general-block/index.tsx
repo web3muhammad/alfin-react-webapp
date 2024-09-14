@@ -23,7 +23,7 @@ export function GeneralNavigationBlock() {
     <Block sx={{ paddingTop: "8px", paddingBottom: "8px" }}>
       <List sx={{ padding: "0" }}>
         <ListItem
-          onClick={() => navigate("")}
+          onClick={() => navigate("/about")}
           sx={{
             paddingTop: "0",
             paddingInline: 0,
@@ -82,7 +82,7 @@ export function GeneralNavigationBlock() {
         </ListItem>
 
         <ListItem
-          onClick={() => navigate("")}
+          onClick={() => navigate("/faq")}
           sx={{
             paddingTop: "0",
             paddingInline: 0,

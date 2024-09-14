@@ -2,7 +2,7 @@
 import { Box, Typography } from "@mui/material";
 
 import { useTelegram } from "../../hooks";
-import { SegmentedProgressBar } from "../shared";
+import { SegmentedProgressBar, Title } from "../shared";
 import { DiscountBadge, Navigation } from "./components";
 
 export function UserWelcomeBanner() {
@@ -18,11 +18,9 @@ export function UserWelcomeBanner() {
 
   return (
     <Box>
-      <Typography
-        sx={{ fontSize: "24px", fontWeight: "600", textAlign: "center" }}
-      >
+      <Title sx={{ paddingBottom: "0" }}>
         Добро пожаловать, {user?.first_name}
-      </Typography>
+      </Title>
 
       {moneyValue <= 0 && (
         <Typography
