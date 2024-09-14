@@ -5,6 +5,7 @@ import { PaymentForm } from "./pages/payment";
 import { ProfilePage } from "./pages/profile";
 import { AboutPage } from "./pages/about";
 import { FAQPage } from "./pages/faq";
+import { ReferralInfoPage } from "./pages/referral-info";
 
 function App() {
   const router = createBrowserRouter([
@@ -17,6 +18,7 @@ function App() {
         { path: "/about", element: <AboutPage /> },
         { path: "/payment", element: <PaymentForm /> },
         { path: "/faq", element: <FAQPage /> },
+        { path: "/referral-info", element: <ReferralInfoPage /> },
       ],
     },
   ]);
