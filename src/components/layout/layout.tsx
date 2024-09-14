@@ -12,12 +12,19 @@ export function RootLayout() {
   useEffect(() => {
     tg.ready();
     tg.expand();
+    tg.BackButton.show();
 
-    tg.onEvent("backButtonClicked", () => {
+    const handleBackButtonClick = () => {
+      navigate(-1);
       tg.BackButton.hide();
-      navigate("/");
-    });
-  }, []);
+    };
+
+    tg.onEvent("backButtonClicked", handleBackButtonClick);
+
+    return () => {
+      tg.offEvent("backButtonClicked", handleBackButtonClick);
+    };
+  }, [tg, navigate]);
 
   return (
     <ThemeProvider theme={theme}>
