@@ -6,8 +6,7 @@ import {
   OfflineExchangeLocationsCard,
   RatesBlock,
 } from "../../components/pages/home";
-import { UserWelcomeBanner } from "../../components/user-welcome-banner";
-import { useTelegram } from "../../hooks";
+import { UserWelcomeBanner } from "../../components/shared";
 
 export function Home() {
   return (

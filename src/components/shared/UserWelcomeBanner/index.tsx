@@ -1,9 +1,9 @@
 // src/components/WelcomeNavBlock/WelcomeNavBlock.tsx
 import { Box, Typography } from "@mui/material";
 
-import { useTelegram } from "../../hooks";
-import { SegmentedProgressBar, Title } from "../shared";
 import { DiscountBadge, Navigation } from "./components";
+import { useTelegram } from "../../../hooks";
+import { SegmentedProgressBar, Title } from "..";
 
 export function UserWelcomeBanner() {
   const { user } = useTelegram();

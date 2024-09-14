@@ -5,9 +5,10 @@ import {
   Person,
   SmsRounded,
 } from "@mui/icons-material";
-import { CustomIconButton } from "../../shared/";
 import { useNavigate } from "react-router-dom";
-import { useTelegram } from "../../../hooks";
+import { useTelegram } from "../../../../hooks";
+import { CustomIconButton } from "../..";
+
 export function Navigation() {
   const { tg } = useTelegram();
   const navigate = useNavigate();

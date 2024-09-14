@@ -5,8 +5,8 @@ import {
   ReferralProgramBlock,
   SocialMediaBlock,
 } from "../../components/pages/profile";
-import { UserWelcomeBanner } from "../../components/user-welcome-banner";
 import { useTelegram } from "../../hooks";
+import { UserWelcomeBanner } from "../../components/shared";
 
 export function ProfilePage() {
   const { tg } = useTelegram();
@@ -14,7 +14,6 @@ export function ProfilePage() {
   return (
     <>
       <UserWelcomeBanner />
-
       <Box sx={{ display: "grid", gap: "15px", marginTop: "30px" }}>
         <ReferralProgramBlock />
         <PersonalDataBlock />

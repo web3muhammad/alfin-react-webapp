@@ -2,7 +2,6 @@ import { Box, ThemeProvider, Typography } from "@mui/material";
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useTelegram, useTelegramTheme } from "../../hooks";
-import { UserWelcomeBanner } from "../user-welcome-banner";
 
 export function RootLayout() {
   const theme = useTelegramTheme();
