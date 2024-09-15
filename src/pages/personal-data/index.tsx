@@ -1,5 +1,5 @@
 import InputMask from "react-input-mask";
-import { Box, TextField, Typography, Divider } from "@mui/material";
+import { Box, TextField, Typography, Divider, Fade } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { Block, Button, Title } from "../../components/shared";
 import { isPhoneComplete } from "../../utils"; // Assuming this utility function exists
@@ -35,57 +35,22 @@ export function PersonalDataForm() {
   const isModified = dirtyFields.name || dirtyFields.phone;
 
   return (
-    <>
-      <Title>Личные данные</Title>
+    <Fade in>
+      <Box>
+        <Title>Личные данные</Title>
 
-      <Block>
-        <Box component="form">
-          {/* Name Input */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-            }}
-          >
-            <Typography>Ваше имя</Typography>
-            <TextField
+        <Block>
+          <Box component="form">
+            {/* Name Input */}
+            <Box
               sx={{
-                width: "60%",
-                input: {
-                  paddingBlock: "2px",
-                  paddingLeft: "10px",
-                  textAlign: "right",
-                },
-                "& fieldset": { border: "none" },
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-end",
               }}
-              {...register("name", { required: "Name is required" })}
-              error={!!errors.name}
-              helperText={errors.name?.message}
-              fullWidth
-            />
-          </Box>
-          <Divider sx={{ margin: "12px 0px" }} />
-
-          {/* Phone Number Input */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-            }}
-          >
-            <Typography>Телефон</Typography>
-            <InputMask
-              mask="+7 999 999 99 99"
-              value={watch("phone")}
-              onChange={(e) =>
-                setValue("phone", e.target.value, { shouldDirty: true })
-              }
             >
+              <Typography>Ваше имя</Typography>
               <TextField
-                placeholder="+7 900 000-00-00"
-                type="tel"
                 sx={{
                   width: "60%",
                   input: {
@@ -95,23 +60,60 @@ export function PersonalDataForm() {
                   },
                   "& fieldset": { border: "none" },
                 }}
-                error={!!errors.phone}
-                helperText={errors.phone?.message}
+                {...register("name", { required: "Name is required" })}
+                error={!!errors.name}
+                helperText={errors.name?.message}
                 fullWidth
               />
-            </InputMask>
-          </Box>
-        </Box>
-      </Block>
+            </Box>
+            <Divider sx={{ margin: "12px 0px" }} />
 
-      <Button
-        onClick={handleSubmit(onSubmit)}
-        sx={{ marginTop: "1.5rem" }}
-        type="submit"
-        disabled={!isModified || !isPhoneValid}
-      >
-        Сохранить изменения
-      </Button>
-    </>
+            {/* Phone Number Input */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-end",
+              }}
+            >
+              <Typography>Телефон</Typography>
+              <InputMask
+                mask="+7 999 999 99 99"
+                value={watch("phone")}
+                onChange={(e) =>
+                  setValue("phone", e.target.value, { shouldDirty: true })
+                }
+              >
+                <TextField
+                  placeholder="+7 900 000-00-00"
+                  type="tel"
+                  sx={{
+                    width: "60%",
+                    input: {
+                      paddingBlock: "2px",
+                      paddingLeft: "10px",
+                      textAlign: "right",
+                    },
+                    "& fieldset": { border: "none" },
+                  }}
+                  error={!!errors.phone}
+                  helperText={errors.phone?.message}
+                  fullWidth
+                />
+              </InputMask>
+            </Box>
+          </Box>
+        </Block>
+
+        <Button
+          onClick={handleSubmit(onSubmit)}
+          sx={{ marginTop: "1.5rem" }}
+          type="submit"
+          disabled={!isModified || !isPhoneValid}
+        >
+          Сохранить изменения
+        </Button>
+      </Box>
+    </Fade>
   );
 }

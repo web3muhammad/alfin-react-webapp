@@ -7,6 +7,7 @@ import {
   Divider,
   MenuItem,
   Menu,
+  Fade,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
@@ -147,66 +148,38 @@ export function PaymentForm() {
   );
 
   return (
-    <Box>
-      <Box
-        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-      >
-        <Typography
-          sx={{ fontSize: "3rem", fontWeight: "500", textAlign: "center" }}
+    <Fade in>
+      <Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
         >
-          {amount} {isBuying ? selectedCurrency : "RUB"}
-        </Typography>
-        <Typography sx={{ opacity: ".5", fontSize: "1rem" }}>
-          = {formatNumber(calculatedAmount)}{" "}
-          {isBuying ? "RUB" : selectedCurrency}
-        </Typography>
-      </Box>
-
-      <Block sx={{ marginTop: "1.25rem" }}>
-        <Box component="form">
-          {/* Name Input */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-            }}
+          <Typography
+            sx={{ fontSize: "3rem", fontWeight: "500", textAlign: "center" }}
           >
-            <Typography>Ваше имя</Typography>
-            <TextField
+            {amount} {isBuying ? selectedCurrency : "RUB"}
+          </Typography>
+          <Typography sx={{ opacity: ".5", fontSize: "1rem" }}>
+            = {formatNumber(calculatedAmount)}{" "}
+            {isBuying ? "RUB" : selectedCurrency}
+          </Typography>
+        </Box>
+
+        <Block sx={{ marginTop: "1.25rem" }}>
+          <Box component="form">
+            {/* Name Input */}
+            <Box
               sx={{
-                width: "60%",
-                input: {
-                  paddingBlock: "2px",
-                  paddingLeft: "10px",
-                  textAlign: "right",
-                },
-                "& fieldset": { border: "none" },
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-end",
               }}
-              {...register("name", { required: "Name is required" })}
-              error={!!errors.name}
-              fullWidth
-            />
-          </Box>
-          <Divider sx={{ margin: "12px 0px" }} />
-
-          {/* Phone Number Input */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-            }}
-          >
-            <Typography>Телефон</Typography>
-            <InputMask
-              mask="+7 (999) 999-99-99"
-              value={watch("phone")}
-              onChange={(e) => setValue("phone", e.target.value)}
             >
+              <Typography>Ваше имя</Typography>
               <TextField
-                placeholder="+7 900 000-00-00"
-                type="tel"
                 sx={{
                   width: "60%",
                   input: {
@@ -216,117 +189,151 @@ export function PaymentForm() {
                   },
                   "& fieldset": { border: "none" },
                 }}
-                error={!!errors.phone}
+                {...register("name", { required: "Name is required" })}
+                error={!!errors.name}
                 fullWidth
               />
-            </InputMask>
-          </Box>
-          <Divider sx={{ margin: "12px 0px" }} />
-
-          {/* Banks Menu Select */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-              marginTop: "1rem",
-            }}
-          >
-            <Typography>Способ оплаты</Typography>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography
-                sx={{
-                  cursor: "pointer",
-                  color: "primary.main",
-                  paddingRight: "3px",
-                }}
-                onClick={(e) => handleMenuOpen(e, "banks")}
-              >
-                {selectedBank || "Выберите банк"}
-              </Typography>
-              <SelectArrowsIcon />
             </Box>
-            <MenuComponent
-              anchorEl={anchorEl}
-              open={menuType === "banks" && Boolean(anchorEl)}
-              onClose={handleMenuClose}
-              items={banks}
-              onSelect={handleSelection}
-              menuType="bank"
-            />
-          </Box>
-          <Divider sx={{ margin: "12px 0px" }} />
+            <Divider sx={{ margin: "12px 0px" }} />
 
-          {/* Bank Card Menu Select */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-              marginTop: "1rem",
-            }}
-          >
-            <Typography>Карта зачисления</Typography>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography
-                sx={{
-                  cursor: "pointer",
-                  color: "primary.main",
-                  paddingRight: "3px",
-                }}
-                onClick={(e) => handleMenuOpen(e, "cards")}
-              >
-                {selectedBankCard || "Выберите карту"}
-              </Typography>
-              <SelectArrowsIcon />
-            </Box>
-            <MenuComponent
-              anchorEl={anchorEl}
-              open={menuType === "cards" && Boolean(anchorEl)}
-              onClose={handleMenuClose}
-              items={bankCards}
-              onSelect={handleSelection}
-              menuType="card"
-            />
-          </Box>
-          <Divider sx={{ margin: "12px 0px" }} />
-
-          {/* Promocode Input */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-              marginTop: "1rem",
-            }}
-          >
-            <Typography>Промокод</Typography>
-            <TextField
-              placeholder="Если есть"
+            {/* Phone Number Input */}
+            <Box
               sx={{
-                width: "60%",
-                input: {
-                  paddingBlock: "2px",
-                  paddingLeft: "10px",
-                  textAlign: "right",
-                },
-                "& fieldset": { border: "none" },
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-end",
               }}
-              {...register("promocode")}
-              error={!!errors.promocode}
-              fullWidth
-            />
+            >
+              <Typography>Телефон</Typography>
+              <InputMask
+                mask="+7 (999) 999-99-99"
+                value={watch("phone")}
+                onChange={(e) => setValue("phone", e.target.value)}
+              >
+                <TextField
+                  placeholder="+7 900 000-00-00"
+                  type="tel"
+                  sx={{
+                    width: "60%",
+                    input: {
+                      paddingBlock: "2px",
+                      paddingLeft: "10px",
+                      textAlign: "right",
+                    },
+                    "& fieldset": { border: "none" },
+                  }}
+                  error={!!errors.phone}
+                  fullWidth
+                />
+              </InputMask>
+            </Box>
+            <Divider sx={{ margin: "12px 0px" }} />
+
+            {/* Banks Menu Select */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-end",
+                marginTop: "1rem",
+              }}
+            >
+              <Typography>Способ оплаты</Typography>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Typography
+                  sx={{
+                    cursor: "pointer",
+                    color: "primary.main",
+                    paddingRight: "3px",
+                  }}
+                  onClick={(e) => handleMenuOpen(e, "banks")}
+                >
+                  {selectedBank || "Выберите банк"}
+                </Typography>
+                <SelectArrowsIcon />
+              </Box>
+              <MenuComponent
+                anchorEl={anchorEl}
+                open={menuType === "banks" && Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                items={banks}
+                onSelect={handleSelection}
+                menuType="bank"
+              />
+            </Box>
+            <Divider sx={{ margin: "12px 0px" }} />
+
+            {/* Bank Card Menu Select */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-end",
+                marginTop: "1rem",
+              }}
+            >
+              <Typography>Карта зачисления</Typography>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Typography
+                  sx={{
+                    cursor: "pointer",
+                    color: "primary.main",
+                    paddingRight: "3px",
+                  }}
+                  onClick={(e) => handleMenuOpen(e, "cards")}
+                >
+                  {selectedBankCard || "Выберите карту"}
+                </Typography>
+                <SelectArrowsIcon />
+              </Box>
+              <MenuComponent
+                anchorEl={anchorEl}
+                open={menuType === "cards" && Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                items={bankCards}
+                onSelect={handleSelection}
+                menuType="card"
+              />
+            </Box>
+            <Divider sx={{ margin: "12px 0px" }} />
+
+            {/* Promocode Input */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-end",
+                marginTop: "1rem",
+              }}
+            >
+              <Typography>Промокод</Typography>
+              <TextField
+                placeholder="Если есть"
+                sx={{
+                  width: "60%",
+                  input: {
+                    paddingBlock: "2px",
+                    paddingLeft: "10px",
+                    textAlign: "right",
+                  },
+                  "& fieldset": { border: "none" },
+                }}
+                {...register("promocode")}
+                error={!!errors.promocode}
+                fullWidth
+              />
+            </Box>
           </Box>
-        </Box>
-      </Block>
-      <Button
-        onClick={handleSubmit(onSubmit)}
-        sx={{ marginTop: "1.5rem" }}
-        type="submit"
-        disabled={isButtonDisabled}
-      >
-        Отправить заявку
-      </Button>
-    </Box>
+        </Block>
+        <Button
+          onClick={handleSubmit(onSubmit)}
+          sx={{ marginTop: "1.5rem" }}
+          type="submit"
+          disabled={isButtonDisabled}
+        >
+          Отправить заявку
+        </Button>
+      </Box>
+    </Fade>
   );
 }

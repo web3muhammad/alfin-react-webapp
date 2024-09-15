@@ -57,7 +57,6 @@ export const CurrencyExchangeWidget: React.FC = () => {
   const navigate = useNavigate();
 
   const isDark = Telegram.WebApp.colorScheme === "dark";
-  const theme = useTelegramTheme();
 
   // Memoized calculation of the amount based on buying/selling
   const calculatedAmount = useMemo(() => {
@@ -108,7 +107,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
     >
       {state.isBuying ? (
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Typography sx={{ paddingRight: "4px" }}>Вы получите</Typography>
+          <Typography sx={{ paddingRight: "4px" }}>Вы продаете</Typography>
           <Typography
             sx={{
               cursor: "pointer",

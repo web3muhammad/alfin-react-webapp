@@ -1,4 +1,4 @@
-import { Box, ThemeProvider } from "@mui/material";
+import { Box, Fade, ThemeProvider } from "@mui/material";
 import { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTelegram, useTelegramTheme } from "../../hooks";
@@ -45,16 +45,18 @@ export function RootLayout() {
           background: theme.palette.background.default,
         }}
       >
-        <Box
-          sx={{
-            width: "100%",
-            maxWidth: "393px",
-            margin: "0 auto",
-            padding: "15px",
-          }}
-        >
-          <Outlet />
-        </Box>
+        <Fade in>
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: "393px",
+              margin: "0 auto",
+              padding: "15px",
+            }}
+          >
+            <Outlet />
+          </Box>
+        </Fade>
       </Box>
     </ThemeProvider>
   );
