@@ -110,8 +110,6 @@ export function PaymentForm() {
 
   const name = watch("name");
   const phone = watch("phone");
-  const paymentService = watch("paymentService");
-  const bankCard = watch("bankCard");
 
   const onSubmit = (data: FormData) => {
     console.log(data);
@@ -156,7 +154,7 @@ export function PaymentForm() {
         <Typography
           sx={{ fontSize: "3rem", fontWeight: "500", textAlign: "center" }}
         >
-          {amount} {isBuying ? selectedBank : "RUB"}
+          {amount} {isBuying ? selectedCurrency : "RUB"}
         </Typography>
         <Typography sx={{ opacity: ".5", fontSize: "1rem" }}>
           = {formatNumber(calculatedAmount)}{" "}
