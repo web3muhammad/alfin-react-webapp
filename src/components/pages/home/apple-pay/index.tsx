@@ -1,6 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import { Button } from "../../../shared/Button";
-import { Block } from "../../../shared";
+import { Block, Button } from "../../../shared/";
 
 export function ApplePayBlock() {
   return (
@@ -44,24 +43,12 @@ export function ApplePayBlock() {
             Аренда карты Apple Pay
           </Typography>
           <Typography sx={{ fontWeight: "300" }}>
-            Пользуйтесь зарубежными картами с поддержкой Apple Pay без лимитов на
-            вывод и пополнением баланса в любое время
+            Пользуйтесь зарубежными картами с поддержкой Apple Pay без лимитов
+            на вывод и пополнением баланса в любое время
           </Typography>
         </Box>
 
-        <Button
-          sx={{
-            width: "100%",
-            padding: "10px",
-            backgroundColor: "primary.main",
-            borderRadius: "8px",
-            color: "#fff",
-            textTransform: "none",
-            fontWeight: "500",
-          }}
-        >
-          Арендовать карту
-        </Button>
+        <Button>Арендовать карту</Button>
 
         <Typography
           sx={{ fontSize: "12px", opacity: ".6", paddingTop: ".75rem" }}

@@ -10,7 +10,8 @@ export const Button: React.FC<IButtonProps> = (props) => {
       sx={{
         fontFamily: "Inter",
         width: "100%",
-        padding: "10px",
+        padding: "8px 10px",
+        minHeight: "40px",
         backgroundColor: "primary.main",
         borderRadius: "8px",
         color: "#fff",

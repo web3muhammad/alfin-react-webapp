@@ -19,6 +19,17 @@ export const baseThemeParameters = createTheme({
         }),
       },
     },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          input: {
+            border: "none",
+            fontSize: "14px",
+          },
+          "& fieldset": { border: "none" },
+        },
+      },
+    },
     MuiIcon: {
       styleOverrides: {
         root: {

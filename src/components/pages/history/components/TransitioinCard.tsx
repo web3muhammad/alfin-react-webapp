@@ -1,7 +1,6 @@
 import React from "react";
 import { Box, Divider, Typography } from "@mui/material";
-import { Block } from "../../../shared";
-import { Button } from "../../../shared/Button";
+import { Block, Button } from "../../../shared";
 
 type TransactionProps = {
   id: string;

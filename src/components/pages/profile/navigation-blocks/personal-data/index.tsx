@@ -17,7 +17,7 @@ export function PersonalDataBlock() {
     <Block sx={{ paddingTop: "8px", paddingBottom: "8px" }}>
       <List sx={{ padding: "0" }}>
         <ListItem
-          onClick={() => navigate("")}
+          onClick={() => navigate("/personal-data")}
           sx={{
             paddingTop: "0",
             paddingInline: 0,

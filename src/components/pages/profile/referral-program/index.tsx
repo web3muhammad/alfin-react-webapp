@@ -1,6 +1,5 @@
 import { Box, Divider, Typography } from "@mui/material";
-import { Block } from "../../../shared";
-import { Button } from "../../../shared/Button";
+import { Block, Button } from "../../../shared";
 import { useTelegram } from "../../../../hooks";
 import { useNavigate } from "react-router-dom";
 

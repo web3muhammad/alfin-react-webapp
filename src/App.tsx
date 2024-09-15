@@ -7,6 +7,7 @@ import { AboutPage } from "./pages/about";
 import { FAQPage } from "./pages/faq";
 import { ReferralInfoPage } from "./pages/referral-info";
 import { TransactionHistoryPage } from "./pages/history";
+import { PersonalDataForm } from "./pages/personal-data";
 
 function App() {
   const router = createBrowserRouter([
@@ -16,9 +17,10 @@ function App() {
       children: [
         { path: "/", element: <Home /> },
         { path: "/profile", element: <ProfilePage /> },
-        { path: "/history", element: <TransactionHistoryPage /> },
-        { path: "/about", element: <AboutPage /> },
         { path: "/payment", element: <PaymentForm /> },
+        { path: "/history", element: <TransactionHistoryPage /> },
+        { path: "/personal-data", element: <PersonalDataForm /> },
+        { path: "/about", element: <AboutPage /> },
         { path: "/faq", element: <FAQPage /> },
         { path: "/referral-info", element: <ReferralInfoPage /> },
       ],

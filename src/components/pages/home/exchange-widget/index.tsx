@@ -13,9 +13,10 @@ import { currencies } from "./data";
 import { SwapVertRounded } from "@mui/icons-material";
 import { Action, State } from "./types";
 import { useNavigate } from "react-router-dom";
-import { Button } from "../../../shared/Button";
 import { useTelegramTheme } from "../../../../hooks";
-import { Block } from "../../../shared";
+import { Block, Button } from "../../../shared";
+import { formatNumber } from "../../../../utils";
+import { SelectArrowsIcon } from "../../../../icons";
 
 // Define the initial state
 const initialState = {
@@ -48,11 +49,6 @@ function reducer(state: State, action: Action): State {
       return state;
   }
 }
-
-// Helper function to format numbers with spaces
-const formatNumber = (value: string) => {
-  return value.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-};
 
 export const CurrencyExchangeWidget: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -125,40 +121,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
           >
             {state.selectedCurrency} • {state.exchangeRate}₽
           </Typography>
-          <svg
-            width="12"
-            height="13"
-            viewBox="0 0 12 13"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g clipPath="url(#clip0_1_1508)">
-              <path
-                d="M2.5 8.25L6 11.25L9.5 8.25"
-                stroke={theme.palette.primary.main}
-                strokeWidth="1.66667"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M2.5 4.75L6 1.75L9.5 4.75"
-                stroke={theme.palette.primary.main}
-                strokeWidth="1.66667"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </g>
-            <defs>
-              <clipPath id="clip0_1_1508">
-                <rect
-                  width="12"
-                  height="12"
-                  fill="white"
-                  transform="translate(0 0.5)"
-                />
-              </clipPath>
-            </defs>
-          </svg>
+          <SelectArrowsIcon />
         </Box>
       ) : (
         <Typography>Вы платите</Typography>
@@ -262,40 +225,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
               {state.selectedCurrency} • {state.exchangeRate}₽
             </Typography>
 
-            <svg
-              width="12"
-              height="13"
-              viewBox="0 0 12 13"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <g clipPath="url(#clip0_1_1508)">
-                <path
-                  d="M2.5 8.25L6 11.25L9.5 8.25"
-                  stroke={theme.palette.primary.main}
-                  strokeWidth="1.66667"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M2.5 4.75L6 1.75L9.5 4.75"
-                  stroke={theme.palette.primary.main}
-                  strokeWidth="1.66667"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </g>
-              <defs>
-                <clipPath id="clip0_1_1508">
-                  <rect
-                    width="12"
-                    height="12"
-                    fill="white"
-                    transform="translate(0 0.5)"
-                  />
-                </clipPath>
-              </defs>
-            </svg>
+            <SelectArrowsIcon />
           </Box>
         )}
       </Box>
@@ -303,15 +233,16 @@ export const CurrencyExchangeWidget: React.FC = () => {
       {/* Action button */}
       <Button
         disabled={isDisabled}
-        // onClick={() => {
-        //   navigate("/payment", {
-        //     state: {
-        //       amount: state.amount,
-        //       selectedCurrency: state.selectedCurrency,
-        //       calculatedAmount: calculatedAmount,
-        //     },
-        //   });
-        // }}
+        onClick={() => {
+          navigate("/payment", {
+            state: {
+              amount: state.amount,
+              selectedCurrency: state.selectedCurrency,
+              calculatedAmount: calculatedAmount,
+              isBuying: state.isBuying,
+            },
+          });
+        }}
         sx={{ marginTop: "16px" }}
       >
         {isDisabled
