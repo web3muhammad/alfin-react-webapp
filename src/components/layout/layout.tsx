@@ -7,13 +7,14 @@ export function RootLayout() {
   const theme = useTelegramTheme();
   const { tg } = useTelegram();
   const navigate = useNavigate();
-  const location = useLocation();
+  const { pathname } = useLocation();
 
   useEffect(() => {
     tg.ready();
     tg.expand();
 
-    if (location.pathname !== "/") {
+    // Only showing the back button if user is not on the homepage
+    if (pathname !== "/") {
       tg.BackButton.show();
     } else {
       tg.BackButton.hide();
@@ -23,14 +24,15 @@ export function RootLayout() {
       navigate(-1);
     };
 
+    tg.offEvent("backButtonClicked", handleBackButtonClick); // Removing any existing listeners before adding a new one
     tg.onEvent("backButtonClicked", handleBackButtonClick);
 
     return () => {
       tg.offEvent("backButtonClicked", handleBackButtonClick);
     };
-  }, [tg, navigate, location.pathname]);
+  }, [tg, navigate, pathname]);
 
-  // Scroll to the top after navigating
+  // Scroll to top after navigating to a new page
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
