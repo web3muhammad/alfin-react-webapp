@@ -163,7 +163,7 @@ export function PaymentForm() {
       </Box>
 
       <Block sx={{ marginTop: "1.25rem" }}>
-        <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Box component="form">
           {/* Name Input */}
           <Box
             sx={{
@@ -317,16 +317,16 @@ export function PaymentForm() {
               fullWidth
             />
           </Box>
-
-          <Button
-            sx={{ marginTop: "1.5rem" }}
-            type="submit"
-            disabled={isButtonDisabled}
-          >
-            Отправить заявку
-          </Button>
         </Box>
       </Block>
+      <Button
+        onClick={handleSubmit(onSubmit)}
+        sx={{ marginTop: "1.5rem" }}
+        type="submit"
+        disabled={isButtonDisabled}
+      >
+        Отправить заявку
+      </Button>
     </Box>
   );
 }
