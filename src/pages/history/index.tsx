@@ -72,9 +72,9 @@ export function TransactionHistoryPage() {
         )}
 
         <Box sx={{ display: "grid", gap: "12px" }}>
-          {transactions.map((transaction) => (
+          {transactions.map((transaction, index) => (
             <TransactionCard
-              key={transaction.id}
+              key={index}
               id={transaction.id}
               date={transaction.date}
               status={transaction.status}
