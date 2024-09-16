@@ -9,6 +9,7 @@ import { ReferralInfoPage } from "./pages/referral-info";
 import { TransactionHistoryPage } from "./pages/history";
 import { PersonalDataForm } from "./pages/personal-data";
 import { BankCardsPage } from "./pages/bank-cards";
+import { AddCardForm } from "./pages/bank-cards/add-card";
 
 function App() {
   const router = createBrowserRouter([
@@ -22,6 +23,7 @@ function App() {
         { path: "/history", element: <TransactionHistoryPage /> },
         { path: "/personal-data", element: <PersonalDataForm /> },
         { path: "/bank-cards", element: <BankCardsPage /> },
+        { path: "/add-card", element: <AddCardForm /> },
         { path: "/about", element: <AboutPage /> },
         { path: "/faq", element: <FAQPage /> },
         { path: "/referral-info", element: <ReferralInfoPage /> },

@@ -1,7 +1,10 @@
 import { Box, Fade, Typography } from "@mui/material";
 import { Button, Title } from "../../components/shared";
+import { useNavigate } from "react-router-dom";
 
 export function BankCardsPage() {
+  const navigate = useNavigate()
+
   return (
     <Fade in>
       <Box>
@@ -20,7 +23,7 @@ export function BankCardsPage() {
           >
             Вы еще не добавили ни одной карты
           </Typography>
-          <Button sx={{ marginTop: "1rem" }}>Добавить карту</Button>
+          <Button onClick={() => navigate('/add-card')} sx={{ marginTop: "1rem" }}>Добавить карту</Button>
         </Box>
       </Box>
     </Fade>
