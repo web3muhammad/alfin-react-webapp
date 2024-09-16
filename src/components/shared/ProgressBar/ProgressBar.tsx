@@ -17,13 +17,13 @@ export const SegmentedProgressBar: React.FC<SegmentedProgressBarProps> = ({
 }) => {
   const theme = useTheme();
 
-  // Define the thresholds and colors for each segment
+  // Defining the thresholds and colors for each segment
   const thresholds = [100000, 500000, 1000000];
   const colors = [
-    "rgba(47, 188, 47, 1)", // Color for first segment
-    "rgba(235, 195, 0, 1)", // Color for second segment
-    "rgba(117, 0, 235, 1)", // Color for third segment
-    "rgba(188, 47, 94, 1)", // Color for fourth segment
+    "rgba(47, 188, 47, 1)", // first segment
+    "rgba(235, 195, 0, 1)", // second segment
+    "rgba(117, 0, 235, 1)", // third segment
+    "rgba(188, 47, 94, 1)", // fourth segment
   ];
 
   const getSegmentFill = (index: number) => {

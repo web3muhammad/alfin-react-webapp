@@ -13,7 +13,6 @@ import { currencies } from "./data";
 import { SwapVertRounded } from "@mui/icons-material";
 import { Action, State } from "./types";
 import { useNavigate } from "react-router-dom";
-import { useTelegramTheme } from "../../../../hooks";
 import { Block, Button } from "../../../shared";
 import { formatNumber } from "../../../../utils";
 import { SelectArrowsIcon } from "../../../../icons";
