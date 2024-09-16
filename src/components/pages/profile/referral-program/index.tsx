@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 const testData = { friends: 0, constantDiscount: 0, oneTimeDiscount: 0 };
 
 export function ReferralProgramBlock() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { tg } = useTelegram();
 
   return (
@@ -17,7 +17,7 @@ export function ReferralProgramBlock() {
             Получайте дополнительные скидки за приглашенных друзей!
           </Typography>
           <Typography
-            onClick={() => navigate('/referral-info')}
+            onClick={() => navigate("/referral-info")}
             sx={{
               color: "primary.main",
               fontSize: "12px",
@@ -29,6 +29,7 @@ export function ReferralProgramBlock() {
             Подробнее об условиях
           </Typography>
         </Box>
+
         <Divider sx={{ margin: "8px -16px" }} />
         <Box
           sx={{
@@ -66,7 +67,7 @@ export function ReferralProgramBlock() {
           sx={{ marginTop: "1rem" }}
           onClick={() => {
             tg.openTelegramLink(
-              "https://t.me/share/url?url=https://t.me/ramazanov_rv&start=&text=Let's exchange together"
+              "https://t.me/share/url?url=https://t.me/ramazanov_rv&start=&text="
             );
           }}
         >

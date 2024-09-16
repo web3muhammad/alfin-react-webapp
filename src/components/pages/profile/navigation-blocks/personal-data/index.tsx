@@ -76,7 +76,7 @@ export function PersonalDataBlock() {
         </ListItem>
 
         <ListItem
-          onClick={() => navigate("")}
+          onClick={() => navigate("/bank-cards")}
           sx={{
             paddingTop: "0",
             paddingInline: 0,
