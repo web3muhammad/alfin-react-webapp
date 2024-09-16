@@ -1,7 +1,8 @@
-import { Box, Divider, Typography } from "@mui/material";
-import { Block, Button } from "../../../shared";
+import { Box, Divider, IconButton, Typography } from "@mui/material";
+import { Block, Button, CustomIconButton } from "../../../shared";
 import { useTelegram } from "../../../../hooks";
 import { useNavigate } from "react-router-dom";
+import { Close } from "@mui/icons-material";
 
 const testData = { friends: 0, constantDiscount: 0, oneTimeDiscount: 0 };
 
@@ -12,7 +13,7 @@ export function ReferralProgramBlock() {
   return (
     <>
       <Block sx={{ display: "grid", gap: ".5rem" }}>
-        <Box>
+        <Box sx={{ position: "relative" }}>
           <Typography>
             Получайте дополнительные скидки за приглашенных друзей!
           </Typography>
@@ -28,6 +29,20 @@ export function ReferralProgramBlock() {
           >
             Подробнее об условиях
           </Typography>
+          <CustomIconButton
+            sx={{
+              position: "absolute",
+              right: "0px",
+              top: "0px",
+              width: "25px",
+              height: "25px",
+              minWidth: "25px",
+              padding: "0px",
+              backgroundColor: "secondary.light",
+            }}
+          >
+            <Close sx={{ width: "20px", color: "#8C8C8D" }} />
+          </CustomIconButton>
         </Box>
 
         <Divider sx={{ margin: "8px -16px" }} />
