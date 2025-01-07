@@ -75,7 +75,7 @@ export function PersonalDataForm() {
 
   return (
     <Fade in>
-      <Box>
+      <Box sx={{ width: "100%" }}>
         <Title>Личные данные</Title>
 
         <Block>

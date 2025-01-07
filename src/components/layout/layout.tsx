@@ -52,10 +52,12 @@ export function RootLayout() {
         <Fade in>
           <Box
             sx={{
+              display: "flex",
+              justifyContent: "center",
               width: "100%",
+              padding: "15px 22px",
               margin: "0 auto",
-              padding: "15px",
-              maxWidth: "430px",
+              maxWidth: "400px",
             }}
           >
             <Outlet />

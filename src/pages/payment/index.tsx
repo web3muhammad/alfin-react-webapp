@@ -140,7 +140,7 @@ export function PaymentForm() {
   } = useForm<FormData>({
     mode: "onChange",
     defaultValues: {
-      name: user?.first_name || userName,
+      name: userName || "",
       phone: userPhone || "",
       paymentMethod: "",
       bankCardId: undefined,
@@ -222,7 +222,7 @@ export function PaymentForm() {
 
   return (
     <Fade in>
-      <Box>
+      <Box sx={{ width: "100%" }}>
         <Box
           sx={{
             display: "flex",

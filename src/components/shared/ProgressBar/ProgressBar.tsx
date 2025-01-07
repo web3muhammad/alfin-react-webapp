@@ -55,7 +55,6 @@ export const SegmentedProgressBar: React.FC<SegmentedProgressBarProps> = ({
         width: "100%",
         marginTop: ".75rem",
         maxWidth: "393px",
-        paddingInline: "15px",
         marginInline: "auto",
       }}
     >

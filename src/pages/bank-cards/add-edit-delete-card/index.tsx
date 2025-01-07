@@ -136,7 +136,7 @@ export function AddCardForm() {
 
   return (
     <Fade in>
-      <Box>
+      <Box sx={{ width: "100%" }}>
         <Title>Новая карта</Title>
         <Block sx={{ marginTop: "1.25rem" }}>
           <Box component="form">

@@ -14,7 +14,7 @@ export function BankCardsPage() {
 
   return (
     <Fade in>
-      <Box>
+      <Box sx={{ width: "100%" }}>
         <Title>Банковские карты</Title>
         {isLoading ? (
           <Box

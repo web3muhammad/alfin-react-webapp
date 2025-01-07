@@ -147,6 +147,22 @@ export const CurrencyExchangeWidget: React.FC = () => {
     setAnchorEl2(null);
   };
 
+  const handleCurrencyChange = (
+    newMainCurrency: string,
+    newExchangeCurrency: string
+  ) => {
+    setSelectedMainCurrency(newMainCurrency);
+    setSelectedExchangeCurrency(newExchangeCurrency);
+
+    fetchExchangeRate(newMainCurrency, newExchangeCurrency).then((rate) => {
+      setExchangeRate(rate);
+
+      const mainAmount = Number(inputAmount1.replace(/\s/g, ""));
+      const convertedValue = (mainAmount * rate).toFixed(0);
+      setInputAmount2(formatNumber(convertedValue));
+    });
+  };
+
   useEffect(() => {
     return () => {
       debouncedFetchRate.cancel();
@@ -366,24 +382,11 @@ export const CurrencyExchangeWidget: React.FC = () => {
           <Box key={currency.id}>
             <MenuItem
               onClick={() => {
-                // Устанавливаем выбранную валюту
-                setSelectedMainCurrency(currency.symbol);
-
-                // Закрываем меню
+                const newMainCurrency = currency.symbol;
                 handleMenu1Close();
 
-                // Делаем немедленный запрос без задержки
-                fetchExchangeRate(
-                  currency.symbol,
-                  selectedExchangeCurrency
-                ).then((rate) => {
-                  setExchangeRate(rate);
-
-                  // Пересчитываем сумму, основываясь на новом курсе
-                  const amount = Number(inputAmount1.replace(/\s/g, ""));
-                  const convertedValue = (amount / rate).toFixed(0);
-                  setInputAmount2(formatNumber(convertedValue));
-                });
+                // Обновляем валюту и пересчитываем значения
+                handleCurrencyChange(newMainCurrency, selectedExchangeCurrency);
               }}
               sx={{
                 paddingBlock: "0",
@@ -473,18 +476,11 @@ export const CurrencyExchangeWidget: React.FC = () => {
           <Box key={currency.id}>
             <MenuItem
               onClick={() => {
-                setSelectedExchangeCurrency(currency.symbol);
+                const newExchangeCurrency = currency.symbol;
                 handleMenu2Close();
 
-                fetchExchangeRate(selectedMainCurrency, currency.symbol).then(
-                  (rate) => {
-                    setExchangeRate(rate);
-
-                    const amount = Number(inputAmount1.replace(/\s/g, ""));
-                    const convertedValue = (amount / rate).toFixed(0);
-                    setInputAmount2(formatNumber(convertedValue));
-                  }
-                );
+                // Обновляем валюту и пересчитываем значения
+                handleCurrencyChange(selectedMainCurrency, newExchangeCurrency);
               }}
               sx={{
                 paddingBlock: "0",
