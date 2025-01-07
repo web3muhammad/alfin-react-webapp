@@ -14,7 +14,7 @@ export function ProfilePage() {
     <>
       <UserWelcomeBanner />
       <Box sx={{ display: "grid", gap: "15px", marginTop: "30px" }}>
-        <ReferralProgramBlock />
+        {/* <ReferralProgramBlock /> */}
         <PersonalDataBlock />
         <GeneralNavigationBlock />
         <SocialMediaBlock />

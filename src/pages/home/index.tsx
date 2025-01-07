@@ -8,7 +8,7 @@ import {
 } from "../../components/pages/home";
 import { UserWelcomeBanner } from "../../components/shared";
 
-export function Home() {
+export function Home() {  
   return (
     <Box sx={{ display: "grid", gap: "25px", marginTop: "10px" }}>
       <UserWelcomeBanner />

@@ -1,39 +1,41 @@
 import { Box, Typography } from "@mui/material";
 
 interface RateCard {
-  code: string;
-  name: string;
-  value: number;
-  color: string;
+  title: string;
+  rate: number;
+  icon: string;
+  symbol: string;
 }
 
-export function RateCard({ code, name, value, color }: RateCard) {
+export function RateCard({ title, rate, icon, symbol }: RateCard) {
   return (
-    <Box sx={{ display: "flex", gap: "6px" }}>
-      <Box
-        sx={{
-          width: "32px",
-          background: color,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          borderRadius: "4px",
-        }}
-      >
+    <Box sx={{ display: "flex", gap: "6px", alignItems: "center" }}>
+      {icon ? (
+        <Box
+          component="img"
+          src={icon}
+          alt={`${title} icon`}
+          style={{
+            width: "32px",
+            height: "16px",
+            objectFit: "cover",
+          }}
+        />
+      ) : (
         <Typography
           sx={{
             fontSize: "10px",
             fontWeight: "700",
-            color: "#fff",
+            color: "#555",
             textTransform: "uppercase",
           }}
         >
-          {code}
+          {symbol}
         </Typography>
-      </Box>
+      )}
       <Typography sx={{ fontWeight: "500" }}>
-        {name} • {value}
-        {code === "RUB" ? "₮" : "₽"}
+        {title} • {rate}
+        {symbol === "RUB" ? "₮" : "₽"}
       </Typography>
     </Box>
   );

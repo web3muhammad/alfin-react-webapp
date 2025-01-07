@@ -8,12 +8,18 @@ import {
   MenuItem,
   Menu,
   Fade,
+  CircularProgress,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { useLocation } from "react-router-dom";
-import { useTelegram } from "../../../hooks";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Block, Button, Title } from "../../../components/shared";
 import { SelectArrowsIcon } from "../../../icons";
+import { useMutation, useQuery } from "react-query";
+import { createBankCard } from "../../../services/bank-cards/create";
+import { getAllCurrencies } from "../../../services/currencies";
+import { editBankCard } from "../../../services/bank-cards/edit";
+import { deleteBankCard } from "../../../services/bank-cards/delete";
+import { useSnackbar } from "notistack";
 
 type AddCardFormData = {
   cardName: string;
@@ -22,13 +28,15 @@ type AddCardFormData = {
   cardNumber: string;
 };
 
-const currencies = ["TRY", "AED", "SAR", "USFD", "RUB"];
-
 export function AddCardForm() {
-  const location = useLocation();
-
+  const { enqueueSnackbar } = useSnackbar();
+  const { state } = useLocation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedCurrencyMenu, setSelectedCurrencyMenu] = useState<string>("");
+  const [selectedCurrencyMenu, setSelectedCurrencyMenu] = useState<string>(
+    state.currency || ""
+  );
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -38,15 +46,75 @@ export function AddCardForm() {
   } = useForm<AddCardFormData>({
     mode: "onChange", // Enables form validation to trigger on each change
     defaultValues: {
-      cardName: "",
-      ownerName: "",
-      cardCurrency: "",
-      cardNumber: "",
+      cardName: state.bankName || "",
+      ownerName: state.ownerName || "",
+      cardCurrency: state.currency || "",
+      cardNumber: String(state.cardNumber) || "",
     },
   });
 
+  const { data: allCurrencyData } = useQuery({
+    queryFn: getAllCurrencies,
+    queryKey: ["all-currency"],
+  });
+
+  const { mutate: createBankCardMutation, isLoading: createCardLoading } =
+    useMutation({
+      mutationFn: createBankCard,
+      mutationKey: ["create-card"],
+      onSuccess() {
+        enqueueSnackbar("Банковская карта успешно добавлена", {
+          variant: "success",
+        });
+        if (state.fromPage === "payment") {
+          navigate(-1);
+        } else {
+          navigate("/bank-cards");
+        }
+      },
+    });
+
+  const { mutate: editBankCardMutation, isLoading: editCardLoading } =
+    useMutation({
+      mutationFn: editBankCard,
+      mutationKey: ["edit-card"],
+      onSuccess() {
+        navigate("/bank-cards");
+        enqueueSnackbar("Данные банковской карты успешно изменены", {
+          variant: "success",
+        });
+      },
+    });
+
+  const { mutate: deleteBankCardMutation, isLoading: deleteCardLoading } =
+    useMutation({
+      mutationFn: deleteBankCard,
+      mutationKey: ["delete-card"],
+      onSuccess() {
+        navigate("/bank-cards");
+        enqueueSnackbar("Банковская карта успешно удалена", {
+          variant: "success",
+        });
+      },
+    });
+
   const onSubmit = (data: AddCardFormData) => {
-    console.log(data);
+    const { cardName, cardNumber, cardCurrency, ownerName } = data;
+
+    const submitData = {
+      bank_name: cardName,
+      owner_name: ownerName,
+      card_number: Number(cardNumber.replace(/\s/g, "")),
+      currency: cardCurrency,
+    };
+
+    if (state.formType === "create") {
+      createBankCardMutation(submitData);
+    }
+
+    if (state.formType === "edit") {
+      editBankCardMutation({ ...submitData, cardId: state.cardId });
+    }
   };
 
   const handleMenuOpen = (event: MouseEvent<HTMLElement>) => {
@@ -62,6 +130,9 @@ export function AddCardForm() {
     setValue("cardCurrency", item, { shouldValidate: true });
     handleMenuClose();
   };
+
+  const isDisabled =
+    !isValid && !/^\d+$/.test(watch("cardNumber").replace(/\s/g, ""));
 
   return (
     <Fade in>
@@ -136,20 +207,34 @@ export function AddCardForm() {
                 anchorOrigin={{ vertical: "center", horizontal: "right" }}
                 transformOrigin={{ vertical: "top", horizontal: "left" }}
               >
-                {currencies.map((item, index) => (
+                {allCurrencyData?.map((item, index) => (
                   <Box key={index}>
                     <MenuItem
                       sx={{
                         paddingBlock: "0",
                         marginBlock: "0",
-                        minHeight: "35px", // Setting minimum height
-                        minWidth: "80px", // Setting minimum width
+                        minHeight: "40px",
+                        minWidth: "100px",
                       }}
-                      onClick={() => handleSelection(item)}
+                      onClick={() => handleSelection(item.symbol)}
                     >
-                      {item}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "5px",
+                        }}
+                      >
+                        <Box
+                          component="img"
+                          src={item.icon}
+                          sx={{ width: "32px", height: "16px" }}
+                        />
+                        <Typography>{item.symbol}</Typography>
+                      </Box>
                     </MenuItem>
-                    {index < currencies.length - 1 && (
+                    {index < allCurrencyData.length - 1 && (
                       <Divider
                         sx={{
                           margin: "0 !important",
@@ -204,7 +289,7 @@ export function AddCardForm() {
             >
               <Typography>Номер карты</Typography>
               <InputMask
-              placeholder="0000 0000 0000 0000"
+                placeholder="0000 0000 0000 0000"
                 mask="9999 9999 9999 9999"
                 value={watch("cardNumber")}
                 onChange={(e) =>
@@ -236,25 +321,35 @@ export function AddCardForm() {
           onClick={handleSubmit(onSubmit)}
           sx={{ marginTop: "1.5rem" }}
           type="submit"
-          disabled={!isValid} // Disables button when form is invalid
+          disabled={isDisabled} // Disables button when form is invalid
         >
-          Отправить заявку
+          {createCardLoading || editCardLoading ? (
+            <CircularProgress sx={{ color: "#fff" }} size={25} />
+          ) : (
+            "Сохранить"
+          )}
         </Button>
 
         {/* Delete Card Button */}
-        <Button
-          sx={{
-            marginTop: ".75rem",
-            backgroundColor:
-              Telegram.WebApp.colorScheme === "dark"
-                ? "rgba(44, 44, 46, 1)"
-                : "#fff",
-            color: "error.light",
-          }}
-          onClick={() => console.log("Card deleted")}
-        >
-          Удалить карту
-        </Button>
+        {state.formType === "edit" && (
+          <Button
+            sx={{
+              marginTop: ".75rem",
+              backgroundColor:
+                Telegram.WebApp.colorScheme === "dark"
+                  ? "rgba(44, 44, 46, 1)"
+                  : "#fff",
+              color: "error.light",
+            }}
+            onClick={() => deleteBankCardMutation(state.cardId)}
+          >
+            {deleteCardLoading ? (
+              <CircularProgress size={25} />
+            ) : (
+              "Удалить карту"
+            )}
+          </Button>
+        )}
       </Box>
     </Fade>
   );

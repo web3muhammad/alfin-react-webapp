@@ -1,26 +1,19 @@
 import React from "react";
 import { Box, Divider, Typography } from "@mui/material";
 import { Block, Button } from "../../../shared";
+import { Order } from "../../../../services/orders/interface";
+import { useNavigate } from "react-router-dom";
 
-type TransactionProps = {
-  id: string;
-  date: string;
-  status: string;
-  amount: string;
-  price: string;
-  paid: string;
-  manager: string;
-};
-
-export const TransactionCard: React.FC<TransactionProps> = ({
+export const TransactionCard: React.FC<Order> = ({
   id,
-  date,
   status,
-  amount,
-  price,
-  paid,
-  manager,
+  sell_amount,
+  sell_currency,
+  buy_amount,
+  buy_currency,
+  rate,
 }) => {
+  const navigate = useNavigate();
   return (
     <Block>
       <Box
@@ -37,17 +30,17 @@ export const TransactionCard: React.FC<TransactionProps> = ({
               #{id}
             </Typography>
           </Box>
-          <Typography sx={{ fontSize: "10px", opacity: ".5" }}>
+          {/* <Typography sx={{ fontSize: "10px", opacity: ".5" }}>
             {date}
-          </Typography>
+          </Typography> */}
         </Box>
 
         <Box
           sx={{
             background:
-              status === "in-progress"
+              status === "IN_PROGRESS"
                 ? "rgba(234, 194, 0, 0.1)"
-                : status === "done"
+                : status === "SUCCEEDED"
                 ? "rgba(0, 234, 0, 0.1)"
                 : "rgba(234, 0, 0, 0.1)",
             display: "flex",
@@ -62,16 +55,16 @@ export const TransactionCard: React.FC<TransactionProps> = ({
               fontWeight: "700",
               fontSize: "12px",
               color:
-                status === "in-progress"
+                status === "IN_PROGRESS" || status === "NEW"
                   ? "rgba(234, 194, 0, 1)"
-                  : status === "done"
+                  : status === "SUCCEEDED"
                   ? "rgba(0, 234, 0, 1)"
                   : "rgba(234, 0, 0, 1)",
             }}
           >
-            {status === "in-progress"
+            {status === "IN_PROGRESS" || status === "NEW"
               ? "В работе"
-              : status === "done"
+              : status === "SUCCEEDED"
               ? "Завершено"
               : "Отменено"}
           </Typography>
@@ -88,8 +81,10 @@ export const TransactionCard: React.FC<TransactionProps> = ({
             alignItems: "center",
           }}
         >
-          <Typography sx={{ opacity: ".5" }}>Сумма</Typography>
-          <Typography sx={{ fontSize: "18px" }}>{amount}</Typography>
+          <Typography sx={{ opacity: ".5" }}>Получили</Typography>
+          <Typography sx={{ fontSize: "18px" }}>
+            {buy_amount + " " + buy_currency}
+          </Typography>
         </Box>
 
         <Box
@@ -99,8 +94,8 @@ export const TransactionCard: React.FC<TransactionProps> = ({
             alignItems: "center",
           }}
         >
-          <Typography sx={{ opacity: ".5" }}>Цена</Typography>
-          <Typography>{price}</Typography>
+          <Typography sx={{ opacity: ".5" }}>Курс</Typography>
+          <Typography>{rate}</Typography>
         </Box>
 
         <Box
@@ -110,24 +105,23 @@ export const TransactionCard: React.FC<TransactionProps> = ({
             alignItems: "center",
           }}
         >
-          <Typography sx={{ opacity: ".5" }}>Заплатили</Typography>
-          <Typography>{paid}</Typography>
-        </Box>
-
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Typography sx={{ opacity: ".5" }}>Менеджер</Typography>
-          <Typography>{manager}</Typography>
+          <Typography sx={{ opacity: ".5" }}>Отдали</Typography>
+          <Typography>{sell_amount + " " + sell_currency}</Typography>
         </Box>
       </Box>
 
-      {status === "done" && (
+      {status === "SUCCEEDED" && (
         <Button
+          onClick={() =>
+            navigate("/payment", {
+              state: {
+                inputAmount1: buy_amount,
+                inputAmount2: sell_amount,
+                selectedMainCurrency: buy_currency,
+                selectedExchangeCurrency: sell_currency,
+              },
+            })
+          }
           sx={{
             // backgroundColor: "primary.main",
             backgroundColor: "secondary.light",

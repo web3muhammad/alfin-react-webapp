@@ -4,25 +4,34 @@ import { Box, Typography } from "@mui/material";
 import { DiscountBadge, Navigation } from "./components";
 import { useTelegram } from "../../../hooks";
 import { SegmentedProgressBar, Title } from "..";
+import { useQuery } from "react-query";
+import { getUserInfo } from "../../../services/me";
 
 export function UserWelcomeBanner() {
   const { user } = useTelegram();
-  const moneyValue = 600000;
-
+  const { data } = useQuery({
+    queryFn: getUserInfo,
+    queryKey: ["user-info"],
+    refetchOnWindowFocus: false,
+    onSuccess(data) {
+      localStorage.setItem("userInfo", JSON.stringify(data));
+    },
+  });
+  const volume = data?.volume || 0;
   const getDiscount = () => {
-    if (moneyValue >= 1000000) return "-10";
-    if (moneyValue >= 500000) return "-7";
-    if (moneyValue >= 100000) return "-5";
+    if (volume >= 1000000) return "-10";
+    if (volume >= 500000) return "-7";
+    if (volume >= 100000) return "-5";
     return "0";
   };
 
   return (
     <Box>
       <Title sx={{ paddingBottom: "0" }}>
-        Добро пожаловать, {user?.first_name}
+        Добро пожаловать, {user?.first_name || data?.full_name}
       </Title>
 
-      {moneyValue <= 0 && (
+      {volume <= 0 && (
         <Typography
           sx={{
             fontSize: "13px",
@@ -37,7 +46,7 @@ export function UserWelcomeBanner() {
         </Typography>
       )}
 
-      {moneyValue > 0 && (
+      {volume > 0 && (
         <Box
           sx={{
             display: "flex",
@@ -49,14 +58,14 @@ export function UserWelcomeBanner() {
           <Typography
             sx={{ fontSize: "14px", fontWeight: 400, textAlign: "center" }}
           >
-            Вы обернули {moneyValue.toLocaleString()}₽
+            Вы обернули {volume.toLocaleString()}₽
           </Typography>
 
-          <DiscountBadge discount={getDiscount()} />
+          {/* <DiscountBadge discount={getDiscount()} /> */}
         </Box>
       )}
 
-      <SegmentedProgressBar value={moneyValue} />
+      <SegmentedProgressBar value={volume} />
 
       <Navigation />
     </Box>

@@ -50,7 +50,15 @@ export const SegmentedProgressBar: React.FC<SegmentedProgressBarProps> = ({
   };
 
   return (
-    <Box sx={{ width: "100%", marginTop: "1rem" }}>
+    <Box
+      sx={{
+        width: "100%",
+        marginTop: ".75rem",
+        maxWidth: "393px",
+        paddingInline: "15px",
+        marginInline: "auto",
+      }}
+    >
       <Box sx={{ display: "flex", height: "12px" }}>
         {Array.from({ length: 4 }, (_, index) => (
           <Box key={index} sx={{ position: "relative", flex: 1, padding: 0 }}>

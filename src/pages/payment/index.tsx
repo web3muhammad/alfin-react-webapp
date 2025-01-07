@@ -8,24 +8,38 @@ import {
   MenuItem,
   Menu,
   Fade,
+  CircularProgress,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Block, Button } from "../../components/shared";
 import { formatNumber, isPhoneComplete } from "../../utils";
 import { useTelegram } from "../../hooks";
 import { SelectArrowsIcon } from "../../icons";
+import { useMutation, useQueries, useQuery } from "react-query";
+import { CreateOrder } from "../../services/orders/create";
+import { CreateOrderRequestTypes } from "../../services/orders/interface";
+import { getAllBankCards } from "../../services/bank-cards";
+import { BankCard } from "../../services/bank-cards/interface";
+import { useSnackbar } from "notistack";
 
 type FormData = {
   name: string;
   phone: string;
-  paymentService: string;
-  bankCard: string;
-  promocode?: string;
+  paymentMethod: string;
+  bankCardId: number;
+  promocode: string;
+  comment: string;
 };
 
-const banks = ["Sberbank", "T-Bank", "Альфа-Банк"];
-const bankCards = ["Вакиф Турецкая", "Deniz Bank"];
+interface MenuComponentProps {
+  anchorEl: null | HTMLElement;
+  open: boolean;
+  onClose: () => void;
+  items: string[] | BankCard[];
+  onSelect: (item: string | BankCard) => void;
+  menuType: "bank" | "card";
+}
 
 function MenuComponent({
   anchorEl,
@@ -34,14 +48,7 @@ function MenuComponent({
   items,
   onSelect,
   menuType,
-}: {
-  anchorEl: null | HTMLElement;
-  open: boolean;
-  onClose: () => void;
-  items: string[];
-  onSelect: (item: string) => void;
-  menuType: "bank" | "card";
-}) {
+}: MenuComponentProps) {
   const isDark = Telegram.WebApp.colorScheme === "dark";
 
   return (
@@ -61,12 +68,29 @@ function MenuComponent({
     >
       {items.map((item, index) => (
         <Box key={index}>
-          <MenuItem
-            sx={{ paddingBlock: "0", marginBlock: "0" }}
-            onClick={() => onSelect(item)}
-          >
-            {item}
-          </MenuItem>
+          {typeof item === "string" ? (
+            <MenuItem
+              sx={{ paddingBlock: "0", marginBlock: "0" }}
+              onClick={() => onSelect(item)}
+            >
+              <Typography>{item}</Typography>
+            </MenuItem>
+          ) : (
+            <MenuItem
+              sx={{ paddingBlock: "0", marginBlock: "0" }}
+              onClick={() => onSelect(item)}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                <Typography>{item.bank_name}</Typography>
+                <Typography
+                  sx={{ fontSize: "12px", color: "rgba(140, 140, 141, 1)" }}
+                >
+                  {(item.card_number % 10000).toString().padStart(4, "0")}
+                </Typography>
+              </Box>
+            </MenuItem>
+          )}
+
           {index < items.length - 1 && (
             <Divider
               sx={{
@@ -82,15 +106,30 @@ function MenuComponent({
 }
 
 export function PaymentForm() {
+  const { enqueueSnackbar } = useSnackbar();
+
   const { user } = useTelegram();
-  const location = useLocation();
-  const { state } = location;
-  const { amount, calculatedAmount, isBuying, selectedCurrency } = state || {};
+  const { state } = useLocation();
+  const navigate = useNavigate();
+  const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+
+  const userPhone = userInfo.phone_number;
+  const userName = userInfo.full_name;
+  const {
+    inputAmount1,
+    inputAmount2,
+    selectedMainCurrency,
+    selectedExchangeCurrency,
+    exchangeRate,
+  } = state || {};
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedBank, setSelectedBank] = useState<string>("");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<string>("");
   const [selectedBankCard, setSelectedBankCard] = useState<string>("");
-  const [menuType, setMenuType] = useState<"banks" | "cards">("banks");
+  const [menuType, setMenuType] = useState<"payment-method" | "cards">(
+    "payment-method"
+  );
 
   const {
     register,
@@ -99,26 +138,60 @@ export function PaymentForm() {
     setValue,
     formState: { errors, isValid },
   } = useForm<FormData>({
-    mode: "onChange", // Ensures validation on every change
+    mode: "onChange",
     defaultValues: {
-      name: user?.first_name || "",
-      phone: "",
-      paymentService: "",
-      bankCard: "",
+      name: user?.first_name || userName,
+      phone: userPhone || "",
+      paymentMethod: "",
+      bankCardId: undefined,
       promocode: "",
+      comment: "",
     },
+  });
+
+  const { mutate: createOrderMutation, isLoading } = useMutation({
+    mutationFn: CreateOrder,
+    mutationKey: ["create-order"],
+    onSuccess() {
+      navigate("/");
+      enqueueSnackbar("Заявка была успешно создана ", {
+        variant: "success",
+      });
+    },
+    onError() {
+      enqueueSnackbar("Что-то пошло не так, попробуйте позже", {
+        variant: "error",
+      });
+    },
+  });
+
+  const { data: allBankCards } = useQuery({
+    queryFn: getAllBankCards,
+    queryKey: ["all-cards"],
   });
 
   const name = watch("name");
   const phone = watch("phone");
 
   const onSubmit = (data: FormData) => {
-    console.log(data);
+    const createOrderRequestData: CreateOrderRequestTypes = {
+      sell_currency: selectedMainCurrency,
+      buy_currency: selectedExchangeCurrency,
+      sell_amount: parseFloat(inputAmount1.replace(/\s/g, "")),
+      buy_amount: parseFloat(inputAmount2.replace(/\s/g, "")),
+      rate: exchangeRate,
+      payment_method: data.paymentMethod === "Наличными" ? "CASH" : "CARD",
+      status: "NEW",
+      comment: data.comment,
+      bank_card_id: data.bankCardId,
+    };
+
+    createOrderMutation(createOrderRequestData);
   };
 
   const handleMenuOpen = (
     event: MouseEvent<HTMLElement>,
-    type: "banks" | "cards"
+    type: "payment-method" | "cards"
   ) => {
     setMenuType(type);
     setAnchorEl(event.currentTarget);
@@ -128,13 +201,13 @@ export function PaymentForm() {
     setAnchorEl(null);
   };
 
-  const handleSelection = (item: string) => {
-    if (menuType === "banks") {
-      setSelectedBank(item);
-      setValue("paymentService", item);
-    } else if (menuType === "cards") {
-      setSelectedBankCard(item);
-      setValue("bankCard", item);
+  const handleSelection = (item: string | BankCard) => {
+    if (menuType === "payment-method" && typeof item === "string") {
+      setSelectedPaymentMethod(item);
+      setValue("paymentMethod", item);
+    } else if (menuType === "cards" && typeof item !== "string") {
+      setSelectedBankCard(item.bank_name);
+      setValue("bankCardId", item.id);
     }
     handleMenuClose();
   };
@@ -143,7 +216,7 @@ export function PaymentForm() {
   const isButtonDisabled = !(
     name &&
     isPhoneComplete(phone) &&
-    selectedBank &&
+    selectedPaymentMethod &&
     selectedBankCard
   );
 
@@ -160,11 +233,10 @@ export function PaymentForm() {
           <Typography
             sx={{ fontSize: "3rem", fontWeight: "500", textAlign: "center" }}
           >
-            {amount} {isBuying ? selectedCurrency : "RUB"}
+            {inputAmount1 + " " + selectedMainCurrency}
           </Typography>
           <Typography sx={{ opacity: ".5", fontSize: "1rem" }}>
-            = {formatNumber(calculatedAmount)}{" "}
-            {isBuying ? "RUB" : selectedCurrency}
+            = {inputAmount2 + " " + selectedExchangeCurrency}
           </Typography>
         </Box>
 
@@ -186,11 +258,17 @@ export function PaymentForm() {
                     paddingBlock: "2px",
                     paddingLeft: "10px",
                     textAlign: "right",
+                    cursor: "default",
                   },
                   "& fieldset": { border: "none" },
                 }}
                 {...register("name", { required: "Name is required" })}
                 error={!!errors.name}
+                slotProps={{
+                  htmlInput: {
+                    readOnly: true,
+                  },
+                }}
                 fullWidth
               />
             </Box>
@@ -207,18 +285,24 @@ export function PaymentForm() {
               <Typography>Телефон</Typography>
               <InputMask
                 mask="+7 (999) 999-99-99"
-                value={watch("phone")}
+                value={phone}
                 onChange={(e) => setValue("phone", e.target.value)}
               >
                 <TextField
                   placeholder="+7 900 000-00-00"
                   type="tel"
+                  slotProps={{
+                    htmlInput: {
+                      readOnly: true,
+                    },
+                  }}
                   sx={{
                     width: "60%",
                     input: {
                       paddingBlock: "2px",
                       paddingLeft: "10px",
                       textAlign: "right",
+                      cursor: "default",
                     },
                     "& fieldset": { border: "none" },
                   }}
@@ -246,17 +330,17 @@ export function PaymentForm() {
                     color: "primary.main",
                     paddingRight: "3px",
                   }}
-                  onClick={(e) => handleMenuOpen(e, "banks")}
+                  onClick={(e) => handleMenuOpen(e, "payment-method")}
                 >
-                  {selectedBank || "Выберите банк"}
+                  {selectedPaymentMethod || "Выберите метод оплаты"}
                 </Typography>
                 <SelectArrowsIcon />
               </Box>
               <MenuComponent
                 anchorEl={anchorEl}
-                open={menuType === "banks" && Boolean(anchorEl)}
+                open={menuType === "payment-method" && Boolean(anchorEl)}
                 onClose={handleMenuClose}
-                items={banks}
+                items={["Перевод", "Наличными"]}
                 onSelect={handleSelection}
                 menuType="bank"
               />
@@ -264,41 +348,55 @@ export function PaymentForm() {
             <Divider sx={{ margin: "12px 0px" }} />
 
             {/* Bank Card Menu Select */}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-end",
-                marginTop: "1rem",
-              }}
-            >
-              <Typography>Карта зачисления</Typography>
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Typography
+            {selectedPaymentMethod !== "Наличными" && (
+              <>
+                <Box
                   sx={{
-                    cursor: "pointer",
-                    color: "primary.main",
-                    paddingRight: "3px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-end",
+                    marginTop: "1rem",
                   }}
-                  onClick={(e) => handleMenuOpen(e, "cards")}
                 >
-                  {selectedBankCard || "Выберите карту"}
-                </Typography>
-                <SelectArrowsIcon />
-              </Box>
-              <MenuComponent
-                anchorEl={anchorEl}
-                open={menuType === "cards" && Boolean(anchorEl)}
-                onClose={handleMenuClose}
-                items={bankCards}
-                onSelect={handleSelection}
-                menuType="card"
-              />
-            </Box>
-            <Divider sx={{ margin: "12px 0px" }} />
+                  <Typography>Карта зачисления</Typography>
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Typography
+                      sx={{
+                        cursor: "pointer",
+                        color: "primary.main",
+                        paddingRight: "3px",
+                      }}
+                      onClick={(e) => {
+                        if (allBankCards?.length === 0) {
+                          navigate("/add-card", {
+                            state: { formType: "create", fromPage: "payment" },
+                          });
+                        }
+                        handleMenuOpen(e, "cards");
+                      }}
+                    >
+                      {allBankCards?.length === 0
+                        ? "Добавить карту"
+                        : selectedBankCard || "Выберите карту"}
+                    </Typography>
+                    {allBankCards?.length !== 0 && <SelectArrowsIcon />}
+                  </Box>
+                  <MenuComponent
+                    anchorEl={anchorEl}
+                    open={menuType === "cards" && Boolean(anchorEl)}
+                    onClose={handleMenuClose}
+                    items={allBankCards || []}
+                    onSelect={handleSelection}
+                    menuType="card"
+                  />
+                </Box>
+
+                <Divider sx={{ margin: "12px 0px" }} />
+              </>
+            )}
 
             {/* Promocode Input */}
-            <Box
+            {/* <Box
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
@@ -322,6 +420,32 @@ export function PaymentForm() {
                 error={!!errors.promocode}
                 fullWidth
               />
+            </Box> */}
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-end",
+                marginTop: "1rem",
+              }}
+            >
+              <Typography>Коментарий</Typography>
+              <TextField
+                placeholder="Если есть"
+                sx={{
+                  width: "60%",
+                  input: {
+                    paddingBlock: "2px",
+                    paddingLeft: "10px",
+                    textAlign: "right",
+                  },
+                  "& fieldset": { border: "none" },
+                }}
+                {...register("comment")}
+                error={!!errors.comment}
+                fullWidth
+              />
             </Box>
           </Box>
         </Block>
@@ -331,7 +455,11 @@ export function PaymentForm() {
           type="submit"
           disabled={isButtonDisabled}
         >
-          Отправить заявку
+          {isLoading ? (
+            <CircularProgress size={25} sx={{ color: "#fff" }} />
+          ) : (
+            "Отправить заявку"
+          )}
         </Button>
       </Box>
     </Fade>

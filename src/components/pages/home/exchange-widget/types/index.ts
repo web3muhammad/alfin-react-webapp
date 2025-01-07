@@ -1,5 +1,6 @@
 export interface State {
-  amount: number | string;
+  inputAmount1: number | string;
+  inputAmount2: number | string;
   selectedCurrency: string;
   exchangeRate: number;
   isBuying: boolean;
@@ -7,7 +8,8 @@ export interface State {
 }
 
 export type Action =
-  | { type: "SET_AMOUNT"; payload: number | string }
+  | { type: "SET_AMOUNT1"; payload: number | string }
+  | { type: "SET_AMOUNT2"; payload: number | string }
   | { type: "SET_CURRENCY"; payload: { currency: string; rate: number } }
   | { type: "TOGGLE_BUY_SELL" }
   | { type: "OPEN_MENU"; payload: HTMLElement }

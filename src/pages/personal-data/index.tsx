@@ -1,23 +1,40 @@
 import InputMask from "react-input-mask";
-import { Box, TextField, Typography, Divider, Fade } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Typography,
+  Divider,
+  Fade,
+  CircularProgress,
+} from "@mui/material";
 import { useForm } from "react-hook-form";
 import { Block, Button, Title } from "../../components/shared";
 import { isPhoneComplete } from "../../utils"; // Assuming this utility function exists
+import { useMutation, useQueryClient } from "react-query";
+import { editPersonalData } from "../../services/me/edit";
+import { EditPersonalDataTypes } from "../../services/me/interface";
+import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "notistack";
 
 type FormData = {
   name: string;
   phone: string;
 };
 
-// Mock server data
-const data = { name: "Рамазан", phone: "+7 932 248 80 05" };
-
 export function PersonalDataForm() {
+  const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+  const data = { name: userInfo.full_name, phone: userInfo.phone_number };
+
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors, dirtyFields },
   } = useForm<FormData>({
     defaultValues: {
@@ -26,8 +43,30 @@ export function PersonalDataForm() {
     },
   });
 
+  const { mutate: editPersonalDataMutation, isLoading } = useMutation({
+    mutationFn: editPersonalData,
+    mutationKey: ["edit-personal"],
+    onSuccess() {
+      queryClient.invalidateQueries(["user-info"]);
+      navigate("/profile");
+      enqueueSnackbar("Личные данные были успешно изменены ", {
+        variant: "success",
+      });
+    },
+    onError() {
+      enqueueSnackbar("Что-то пошло не так, попробуйте позже", {
+        variant: "error",
+      });
+    },
+  });
+
   const onSubmit = (formData: FormData) => {
-    console.log(formData);
+    const payload: EditPersonalDataTypes = {
+      full_name: formData.name,
+      phone_number: formData.phone,
+    };
+
+    editPersonalDataMutation(payload);
   };
 
   const isPhoneValid = isPhoneComplete(watch("phone"));
@@ -111,7 +150,11 @@ export function PersonalDataForm() {
           type="submit"
           disabled={!isModified || !isPhoneValid}
         >
-          Сохранить изменения
+          {isLoading ? (
+            <CircularProgress size={25} sx={{ color: "#fff" }} />
+          ) : (
+            "Сохранить изменения"
+          )}
         </Button>
       </Box>
     </Fade>

@@ -2,6 +2,8 @@ import { Box, Fade, ThemeProvider } from "@mui/material";
 import { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTelegram, useTelegramTheme } from "../../hooks";
+import { getAccessToken } from "../../services/login";
+import { useSnackbar } from "notistack";
 
 export function RootLayout() {
   const theme = useTelegramTheme();
@@ -12,6 +14,7 @@ export function RootLayout() {
   useEffect(() => {
     tg.ready();
     tg.expand();
+    tg.setBackgroundColor("rgba(239, 239, 243, 1)");
 
     // Only showing the back button if user is not on the homepage
     if (pathname !== "/") {
@@ -35,6 +38,7 @@ export function RootLayout() {
   // Scroll to top after navigating to a new page
   useEffect(() => {
     window.scrollTo(0, 0);
+    getAccessToken();
   }, [location.pathname]);
 
   return (
@@ -49,7 +53,6 @@ export function RootLayout() {
           <Box
             sx={{
               width: "100%",
-              maxWidth: "393px",
               margin: "0 auto",
               padding: "15px",
             }}

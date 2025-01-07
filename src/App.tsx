@@ -9,7 +9,7 @@ import { ReferralInfoPage } from "./pages/referral-info";
 import { TransactionHistoryPage } from "./pages/history";
 import { PersonalDataForm } from "./pages/personal-data";
 import { BankCardsPage } from "./pages/bank-cards";
-import { AddCardForm } from "./pages/bank-cards/add-card";
+import { AddCardForm } from "./pages/bank-cards/add-edit-delete-card";
 
 function App() {
   const router = createBrowserRouter([

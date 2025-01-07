@@ -1,4 +1,4 @@
-import React, { useMemo, useReducer, useRef, useState } from "react";
+import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import {
   Box,
   TextField,
@@ -6,134 +6,185 @@ import {
   Typography,
   Menu,
   MenuItem,
-  ListItemIcon,
   Divider,
 } from "@mui/material";
-import { currencies } from "./data";
 import { SwapVertRounded } from "@mui/icons-material";
-import { Action, State } from "./types";
 import { useNavigate } from "react-router-dom";
 import { Block, Button } from "../../../shared";
 import { formatNumber } from "../../../../utils";
-import { SelectArrowsIcon } from "../../../../icons";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { useQuery } from "react-query";
+import { getAllCurrencies } from "../../../../services/currencies";
+import { getCurrenciesPairs } from "../../../../services/currencies/pairs";
 
-// Define the initial state
-const initialState = {
-  amount: "15 000",
-  selectedCurrency: "TRY",
-  exchangeRate: 2.89,
-  isBuying: false,
-  anchorEl: null,
-};
-
-// Reducer function
-function reducer(state: State, action: Action): State {
-  switch (action.type) {
-    case "SET_AMOUNT":
-      return { ...state, amount: action.payload };
-    case "SET_CURRENCY":
-      return {
-        ...state,
-        selectedCurrency: action.payload.currency,
-        exchangeRate: action.payload.rate,
-        anchorEl: null,
-      };
-    case "TOGGLE_BUY_SELL":
-      return { ...state, isBuying: !state.isBuying };
-    case "OPEN_MENU":
-      return { ...state, anchorEl: action.payload };
-    case "CLOSE_MENU":
-      return { ...state, anchorEl: null };
-    default:
-      return state;
-  }
-}
+import { debounce } from "lodash";
+import { fetchExchangeRate } from "../../../../services/exchange-rate";
 
 export const CurrencyExchangeWidget: React.FC = () => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [inputAmount1, setInputAmount1] = useState("");
+  const [inputAmount2, setInputAmount2] = useState("");
+  const [anchorEl1, setAnchorEl1] = useState<null | HTMLElement>(null); // For the first menu
+  const [anchorEl2, setAnchorEl2] = useState<null | HTMLElement>(null); // For the second menu
+  const [selectedMainCurrency, setSelectedMainCurrency] = useState("RUB");
+  const [selectedExchangeCurrency, setSelectedExchangeCurrency] =
+    useState("TRY");
+  const [exchangeRate, setExchangeRate] = useState(0);
   const [isRotated, setIsRotated] = useState(false);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   const isDark = Telegram.WebApp.colorScheme === "dark";
 
-  // Memoized calculation of the amount based on buying/selling
-  const calculatedAmount = useMemo(() => {
-    const amountString = String(state.amount).replace(/\s/g, "");
-    const amount = Number(amountString);
-    return state.isBuying
-      ? (amount * state.exchangeRate).toFixed(0)
-      : (amount / state.exchangeRate).toFixed(0);
-  }, [state.amount, state.exchangeRate, state.isBuying]);
+  const debouncedFetchRate = useRef(
+    debounce(
+      async (
+        sell: string,
+        buy: string,
+        setRate: React.Dispatch<React.SetStateAction<number>>
+      ) => {
+        const rate = await fetchExchangeRate(sell, buy);
+        setRate(rate);
+      },
+      500
+    )
+  ).current;
+
+  const { data: allCurrenciesData } = useQuery({
+    queryFn: () => getAllCurrencies(),
+    queryKey: ["all-currency"],
+  });
+
+  const { data: currenciesPairsData } = useQuery({
+    queryFn: () =>
+      getCurrenciesPairs({ symbol: selectedMainCurrency, rates: true }),
+    queryKey: ["currency-pairs", selectedMainCurrency],
+    onSuccess(data) {
+      const defaultCurrency = data.find(
+        (currency) => currency.symbol === selectedMainCurrency
+      );
+      setExchangeRate(defaultCurrency?.rate || 0);
+    },
+  });
+
+  const isDisabledSwap = selectedExchangeCurrency === "SAR";
 
   const isDisabled =
-    state.amount === ("" || "0") ||
-    calculatedAmount === "0" ||
-    (!state.isBuying && state.exchangeRate > Number(state.amount));
+    !inputAmount1 ||
+    !inputAmount2 ||
+    Number(inputAmount1) === 0 ||
+    Number(inputAmount2) === 0 ||
+    exchangeRate > Number(inputAmount1);
 
-  // Handle input change with digit limit and formatting
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let input = e.target.value.replace(/\D/g, "");
+  const handleAmountChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: "inputAmount1" | "inputAmount2"
+  ) => {
+    let value = e.target.value.replace(/\D/g, ""); // Убираем нечисловые символы
+    if (value.startsWith("0") && value.length > 1) value = value.substring(1); // Убираем ведущий ноль
 
-    // Prevent typing a leading zero (unless it's just "0")
-    if (input.length > 1 && input.startsWith("0")) {
-      input = input.substring(1);
-    }
+    if (value.length <= 10) {
+      const formattedValue = value === "0.00" ? "0" : formatNumber(value);
+      if (field === "inputAmount1") {
+        setInputAmount1(formattedValue);
+        debouncedFetchRate(
+          selectedMainCurrency,
+          selectedExchangeCurrency,
+          (rate) => {
+            setExchangeRate(rate);
 
-    if (input.length <= 10) {
-      const formattedInput = formatNumber(input);
-      dispatch({ type: "SET_AMOUNT", payload: formattedInput });
+            // Пересчёт из основной валюты в обменную
+            const convertedValue = (Number(value) * Number(rate)).toFixed(2);
+            setInputAmount2(formatNumber(convertedValue));
+          }
+        );
+      } else {
+        setInputAmount2(formattedValue);
+        debouncedFetchRate(
+          selectedExchangeCurrency,
+          selectedMainCurrency,
+          (rate) => {
+            setExchangeRate(rate);
+            const convertedValue = (Number(value) * Number(rate)).toFixed(2);
+            setInputAmount1(formatNumber(convertedValue));
+          }
+        );
+      }
     }
   };
 
   const handleSwapClick = () => {
-    dispatch({ type: "SET_AMOUNT", payload: "" });
-    dispatch({ type: "TOGGLE_BUY_SELL" });
-    setIsRotated(!isRotated);
+    setInputAmount1("");
+    setInputAmount2("");
 
-    // Focus the input field
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    setSelectedMainCurrency(selectedExchangeCurrency);
+    setSelectedExchangeCurrency(selectedMainCurrency);
+
+    setIsRotated((prev) => !prev);
+
+    fetchExchangeRate(selectedMainCurrency, selectedExchangeCurrency).then(
+      (rate) => {
+        setExchangeRate(rate);
+      }
+    );
+    if (inputRef.current) inputRef.current.focus();
   };
+  // Handlers for the first menu
+  const handleMenu1Open = (e: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl1(e.currentTarget);
+  };
+
+  const handleMenu1Close = () => {
+    setAnchorEl1(null);
+  };
+
+  // Handlers for the second menu
+  const handleMenu2Open = (e: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl2(e.currentTarget);
+  };
+
+  const handleMenu2Close = () => {
+    setAnchorEl2(null);
+  };
+
+  useEffect(() => {
+    return () => {
+      debouncedFetchRate.cancel();
+    };
+  }, []);
 
   return (
     <Block
       sx={{
         display: "flex",
         flexDirection: "column",
+        padding: "10px 16px",
       }}
     >
-      {state.isBuying ? (
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Typography sx={{ paddingRight: "4px" }}>Вы продаете</Typography>
-          <Typography
-            sx={{
-              cursor: "pointer",
-              color: "primary.main",
-              paddingRight: "3px",
-            }}
-            onClick={(e) =>
-              dispatch({ type: "OPEN_MENU", payload: e.currentTarget })
-            } // Open the Menu
-          >
-            {state.selectedCurrency} • {state.exchangeRate}₽
-          </Typography>
-          <SelectArrowsIcon />
-        </Box>
-      ) : (
-        <Typography>Вы платите</Typography>
-      )}
-
       {/* Input section */}
       <Box sx={{ display: "flex", alignItems: "center", marginTop: "8px" }}>
         <Box sx={{ position: "relative", flex: 1 }}>
+          <Box sx={{ display: "flex", gap: "4px", alignItems: "center" }}>
+            <Typography>Вы платите</Typography>
+            {allCurrenciesData && (
+              <Box
+                component="img"
+                src={
+                  allCurrenciesData?.find(
+                    (currency) => currency.symbol === selectedMainCurrency
+                  )?.icon
+                }
+                sx={{ width: "32px", height: "16px" }}
+              />
+            )}
+          </Box>
+
           <TextField
             inputRef={inputRef}
             placeholder="0"
             type="tel"
-            value={state.amount}
-            onChange={handleAmountChange}
+            value={inputAmount1}
+            onChange={(e) => handleAmountChange(e as any, "inputAmount1")}
             variant="outlined"
             slotProps={{
               htmlInput: {
@@ -152,11 +203,25 @@ export const CurrencyExchangeWidget: React.FC = () => {
             }}
           />
         </Box>
-        <Typography
-          sx={{ fontSize: "20px", fontWeight: "bold", marginLeft: "8px" }}
+        <Box
+          sx={{ display: "flex", alignItems: "center" }}
+          onClick={(e) => handleMenu1Open(e)}
         >
-          {state.isBuying ? state.selectedCurrency : "RUB"}
-        </Typography>
+          <Typography
+            sx={{
+              fontSize: "25px",
+              fontWeight: "500",
+              marginLeft: "8px",
+              cursor: "pointer",
+              color: "rgba(140, 140, 141, 1)",
+            }}
+          >
+            {selectedMainCurrency}
+          </Typography>
+          <ArrowForwardIosIcon
+            sx={{ fontSize: "22px", color: "rgba(140, 140, 141, 1)" }}
+          />
+        </Box>
       </Box>
 
       <Box sx={{ position: "relative", display: "flex", alignItems: "center" }}>
@@ -171,6 +236,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
 
         {/* Swap icon positioned absolutely */}
         <IconButton
+          disabled={isDisabledSwap}
           sx={{
             position: "absolute",
             right: "16px",
@@ -188,75 +254,87 @@ export const CurrencyExchangeWidget: React.FC = () => {
         </IconButton>
       </Box>
 
-      {/* Conversion details */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: "5px",
-          paddingTop: ".5rem",
-        }}
-      >
-        <Typography>
-          {state.isBuying
-            ? `Вы платите ${state.amount} ${state.selectedCurrency}`
-            : `Вы получите ${formatNumber(calculatedAmount)}`}
-        </Typography>
-
-        {!state.isBuying && (
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: "3px",
-            }}
-            onClick={(e) =>
-              dispatch({ type: "OPEN_MENU", payload: e.currentTarget })
-            }
-          >
-            <Typography
-              sx={{
-                cursor: "pointer",
-                color: "primary.main",
-              }}
-            >
-              {state.selectedCurrency} • {state.exchangeRate}₽
-            </Typography>
-
-            <SelectArrowsIcon />
+      <Box sx={{ display: "flex", alignItems: "center", marginTop: "8px" }}>
+        <Box sx={{ position: "relative", flex: 1 }}>
+          <Box sx={{ display: "flex", gap: "4px", alignItems: "center" }}>
+            <Typography>Вы получите</Typography>
+            {allCurrenciesData && (
+              <Box
+                component="img"
+                src={
+                  allCurrenciesData?.find(
+                    (currency) => currency.symbol === selectedExchangeCurrency
+                  )?.icon
+                }
+                sx={{ width: "32px", height: "16px" }}
+              />
+            )}
           </Box>
-        )}
+          <TextField
+            placeholder="0"
+            type="tel"
+            value={inputAmount2}
+            onChange={(e) => handleAmountChange(e as any, "inputAmount2")}
+            variant="outlined"
+            slotProps={{
+              htmlInput: {
+                maxLength: 10,
+                readOnly: isDisabledSwap,
+              },
+            }}
+            sx={{
+              width: "100%",
+              input: {
+                border: "none",
+                fontSize: "3rem",
+                fontWeight: "medium",
+                padding: "0",
+              },
+              "& fieldset": { border: "none" },
+            }}
+          />
+        </Box>
+        <Box
+          sx={{ display: "flex", alignItems: "center" }}
+          onClick={handleMenu2Open}
+        >
+          <Typography
+            sx={{
+              fontSize: "25px",
+              fontWeight: "500",
+              marginLeft: "8px",
+              cursor: "pointer",
+              color: "rgba(140, 140, 141, 1)",
+            }}
+          >
+            {selectedExchangeCurrency}
+          </Typography>
+          <ArrowForwardIosIcon
+            sx={{ fontSize: "22px", color: "rgba(140, 140, 141, 1)" }}
+          />
+        </Box>
       </Box>
 
       {/* Action button */}
       <Button
+        sx={{ marginTop: ".5rem" }}
         disabled={isDisabled}
         onClick={() => {
           navigate("/payment", {
             state: {
-              amount: state.amount,
-              selectedCurrency: state.selectedCurrency,
-              calculatedAmount: calculatedAmount,
-              isBuying: state.isBuying,
+              selectedMainCurrency,
+              selectedExchangeCurrency,
+              inputAmount1,
+              inputAmount2,
+              exchangeRate,
             },
           });
         }}
-        sx={{ marginTop: "16px" }}
       >
-        {isDisabled
-          ? !state.isBuying
-            ? "Купить"
-            : "Продать"
-          : !state.isBuying
-          ? `Купить ${formatNumber(calculatedAmount)} ${
-              state.selectedCurrency
-            } за ${state.amount || 0} RUB`
-          : `Продать ${state.amount || 0} ${
-              state.selectedCurrency
-            } за ${formatNumber(calculatedAmount)} RUB`}
+        Обменять
       </Button>
 
-      {/* Currency Selection Menu */}
+      {/* Currency Selection Menu (First Input)*/}
       <Menu
         MenuListProps={{
           sx: {
@@ -272,65 +350,203 @@ export const CurrencyExchangeWidget: React.FC = () => {
             },
           },
         }}
-        anchorEl={state.anchorEl}
-        open={Boolean(state.anchorEl)}
-        onClose={() => dispatch({ type: "CLOSE_MENU" })}
+        anchorEl={anchorEl1}
+        open={Boolean(anchorEl1)}
+        onClose={handleMenu1Close}
         anchorOrigin={{
-          vertical: "center",
+          vertical: "bottom",
           horizontal: "right",
         }}
         transformOrigin={{
           vertical: "top",
-          horizontal: "left",
+          horizontal: "center",
         }}
       >
-        {currencies.map((currency, index) => (
-          <Box key={currency.code}>
+        {allCurrenciesData?.map((currency, index) => (
+          <Box key={currency.id}>
             <MenuItem
+              onClick={() => {
+                // Устанавливаем выбранную валюту
+                setSelectedMainCurrency(currency.symbol);
+
+                // Закрываем меню
+                handleMenu1Close();
+
+                // Делаем немедленный запрос без задержки
+                fetchExchangeRate(
+                  currency.symbol,
+                  selectedExchangeCurrency
+                ).then((rate) => {
+                  setExchangeRate(rate);
+
+                  // Пересчитываем сумму, основываясь на новом курсе
+                  const amount = Number(inputAmount1.replace(/\s/g, ""));
+                  const convertedValue = (amount / rate).toFixed(2);
+                  setInputAmount2(formatNumber(convertedValue));
+                });
+              }}
               sx={{
                 paddingBlock: "0",
                 marginBlock: "0",
+                minHeight: "40px",
               }}
-              onClick={() =>
-                dispatch({
-                  type: "SET_CURRENCY",
-                  payload: { currency: currency.code, rate: currency.rate },
-                })
-              }
             >
-              <ListItemIcon>
-                <Box
-                  sx={{
-                    width: "32px",
-                    background: currency.color,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "10px",
-                    borderRadius: "4px",
-                  }}
-                >
+              <Box
+                sx={{
+                  width: "32px",
+                  height: "16px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "4px",
+                  overflow: "hidden",
+                }}
+              >
+                {currency.icon ? (
+                  <Box
+                    component="img"
+                    src={currency.icon}
+                    alt={`${currency.symbol} icon`}
+                    style={{
+                      width: "32px",
+                      height: "16px",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
                   <Typography
                     sx={{
                       fontSize: "10px",
                       fontWeight: "700",
-                      color: "#fff",
+                      color: "#555",
                       textTransform: "uppercase",
                     }}
                   >
-                    {currency.code}
+                    {currency.symbol}
                   </Typography>
-                </Box>
-                <Typography sx={{ paddingLeft: "12px" }}>
-                  {currency.name} - {currency.rate}₽
-                </Typography>
-              </ListItemIcon>
+                )}
+              </Box>
+              <Typography sx={{ paddingLeft: "12px" }}>
+                {currency.title}
+              </Typography>
             </MenuItem>
-            {index < currencies.length - 1 && (
+            {index < allCurrenciesData.length - 1 && (
               <Divider
                 sx={{
                   margin: "0 !important",
-                  borderColor: `${isDark ? "#31475E" : "#EFEFF3"}`,
+                  borderColor: "#EFEFF3",
+                }}
+              />
+            )}
+          </Box>
+        ))}
+      </Menu>
+
+      <Menu
+        MenuListProps={{
+          sx: {
+            backgroundColor: "secondary.main",
+            paddingBlock: "0 !important",
+          },
+        }}
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: "16px",
+              margin: "0",
+            },
+          },
+        }}
+        anchorEl={anchorEl2}
+        open={Boolean(anchorEl2)}
+        onClose={handleMenu2Close}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+      >
+        {currenciesPairsData?.map((currency, index) => (
+          <Box key={currency.id}>
+            <MenuItem
+              onClick={() => {
+                setSelectedExchangeCurrency(currency.symbol);
+                handleMenu2Close();
+
+                fetchExchangeRate(selectedMainCurrency, currency.symbol).then(
+                  (rate) => {
+                    setExchangeRate(rate);
+
+                    const amount = Number(inputAmount1.replace(/\s/g, ""));
+                    const convertedValue = (amount / rate).toFixed(2);
+                    setInputAmount2(formatNumber(convertedValue));
+                  }
+                );
+              }}
+              sx={{
+                paddingBlock: "0",
+                marginBlock: "0",
+                minHeight: "48px",
+              }}
+            >
+              <Box
+                sx={{
+                  width: "32px",
+                  height: "16px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "4px",
+                  overflow: "hidden",
+                }}
+              >
+                {currency.icon ? (
+                  <Box
+                    component="img"
+                    src={currency.icon}
+                    alt={`${currency.symbol} icon`}
+                    style={{
+                      width: "32px",
+                      height: "16px",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <Typography
+                    sx={{
+                      fontSize: "10px",
+                      fontWeight: "700",
+                      color: "#555",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {currency.symbol}
+                  </Typography>
+                )}
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: "100%",
+                  paddingLeft: "12px",
+                }}
+              >
+                <Typography>{currency.title}</Typography>
+                <Typography sx={{ paddingLeft: "15px" }}>
+                  {currency.rate}₽
+                </Typography>
+              </Box>
+            </MenuItem>
+            {index < currenciesPairsData.length - 1 && (
+              <Divider
+                sx={{
+                  margin: "0 !important",
+                  borderColor: "#EFEFF3",
                 }}
               />
             )}
