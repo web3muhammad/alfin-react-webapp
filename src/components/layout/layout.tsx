@@ -55,6 +55,7 @@ export function RootLayout() {
               width: "100%",
               margin: "0 auto",
               padding: "15px",
+              maxWidth: "430px",
             }}
           >
             <Outlet />
