@@ -68,8 +68,6 @@ export const SuccessSnackbarIcon = () => {
 };
 
 export const ErrorSnackbarIcon = () => {
-  const theme = useTelegramTheme();
-
   return (
     <svg
       style={{ marginRight: "5px" }}
@@ -83,7 +81,7 @@ export const ErrorSnackbarIcon = () => {
         cx="8.99998"
         cy="8.99998"
         r="8.67857"
-        fill={theme.palette.primary.main}
+        fill="rgba(255, 60, 20, 1)"
       />
       <path d="M6.10724 11.8923L11.893 6.10662" stroke="white" />
       <path d="M11.8929 11.8928L6.10717 6.10711" stroke="white" />

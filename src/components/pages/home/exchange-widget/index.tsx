@@ -94,7 +94,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
             setExchangeRate(rate);
 
             // Пересчёт из основной валюты в обменную
-            const convertedValue = (Number(value) * Number(rate)).toFixed(2);
+            const convertedValue = (Number(value) * Number(rate)).toFixed(0);
             setInputAmount2(formatNumber(convertedValue));
           }
         );
@@ -105,7 +105,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
           selectedMainCurrency,
           (rate) => {
             setExchangeRate(rate);
-            const convertedValue = (Number(value) * Number(rate)).toFixed(2);
+            const convertedValue = (Number(value) * Number(rate)).toFixed(0);
             setInputAmount1(formatNumber(convertedValue));
           }
         );
@@ -381,7 +381,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
 
                   // Пересчитываем сумму, основываясь на новом курсе
                   const amount = Number(inputAmount1.replace(/\s/g, ""));
-                  const convertedValue = (amount / rate).toFixed(2);
+                  const convertedValue = (amount / rate).toFixed(0);
                   setInputAmount2(formatNumber(convertedValue));
                 });
               }}
@@ -481,7 +481,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
                     setExchangeRate(rate);
 
                     const amount = Number(inputAmount1.replace(/\s/g, ""));
-                    const convertedValue = (amount / rate).toFixed(2);
+                    const convertedValue = (amount / rate).toFixed(0);
                     setInputAmount2(formatNumber(convertedValue));
                   }
                 );
