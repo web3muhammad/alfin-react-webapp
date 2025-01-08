@@ -29,6 +29,11 @@ type AddCardFormData = {
   cardNumber: string;
 };
 
+const isCompleteCardNumber = (cardNumber: string): boolean => {
+  const strippedPhone = cardNumber?.replace(/[^0-9]/g, "");
+  return strippedPhone?.length === 16;
+};
+
 export function AddCardForm() {
   const { enqueueSnackbar } = useSnackbar();
   const { state } = useLocation();
@@ -139,8 +144,7 @@ export function AddCardForm() {
     handleMenuClose();
   };
 
-  const isDisabled =
-    !isValid && !/^\d+$/.test(watch("cardNumber").replace(/\s/g, ""));
+  const isDisabled = !isValid && !isCompleteCardNumber(watch("cardNumber"));
 
   return (
     <Fade in>

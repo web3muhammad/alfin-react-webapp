@@ -8,7 +8,6 @@ import { useQuery } from "react-query";
 import { getUserInfo } from "../../../services/me";
 
 export function UserWelcomeBanner() {
-  const { user } = useTelegram();
   const { data } = useQuery({
     queryFn: getUserInfo,
     queryKey: ["user-info"],

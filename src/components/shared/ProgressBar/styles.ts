@@ -2,17 +2,16 @@ import { SxProps, Theme } from "@mui/material";
 
 // Define styles for each segment
 export const getSegmentStyle = (index: number, theme: Theme): SxProps => ({
-  width: 87,
   backgroundColor:
     theme.palette.mode === "dark"
       ? theme.palette.secondary.main
       : "rgba(220, 220, 229, 1)", // Background color for non-filled sections
-  height: "12px", 
+  height: "12px",
   position: "relative",
   overflow: "hidden",
   borderRadius:
     index === 0 ? "8px 4px 4px 8px" : index === 3 ? "4px 8px 8px 4px" : "4px",
-  marginRight: index < 3 ? "4px" : 0, 
+  marginRight: index < 3 ? "4px" : 0,
 });
 
 // Define styles for the fill of each segment
@@ -33,9 +32,10 @@ export const getFillStyle = (
 
 // Define thresholds and text values
 export const textValues = [
-  { threshold: 100000, text: "100 000₽ • 5%" },
-  { threshold: 500000, text: "500 000₽ • 7%" },
-  { threshold: 1000000, text: "1 000 000₽ • 10%" },
+  { threshold: 1000000, text: "1 000 000₽ • 5%" },
+  { threshold: 3000000, text: "3 000 000₽ • 10%" },
+  { threshold: 10000000, text: "10 000 000₽ • 15%" },
+  { threshold: 20000000, text: "20 000 000₽ • 20%" },
 ];
 
 // Helper function to determine opacity

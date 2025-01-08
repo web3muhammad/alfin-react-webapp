@@ -9,6 +9,7 @@ export interface CreateOrderRequestTypes {
   status: string;
   promo_code_id?: number;
   bank_card_id: number;
+  phone_number: string;
 }
 
 export interface Order {

@@ -13,8 +13,7 @@ import {
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Block, Button } from "../../components/shared";
-import { formatNumber, isPhoneComplete } from "../../utils";
-import { useTelegram } from "../../hooks";
+import { isPhoneComplete } from "../../utils";
 import { SelectArrowsIcon } from "../../icons";
 import { useMutation, useQueries, useQuery } from "react-query";
 import { CreateOrder } from "../../services/orders/create";
@@ -111,7 +110,6 @@ export function PaymentForm() {
   const navigate = useNavigate();
   useTelegramBackButton(() => navigate(-1));
 
-  const { user } = useTelegram();
   const { state } = useLocation();
   const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
 
@@ -184,6 +182,7 @@ export function PaymentForm() {
       status: "NEW",
       comment: data.comment,
       bank_card_id: data.bankCardId,
+      phone_number: data.phone,
     };
 
     createOrderMutation(createOrderRequestData);
@@ -291,18 +290,12 @@ export function PaymentForm() {
                 <TextField
                   placeholder="+7 900 000-00-00"
                   type="tel"
-                  slotProps={{
-                    htmlInput: {
-                      readOnly: true,
-                    },
-                  }}
                   sx={{
                     width: "60%",
                     input: {
                       paddingBlock: "2px",
                       paddingLeft: "10px",
                       textAlign: "right",
-                      cursor: "default",
                     },
                     "& fieldset": { border: "none" },
                   }}
@@ -348,52 +341,50 @@ export function PaymentForm() {
             <Divider sx={{ margin: "12px 0px" }} />
 
             {/* Bank Card Menu Select */}
-            {selectedPaymentMethod !== "Наличными" && (
-              <>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-end",
-                    marginTop: "1rem",
-                  }}
-                >
-                  <Typography>Карта зачисления</Typography>
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Typography
-                      sx={{
-                        cursor: "pointer",
-                        color: "primary.main",
-                        paddingRight: "3px",
-                      }}
-                      onClick={(e) => {
-                        if (allBankCards?.length === 0) {
-                          navigate("/add-card", {
-                            state: { formType: "create", fromPage: "payment" },
-                          });
-                        }
-                        handleMenuOpen(e, "cards");
-                      }}
-                    >
-                      {allBankCards?.length === 0
-                        ? "Добавить карту"
-                        : selectedBankCard || "Выберите карту"}
-                    </Typography>
-                    {allBankCards?.length !== 0 && <SelectArrowsIcon />}
-                  </Box>
-                  <MenuComponent
-                    anchorEl={anchorEl}
-                    open={menuType === "cards" && Boolean(anchorEl)}
-                    onClose={handleMenuClose}
-                    items={allBankCards || []}
-                    onSelect={handleSelection}
-                    menuType="card"
-                  />
+            <>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-end",
+                  marginTop: "1rem",
+                }}
+              >
+                <Typography>Карта зачисления</Typography>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <Typography
+                    sx={{
+                      cursor: "pointer",
+                      color: "primary.main",
+                      paddingRight: "3px",
+                    }}
+                    onClick={(e) => {
+                      if (allBankCards?.length === 0) {
+                        navigate("/add-card", {
+                          state: { formType: "create", fromPage: "payment" },
+                        });
+                      }
+                      handleMenuOpen(e, "cards");
+                    }}
+                  >
+                    {allBankCards?.length === 0
+                      ? "Добавить карту"
+                      : selectedBankCard || "Выберите карту"}
+                  </Typography>
+                  {allBankCards?.length !== 0 && <SelectArrowsIcon />}
                 </Box>
+                <MenuComponent
+                  anchorEl={anchorEl}
+                  open={menuType === "cards" && Boolean(anchorEl)}
+                  onClose={handleMenuClose}
+                  items={allBankCards || []}
+                  onSelect={handleSelection}
+                  menuType="card"
+                />
+              </Box>
 
-                <Divider sx={{ margin: "12px 0px" }} />
-              </>
-            )}
+              <Divider sx={{ margin: "12px 0px" }} />
+            </>
 
             {/* Promocode Input */}
             {/* <Box

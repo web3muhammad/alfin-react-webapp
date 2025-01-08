@@ -19,6 +19,7 @@ import { getCurrenciesPairs } from "../../../../services/currencies/pairs";
 
 import { debounce } from "lodash";
 import { fetchExchangeRate } from "../../../../services/exchange-rate";
+import { enqueueSnackbar } from "notistack";
 
 export const CurrencyExchangeWidget: React.FC = () => {
   const [inputAmount1, setInputAmount1] = useState("");
@@ -50,8 +51,8 @@ export const CurrencyExchangeWidget: React.FC = () => {
     },
     {
       onSuccess: (rate) => {
-        setExchangeRate(rate); // Обновляем курс
-        setIsTyping(false); // Сбрасываем состояние ввода
+        setExchangeRate(rate);
+        setIsTyping(false);
       },
     }
   );
@@ -61,17 +62,15 @@ export const CurrencyExchangeWidget: React.FC = () => {
     debounce(
       async (sell: string, buy: string, callback: (rate: number) => void) => {
         try {
-          // Выполняем асинхронный запрос и получаем курс
           const rate = await fetchRate({
             sellCurrency: sell,
             buyCurrency: buy,
           });
 
-          // Вызываем callback с результатом
           callback(rate as any);
         } catch (error) {
           console.error("Ошибка при получении курса обмена:", error);
-          callback(0); // В случае ошибки передаем значение по умолчанию
+          callback(0);
         }
       },
       500
@@ -104,7 +103,8 @@ export const CurrencyExchangeWidget: React.FC = () => {
     !inputAmount2 ||
     Number(inputAmount1) === 0 ||
     Number(inputAmount2) === 0 ||
-    exchangeRate > Number(inputAmount1);
+    exchangeRate > Number(inputAmount1) ||
+    selectedMainCurrency === selectedExchangeCurrency;
 
   const handleAmountChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -312,6 +312,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
               <Box
                 component="img"
                 src={
+                  allCurrenciesData?.find(
+                    (currency) => currency.symbol === selectedExchangeCurrency
+                  )?.icon ||
                   currenciesPairsData?.find(
                     (currency) => currency.symbol === selectedExchangeCurrency
                   )?.icon
@@ -568,7 +571,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
               >
                 <Typography>{currency.title}</Typography>
                 <Typography sx={{ paddingLeft: "15px" }}>
-                  {currency.rate}₽
+                  {currency.rate}
                 </Typography>
               </Box>
             </MenuItem>
