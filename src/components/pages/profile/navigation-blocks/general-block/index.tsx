@@ -202,7 +202,7 @@ export function GeneralNavigationBlock() {
         </ListItem>
 
         <ListItem
-          onClick={() => navigate("")}
+          onClick={() => Telegram.WebApp.openTelegramLink("https://t.me/alfin_support")}
           sx={{
             paddingTop: "0",
             paddingInline: 0,
