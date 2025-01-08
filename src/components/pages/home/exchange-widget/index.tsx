@@ -32,7 +32,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
   const [exchangeRate, setExchangeRate] = useState(0);
   const [isRotated, setIsRotated] = useState(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
-
+  const [justChangedInputId, setJustChangedInputId] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
@@ -116,6 +116,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
     if (value.length <= 10) {
       const formattedValue = value === "0.00" ? "0" : formatNumber(value);
       if (field === "inputAmount1") {
+        setJustChangedInputId(1);
         setInputAmount1(formattedValue);
         debouncedFetchRate(
           selectedMainCurrency,
@@ -129,6 +130,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
           }
         );
       } else {
+        setJustChangedInputId(2);
         setInputAmount2(formattedValue);
         debouncedFetchRate(
           selectedExchangeCurrency,
@@ -227,6 +229,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
                 sx={{ width: "32px", height: "16px" }}
               />
             )}
+            <Typography>
+              {justChangedInputId === 2 && exchangeRate !== 0 && exchangeRate}
+            </Typography>
           </Box>
 
           <TextField
@@ -322,6 +327,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
                 sx={{ width: "32px", height: "16px" }}
               />
             )}
+            <Typography>
+              {justChangedInputId === 1 && exchangeRate !== 0 && exchangeRate}
+            </Typography>
           </Box>
           <TextField
             placeholder="0"

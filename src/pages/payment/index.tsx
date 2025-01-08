@@ -1,5 +1,5 @@
 import InputMask from "react-input-mask";
-import { useState, MouseEvent } from "react";
+import { useState, MouseEvent, useEffect } from "react";
 import {
   Box,
   TextField,
@@ -22,6 +22,7 @@ import { getAllBankCards } from "../../services/bank-cards";
 import { BankCard } from "../../services/bank-cards/interface";
 import { useSnackbar } from "notistack";
 import { useTelegramBackButton } from "../../hooks/useTelegramBackButton";
+import { fetchExchangeRate } from "../../services/exchange-rate";
 
 type FormData = {
   name: string;
@@ -109,7 +110,7 @@ export function PaymentForm() {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   useTelegramBackButton(() => navigate(-1));
-
+  const [rate, setRate] = useState<number | undefined>();
   const { state } = useLocation();
   const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
 
@@ -130,6 +131,18 @@ export function PaymentForm() {
   const [menuType, setMenuType] = useState<"payment-method" | "cards">(
     "payment-method"
   );
+
+  useEffect(() => {
+    async function getRate() {
+      const rate = await fetchExchangeRate({
+        sellCurrency: selectedMainCurrency,
+        buyCurrency: selectedExchangeCurrency,
+      });
+      setRate(rate);
+    }
+
+    getRate();
+  }, []);
 
   const {
     register,
@@ -235,7 +248,7 @@ export function PaymentForm() {
             {inputAmount1 + " " + selectedMainCurrency}
           </Typography>
           <Typography sx={{ opacity: ".5", fontSize: "1rem" }}>
-            = {inputAmount2 + " " + selectedExchangeCurrency}
+            = {inputAmount2 + " " + selectedExchangeCurrency} • {rate}
           </Typography>
         </Box>
 
