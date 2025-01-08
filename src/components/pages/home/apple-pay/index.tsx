@@ -49,11 +49,13 @@ export function ApplePayBlock() {
         </Box>
 
         <Button
-          onClick={() =>
-            Telegram.WebApp.openTelegramLink(
-              "https://t.me/alfin_manager?text=Хочу привязать карту к Apple Pay/Google pay"
-            )
-          }
+          onClick={() => {
+            const text = "Хочу привязать карту к Apple Pay/Google pay";
+            const encodedText = text;
+            const url = `https://t.me/alfin_manager?text=${encodedText}`;
+
+            Telegram.WebApp.openTelegramLink(url);
+          }}
         >
           Арендовать карту
         </Button>
