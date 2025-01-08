@@ -51,7 +51,7 @@ export function ApplePayBlock() {
         <Button
           onClick={() =>
             Telegram.WebApp.openTelegramLink(
-              "https://t.me/ramazanov_rv?text=Хочу привязать карту к Apple Pay/Google pay"
+              "https://t.me/alfin_manager?text=Хочу привязать карту к Apple Pay/Google pay"
             )
           }
         >

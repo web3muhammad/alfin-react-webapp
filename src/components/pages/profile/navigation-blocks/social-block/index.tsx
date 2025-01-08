@@ -80,7 +80,7 @@ export function SocialMediaBlock() {
         </ListItem>
 
         <ListItem
-          onClick={() => navigate("")}
+          onClick={() => Telegram.WebApp.openLink("https://wa.me/79288005889")}
           sx={{
             paddingTop: "0",
             paddingInline: 0,
@@ -139,7 +139,11 @@ export function SocialMediaBlock() {
         </ListItem>
 
         <ListItem
-          onClick={() => navigate("")}
+          onClick={() =>
+            Telegram.WebApp.openLink(
+              "https://www.instagram.com/alfin.ru?igsh=MXB6bng2enAwYzRycg=="
+            )
+          }
           sx={{
             paddingTop: "0",
             paddingInline: 0,
