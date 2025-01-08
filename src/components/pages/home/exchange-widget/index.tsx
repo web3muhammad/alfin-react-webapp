@@ -73,7 +73,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
           callback(0);
         }
       },
-      500
+      300
     )
   ).current;
 
@@ -90,7 +90,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
       const defaultCurrency = data.find(
         (currency) => currency.symbol === selectedMainCurrency
       );
-      setExchangeRate(defaultCurrency?.rate || 0);
+      if (defaultCurrency?.rate) {
+        setExchangeRate(defaultCurrency?.rate);
+      }
     },
   });
 
@@ -182,8 +184,15 @@ export const CurrencyExchangeWidget: React.FC = () => {
 
   const handleCurrencyChange = (
     newMainCurrency: string,
-    newExchangeCurrency: string
+    newExchangeCurrency: string,
+    menuTriggered: 1 | 2
   ) => {
+    if (menuTriggered === 1) {
+      setJustChangedInputId(1);
+    } else {
+      setJustChangedInputId(2);
+    }
+
     setSelectedMainCurrency(newMainCurrency);
     setSelectedExchangeCurrency(newExchangeCurrency);
 
@@ -431,7 +440,11 @@ export const CurrencyExchangeWidget: React.FC = () => {
                 handleMenu1Close();
 
                 // Обновляем валюту и пересчитываем значения
-                handleCurrencyChange(newMainCurrency, selectedExchangeCurrency);
+                handleCurrencyChange(
+                  newMainCurrency,
+                  selectedExchangeCurrency,
+                  1
+                );
               }}
               sx={{
                 paddingBlock: "0",
@@ -525,7 +538,11 @@ export const CurrencyExchangeWidget: React.FC = () => {
                 handleMenu2Close();
 
                 // Обновляем валюту и пересчитываем значения
-                handleCurrencyChange(selectedMainCurrency, newExchangeCurrency);
+                handleCurrencyChange(
+                  selectedMainCurrency,
+                  newExchangeCurrency,
+                  2
+                );
               }}
               sx={{
                 paddingBlock: "0",
