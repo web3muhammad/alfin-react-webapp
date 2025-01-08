@@ -26,7 +26,7 @@ export function OfflineExchangeLocationsCard() {
       <List sx={{ padding: "0" }}>
         {services.map((service, index) => (
           <ListItem
-            onClick={() => window.open(service.mapLink, "_blank")}
+            onClick={() => Telegram.WebApp.openLink(service.mapLink)}
             key={index}
             sx={{
               paddingInline: 0,
