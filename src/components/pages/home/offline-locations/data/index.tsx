@@ -23,6 +23,13 @@ export const services: Service[] = [
   },
   {
     icon: <PlaceRounded sx={{ width: "20px" }} color="primary" />,
+    title: "Стамбул",
+    adress: "Обмен Крипты и валюты, в Галатопорте",
+    mapLink:
+      "https://www.google.com/maps?q=41.00882339477539,28.954137802124023",
+  },
+  {
+    icon: <PlaceRounded sx={{ width: "20px" }} color="primary" />,
     title: "Москва",
     adress:
       "Торговый центр Горбушка. Старая Горбушка. Барклая 8, 2 этаж. Офис 231 ",

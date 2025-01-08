@@ -31,7 +31,7 @@ export const services: Service[] = [
         color="primary"
       />
     ),
-    title: "Оплата подписок (ChatGPR, Netflix, Skype и т.д.)",
+    title: "Оплата подписок (ChatGPT, Netflix, Skype и т.д.)",
     description: "",
     link: "https://t.me/alfin_manager?text=Хочу оплатить подписку на интернет сервис",
   },
