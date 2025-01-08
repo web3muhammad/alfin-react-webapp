@@ -4,9 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
 import { getAllBankCards } from "../../services/bank-cards";
 import { BankCard } from "../../components/pages/bank-cards/components/BankCard";
+import { useTelegramBackButton } from "../../hooks/useTelegramBackButton";
 
 export function BankCardsPage() {
   const navigate = useNavigate();
+  useTelegramBackButton(() => navigate("/profile"));
   const { data: allBankCards, isLoading } = useQuery({
     queryFn: getAllBankCards,
     queryKey: ["all-cards"],

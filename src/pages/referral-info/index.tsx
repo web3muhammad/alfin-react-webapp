@@ -1,7 +1,11 @@
 import { Box, Fade, Typography } from "@mui/material";
 import { Block, Title } from "../../components/shared";
+import { useNavigate } from "react-router-dom";
+import { useTelegramBackButton } from "../../hooks/useTelegramBackButton";
 
 export function ReferralInfoPage() {
+  const navigate = useNavigate();
+  useTelegramBackButton(() => navigate("/profile"));
   return (
     <Fade in>
       <Box>

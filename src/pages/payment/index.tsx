@@ -22,6 +22,7 @@ import { CreateOrderRequestTypes } from "../../services/orders/interface";
 import { getAllBankCards } from "../../services/bank-cards";
 import { BankCard } from "../../services/bank-cards/interface";
 import { useSnackbar } from "notistack";
+import { useTelegramBackButton } from "../../hooks/useTelegramBackButton";
 
 type FormData = {
   name: string;
@@ -107,10 +108,11 @@ function MenuComponent({
 
 export function PaymentForm() {
   const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
+  useTelegramBackButton(() => navigate(-1));
 
   const { user } = useTelegram();
   const { state } = useLocation();
-  const navigate = useNavigate();
   const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
 
   const userPhone = userInfo.phone_number;

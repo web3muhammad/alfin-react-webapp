@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import { WhatsApp } from "@mui/icons-material";
 import { WhatsappIcon } from "../../icons";
+import { useTelegramBackButton } from "../../hooks/useTelegramBackButton";
 
 type FormData = {
   first_name: string;
@@ -25,6 +26,8 @@ type FormData = {
 };
 
 export function PersonalDataForm() {
+  const navigate = useNavigate();
+  useTelegramBackButton(() => navigate("/profile"));
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -35,7 +38,6 @@ export function PersonalDataForm() {
     phone: userInfo.phone_number,
   };
 
-  const navigate = useNavigate();
   const {
     register,
     handleSubmit,

@@ -20,6 +20,7 @@ import { getAllCurrencies } from "../../../services/currencies";
 import { editBankCard } from "../../../services/bank-cards/edit";
 import { deleteBankCard } from "../../../services/bank-cards/delete";
 import { useSnackbar } from "notistack";
+import { useTelegramBackButton } from "../../../hooks/useTelegramBackButton";
 
 type AddCardFormData = {
   cardName: string;
@@ -36,6 +37,13 @@ export function AddCardForm() {
     state.currency || ""
   );
   const navigate = useNavigate();
+  useTelegramBackButton(() => {
+    if (state.fromPage === "payment") {
+      navigate(-1);
+    } else {
+      navigate("/bank-cards");
+    }
+  });
 
   const {
     register,

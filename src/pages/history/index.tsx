@@ -9,6 +9,8 @@ import { Block, Title } from "../../components/shared";
 import { TransactionCard } from "../../components/pages/history";
 import { useQuery } from "react-query";
 import { getOrderHistory } from "../../services/orders/history";
+import { useNavigate } from "react-router-dom";
+import { useTelegramBackButton } from "../../hooks/useTelegramBackButton";
 const transactions = [
   {
     id: "210488",
@@ -58,6 +60,8 @@ const transactions = [
 ];
 
 export function TransactionHistoryPage() {
+  const navigate = useNavigate();
+  useTelegramBackButton(() => navigate("/"));
   const { data: orderHistoryData, isLoading } = useQuery({
     queryFn: getOrderHistory,
     queryKey: ["order-history"],

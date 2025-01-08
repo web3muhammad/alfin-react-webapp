@@ -15,31 +15,7 @@ export function RootLayout() {
     tg.ready();
     tg.expand();
     tg.setBackgroundColor("rgba(239, 239, 243, 1)");
-
-    const handleBackButtonClick = () => {
-      navigate(-1);
-    };
-
-    // Only showing the back button if user is not on the homepage
-    if (pathname !== "/") {
-      tg.BackButton.show();
-    } else {
-      tg.BackButton.hide();
-    }
-
-    if (pathname === "/bank-cards") {
-      tg.onEvent("backButtonClicked", () => navigate("/profile"));
-    } else if (pathname === "/add-card") {
-      tg.onEvent("backButtonClicked", () => navigate("/bank-cards"));
-    } else {
-      tg.offEvent("backButtonClicked", handleBackButtonClick); // Removing any existing listeners before adding a new one
-      tg.onEvent("backButtonClicked", handleBackButtonClick);
-    }
-
-    return () => {
-      tg.offEvent("backButtonClicked", handleBackButtonClick);
-    };
-  }, [tg, navigate, pathname]);
+  }, [tg]);
 
   // Scroll to top after navigating to a new page
   useEffect(() => {

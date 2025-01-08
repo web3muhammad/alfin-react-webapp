@@ -5,11 +5,14 @@ import {
   ReferralProgramBlock,
   SocialMediaBlock,
 } from "../../components/pages/profile";
-import { useTelegram } from "../../hooks";
 import { UserWelcomeBanner } from "../../components/shared";
+import { useTelegramBackButton } from "../../hooks/useTelegramBackButton";
+import { useNavigate } from "react-router-dom";
 
 export function ProfilePage() {
-  const { tg } = useTelegram();
+  const navigate = useNavigate();
+  useTelegramBackButton(() => navigate("/"));
+
   return (
     <Box>
       <UserWelcomeBanner />
