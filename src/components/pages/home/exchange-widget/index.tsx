@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { Block, Button } from "../../../shared";
 import { formatNumber } from "../../../../utils";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { getAllCurrencies } from "../../../../services/currencies";
 import { getCurrenciesPairs } from "../../../../services/currencies/pairs";
 
@@ -30,21 +30,49 @@ export const CurrencyExchangeWidget: React.FC = () => {
     useState("TRY");
   const [exchangeRate, setExchangeRate] = useState(0);
   const [isRotated, setIsRotated] = useState(false);
+  const [isTyping, setIsTyping] = useState<boolean>(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   const isDark = Telegram.WebApp.colorScheme === "dark";
 
+  // React Query: useMutation для получения курса обмена
+  const { mutateAsync: fetchRate, isLoading } = useMutation(
+    async ({
+      sellCurrency,
+      buyCurrency,
+    }: {
+      sellCurrency: string;
+      buyCurrency: string;
+    }) => {
+      return fetchExchangeRate({ buyCurrency, sellCurrency });
+    },
+    {
+      onSuccess: (rate) => {
+        setExchangeRate(rate); // Обновляем курс
+        setIsTyping(false); // Сбрасываем состояние ввода
+      },
+    }
+  );
+
+  // Debounce для уменьшения количества запросов
   const debouncedFetchRate = useRef(
     debounce(
-      async (
-        sell: string,
-        buy: string,
-        setRate: React.Dispatch<React.SetStateAction<number>>
-      ) => {
-        const rate = await fetchExchangeRate(sell, buy);
-        setRate(rate);
+      async (sell: string, buy: string, callback: (rate: number) => void) => {
+        try {
+          // Выполняем асинхронный запрос и получаем курс
+          const rate = await fetchRate({
+            sellCurrency: sell,
+            buyCurrency: buy,
+          });
+
+          // Вызываем callback с результатом
+          callback(rate as any);
+        } catch (error) {
+          console.error("Ошибка при получении курса обмена:", error);
+          callback(0); // В случае ошибки передаем значение по умолчанию
+        }
       },
       500
     )
@@ -70,6 +98,8 @@ export const CurrencyExchangeWidget: React.FC = () => {
   const isDisabledSwap = selectedExchangeCurrency === "SAR";
 
   const isDisabled =
+    isLoading ||
+    isTyping ||
     !inputAmount1 ||
     !inputAmount2 ||
     Number(inputAmount1) === 0 ||
@@ -82,7 +112,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
   ) => {
     let value = e.target.value.replace(/\D/g, ""); // Убираем нечисловые символы
     if (value.startsWith("0") && value.length > 1) value = value.substring(1); // Убираем ведущий ноль
-
+    setIsTyping(true);
     if (value.length <= 10) {
       const formattedValue = value === "0.00" ? "0" : formatNumber(value);
       if (field === "inputAmount1") {
@@ -122,11 +152,12 @@ export const CurrencyExchangeWidget: React.FC = () => {
 
     setIsRotated((prev) => !prev);
 
-    fetchExchangeRate(selectedMainCurrency, selectedExchangeCurrency).then(
-      (rate) => {
-        setExchangeRate(rate);
-      }
-    );
+    fetchExchangeRate({
+      sellCurrency: selectedMainCurrency,
+      buyCurrency: selectedExchangeCurrency,
+    }).then((rate: any) => {
+      setExchangeRate(rate);
+    });
     if (inputRef.current) inputRef.current.focus();
   };
   // Handlers for the first menu
@@ -154,7 +185,10 @@ export const CurrencyExchangeWidget: React.FC = () => {
     setSelectedMainCurrency(newMainCurrency);
     setSelectedExchangeCurrency(newExchangeCurrency);
 
-    fetchExchangeRate(newMainCurrency, newExchangeCurrency).then((rate) => {
+    fetchExchangeRate({
+      sellCurrency: newMainCurrency,
+      buyCurrency: newExchangeCurrency,
+    }).then((rate: any) => {
       setExchangeRate(rate);
 
       const mainAmount = Number(inputAmount1.replace(/\s/g, ""));

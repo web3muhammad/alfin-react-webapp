@@ -46,21 +46,23 @@ export function FAQPage() {
             <Typography sx={{ opacity: ".5" }}>
               • На карту: от 5 минут до 1 часа.
             </Typography>
-            <Typography sx={{ opacity: ".5" }}>
-              • На карту: от 5 минут до 1 часа.
-            </Typography>
           </Block>
           <Block>
-            <Typography>
-              Могу ли я отменить перевод? Если перевод еще не отправлен, его
-              можно всегда отменить через менеджера. <br /> Как узнать, что
-              перевод выполнен?
+            <Typography>Могу ли я отменить перевод?</Typography>
+            <Typography sx={{ opacity: ".5" }}>
+              Если перевод еще не отправлен, его можно всегда отменить через
+              менеджера.
             </Typography>
+          </Block>
+
+          <Block>
+            <Typography>Как узнать, что перевод выполнен?</Typography>
             <Typography sx={{ opacity: ".5" }}>
               Вы получите уведомление в мессенджер от менеджера и чек об успешно
               проведенной заявке.
             </Typography>
           </Block>
+
           <Block>
             <Typography>Что делать, если перевод не прошел?</Typography>
             <Typography sx={{ opacity: ".5" }}>
