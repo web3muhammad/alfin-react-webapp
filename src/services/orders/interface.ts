@@ -24,4 +24,5 @@ export interface Order {
   user_telegram_id: number;
   promo_code_id: number | null;
   bank_card_id: number | null;
+  created_at: string;
 }

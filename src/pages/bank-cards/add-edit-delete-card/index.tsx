@@ -63,7 +63,7 @@ export function AddCardForm() {
       mutationFn: createBankCard,
       mutationKey: ["create-card"],
       onSuccess() {
-        enqueueSnackbar("Банковская карта успешно добавлена", {
+        enqueueSnackbar("Банковская карта была успешно добавлена", {
           variant: "success",
         });
         if (state.fromPage === "payment") {
@@ -154,6 +154,7 @@ export function AddCardForm() {
                 sx={{
                   width: "60%",
                   input: {
+                    paddingRight: "0px",
                     paddingBlock: "2px",
                     paddingLeft: "10px",
                     textAlign: "right",
@@ -262,19 +263,33 @@ export function AddCardForm() {
             >
               <Typography>Имя на карте</Typography>
               <TextField
-                placeholder="Магомед Магомедов"
+                placeholder="MAGOMED MAGOMEDOV"
                 sx={{
                   width: "60%",
                   input: {
+                    paddingRight: "0px",
                     paddingBlock: "2px",
                     paddingLeft: "10px",
                     textAlign: "right",
                   },
-                  "& fieldset": { border: "none" },
+                  "& fieldset": { border: "none", padding: "0" },
                 }}
-                {...register("ownerName", { required: true })}
+                {...register("ownerName", {
+                  required: true,
+                  pattern: /^[a-zA-Z\s]+$/,
+                })}
                 error={!!errors.ownerName}
                 fullWidth
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const latinOnly = value.replace(/[^a-zA-Z\s]/g, "");
+                  if (value !== latinOnly) {
+                    enqueueSnackbar("Ввод только латиницей.", {
+                      variant: "warning",
+                    });
+                  }
+                  e.target.value = latinOnly.toUpperCase();
+                }}
               />
             </Box>
             <Divider sx={{ margin: "12px 0px" }} />

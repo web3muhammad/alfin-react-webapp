@@ -5,6 +5,7 @@ import App from "./App";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { SnackbarProvider, enqueueSnackbar } from "notistack";
 import { ErrorSnackbarIcon, SuccessSnackbarIcon } from "./icons";
+import { InfoOutlined, InfoRounded } from "@mui/icons-material";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -48,6 +49,11 @@ root.render(
         iconVariant={{
           success: <SuccessSnackbarIcon />,
           error: <ErrorSnackbarIcon />,
+          warning: (
+            <InfoRounded
+              sx={{ marginRight: "5px", color: "rgb(50 158 255)" }}
+            />
+          ),
         }}
       >
         <App />

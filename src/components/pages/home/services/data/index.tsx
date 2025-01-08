@@ -1,34 +1,28 @@
 import {
   AccountBalanceRounded,
+  AddCardOutlined,
+  BedOutlined,
   PaymentsRounded,
   PersonPinCircleRounded,
   ReplayRounded,
   SendRounded,
+  ShoppingCartOutlined,
 } from "@mui/icons-material";
 
 interface Service {
   icon: JSX.Element;
   title: string;
   description: string;
+  link: string;
+  soon?: boolean;
 }
 
 export const services: Service[] = [
   {
     icon: <PaymentsRounded sx={{ width: "20px" }} color="primary" />,
-    title: "Обмен иностранной валюты переводом и наличными",
+    title: "Оплата инвойсов/Swift перевод",
     description: "Лиры, тенге, дирхамы, евро",
-  },
-  {
-    icon: (
-      <SendRounded sx={{ width: "20px", marginLeft: "3px" }} color="primary" />
-    ),
-    title: "Переводы заграницу в иностранной валюте",
-    description: "",
-  },
-  {
-    icon: <AccountBalanceRounded sx={{ width: "20px" }} color="primary" />,
-    title: "Оплата инвойсов SWIFT",
-    description: "Линк переводы",
+    link: "https://t.me/ramazanov_rv?text=Хочу оплатить инвойс/перевод Swift",
   },
   {
     icon: (
@@ -37,12 +31,33 @@ export const services: Service[] = [
         color="primary"
       />
     ),
-    title: "Оплата подписок",
+    title: "Оплата подписок (ChatGPR, Netflix, Skype и т.д.)",
     description: "",
+    link: "https://t.me/ramazanov_rv?text=Хочу оплатить подписку на интернет сервис",
   },
   {
     icon: <PersonPinCircleRounded sx={{ width: "20px" }} color="primary" />,
-    title: "Доставка наличной валюты",
+    title: "Выдача наличных заграницей (перестановка)",
     description: "Перестановка валюты в разных странах",
+    link: "https://t.me/ramazanov_rv?text=Нужна выдача наличных заграницей",
+  },
+  {
+    icon: <BedOutlined sx={{ width: "20px" }} color="primary" />,
+    title: "Оплата отелей",
+    description: "",
+    link: "https://t.me/ramazanov_rv?text=Хочу оплатить отель",
+  },
+  {
+    icon: <ShoppingCartOutlined sx={{ width: "20px" }} color="primary" />,
+    title: "Оплата интернет покупок",
+    description: "",
+    link: "https://t.me/ramazanov_rv?text=Хочу оплатить покупку в интернете",
+  },
+  {
+    icon: <AddCardOutlined sx={{ width: "20px" }} color="primary" />,
+    title: "Открытие иностранной карты (скоро)",
+    description: "",
+    link: "https://t.me/ramazanov_rv?text=",
+    soon: true,
   },
 ];

@@ -9,6 +9,7 @@ import {
 import { services } from "./data";
 import { ChevronRight } from "@mui/icons-material";
 import { Block } from "../../../shared";
+import { enqueueSnackbar } from "notistack";
 
 export function AdditionalServicesCard() {
   return (
@@ -27,7 +28,11 @@ export function AdditionalServicesCard() {
         {services.map((service, index) => (
           <ListItem
             onClick={() =>
-              Telegram.WebApp.openTelegramLink("https://t.me/ramazanov_rv")
+              !service.soon
+                ? Telegram.WebApp.openTelegramLink(service.link)
+                : enqueueSnackbar("Эта услуга появится уже совсем скоро", {
+                    variant: "warning",
+                  })
             }
             key={index}
             sx={{

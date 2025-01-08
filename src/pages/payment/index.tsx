@@ -114,7 +114,7 @@ export function PaymentForm() {
   const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
 
   const userPhone = userInfo.phone_number;
-  const userName = userInfo.full_name;
+  const userName = userInfo.first_name + " " + userInfo.last_name;
   const {
     inputAmount1,
     inputAmount2,
@@ -154,14 +154,12 @@ export function PaymentForm() {
     mutationKey: ["create-order"],
     onSuccess() {
       navigate("/");
-      enqueueSnackbar("Заявка была успешно создана ", {
-        variant: "success",
-      });
-    },
-    onError() {
-      enqueueSnackbar("Что-то пошло не так, попробуйте позже", {
-        variant: "error",
-      });
+      enqueueSnackbar(
+        "Заявка создана успешно, менеджер сейчас с вами свяжется",
+        {
+          variant: "success",
+        }
+      );
     },
   });
 

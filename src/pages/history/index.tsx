@@ -65,7 +65,7 @@ export function TransactionHistoryPage() {
 
   return (
     <Fade in>
-      <Box>
+      <Box sx={{ width: "100%" }}>
         <Title>История</Title>
         {orderHistoryData?.length === 0 ? (
           <Box

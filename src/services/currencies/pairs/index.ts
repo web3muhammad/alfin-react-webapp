@@ -15,3 +15,10 @@ export async function getCurrenciesPairs({
   );
   return res.data;
 }
+
+export async function getRates(): Promise<GetAllCurrenciesResponse> {
+  const res = await api.get<GetAllCurrenciesResponse>(
+    `/currencies/RUB/pairs/table`
+  );
+  return res.data;
+}

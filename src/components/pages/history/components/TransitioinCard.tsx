@@ -12,6 +12,7 @@ export const TransactionCard: React.FC<Order> = ({
   buy_amount,
   buy_currency,
   rate,
+  created_at,
 }) => {
   const navigate = useNavigate();
   return (
@@ -30,9 +31,9 @@ export const TransactionCard: React.FC<Order> = ({
               #{id}
             </Typography>
           </Box>
-          {/* <Typography sx={{ fontSize: "10px", opacity: ".5" }}>
-            {date}
-          </Typography> */}
+          <Typography sx={{ fontSize: "10px", opacity: ".5" }}>
+            {created_at}
+          </Typography>
         </Box>
 
         <Box

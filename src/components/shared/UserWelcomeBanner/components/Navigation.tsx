@@ -2,6 +2,7 @@ import { Box, Typography } from "@mui/material";
 
 import {
   FormatListBulletedRounded,
+  HomeRounded,
   Person,
   SmsRounded,
 } from "@mui/icons-material";
@@ -29,6 +30,13 @@ export function Navigation() {
         <Typography sx={{ paddingTop: ".25rem" }}>История</Typography>
       </Box>
 
+      <Box sx={{ width: "33.333%", display: "grid", placeItems: "center" }}>
+        <CustomIconButton onClick={() => navigate("/")}>
+          <HomeRounded sx={{ width: "18px", paddingTop: ".1rem" }} />
+        </CustomIconButton>
+        <Typography sx={{ paddingTop: ".25rem" }}>Главная</Typography>
+      </Box>
+
       <Box
         sx={{
           width: "33.333%",
@@ -40,13 +48,6 @@ export function Navigation() {
           <Person sx={{ width: "20px" }} />
         </CustomIconButton>
         <Typography sx={{ paddingTop: ".25rem" }}>Профиль</Typography>
-      </Box>
-
-      <Box sx={{ width: "33.333%", display: "grid", placeItems: "center" }}>
-        <CustomIconButton>
-          <SmsRounded sx={{ width: "18px", paddingTop: ".1rem" }} />
-        </CustomIconButton>
-        <Typography sx={{ paddingTop: ".25rem" }}>Поддержка</Typography>
       </Box>
     </Box>
   );

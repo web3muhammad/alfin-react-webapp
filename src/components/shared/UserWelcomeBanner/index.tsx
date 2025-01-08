@@ -28,7 +28,7 @@ export function UserWelcomeBanner() {
   return (
     <Box>
       <Title sx={{ paddingBottom: "0" }}>
-        Добро пожаловать, {user?.first_name || data?.full_name}
+        Добро пожаловать, {data?.first_name}
       </Title>
 
       {volume <= 0 && (

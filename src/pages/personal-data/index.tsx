@@ -15,9 +15,12 @@ import { editPersonalData } from "../../services/me/edit";
 import { EditPersonalDataTypes } from "../../services/me/interface";
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
+import { WhatsApp } from "@mui/icons-material";
+import { WhatsappIcon } from "../../icons";
 
 type FormData = {
-  name: string;
+  first_name: string;
+  last_name: string;
   phone: string;
 };
 
@@ -26,7 +29,11 @@ export function PersonalDataForm() {
   const { enqueueSnackbar } = useSnackbar();
 
   const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
-  const data = { name: userInfo.full_name, phone: userInfo.phone_number };
+  const data = {
+    first_name: userInfo.first_name,
+    last_name: userInfo.last_name,
+    phone: userInfo.phone_number,
+  };
 
   const navigate = useNavigate();
   const {
@@ -38,7 +45,8 @@ export function PersonalDataForm() {
     formState: { errors, dirtyFields },
   } = useForm<FormData>({
     defaultValues: {
-      name: data.name,
+      first_name: data.first_name,
+      last_name: data.last_name,
       phone: data.phone,
     },
   });
@@ -62,7 +70,8 @@ export function PersonalDataForm() {
 
   const onSubmit = (formData: FormData) => {
     const payload: EditPersonalDataTypes = {
-      full_name: formData.name,
+      first_name: formData.first_name,
+      last_name: formData.last_name,
       phone_number: formData.phone,
     };
 
@@ -71,7 +80,8 @@ export function PersonalDataForm() {
 
   const isPhoneValid = isPhoneComplete(watch("phone"));
 
-  const isModified = dirtyFields.name || dirtyFields.phone;
+  const isModified =
+    dirtyFields.first_name || dirtyFields.last_name || dirtyFields.phone;
 
   return (
     <Fade in>
@@ -99,9 +109,37 @@ export function PersonalDataForm() {
                   },
                   "& fieldset": { border: "none" },
                 }}
-                {...register("name", { required: "Name is required" })}
-                error={!!errors.name}
-                helperText={errors.name?.message}
+                {...register("first_name", { required: "Name is required" })}
+                error={!!errors.first_name}
+                helperText={errors.first_name?.message}
+                fullWidth
+              />
+            </Box>
+            <Divider sx={{ margin: "12px 0px" }} />
+
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-end",
+              }}
+            >
+              <Typography>Ваша фамилия</Typography>
+              <TextField
+                sx={{
+                  width: "60%",
+                  input: {
+                    paddingBlock: "2px",
+                    paddingLeft: "10px",
+                    textAlign: "right",
+                  },
+                  "& fieldset": { border: "none" },
+                }}
+                {...register("last_name", {
+                  required: "Last name is required",
+                })}
+                error={!!errors.last_name}
+                helperText={errors.last_name?.message}
                 fullWidth
               />
             </Box>
@@ -115,7 +153,11 @@ export function PersonalDataForm() {
                 alignItems: "flex-end",
               }}
             >
-              <Typography>Телефон</Typography>
+              <Box sx={{ display: "flex", gap: "4px", alignItems: "center" }}>
+                <Typography sx={{ fontSize: "14px" }}>Телефон</Typography>
+                <WhatsappIcon />
+              </Box>
+
               <InputMask
                 mask="+7 999 999 99 99"
                 value={watch("phone")}

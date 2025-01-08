@@ -48,7 +48,15 @@ export function ApplePayBlock() {
           </Typography>
         </Box>
 
-        <Button>Арендовать карту</Button>
+        <Button
+          onClick={() =>
+            Telegram.WebApp.openTelegramLink(
+              "https://t.me/ramazanov_rv?text=Хочу привязать карту к Apple Pay/Google pay"
+            )
+          }
+        >
+          Арендовать карту
+        </Button>
 
         <Typography
           sx={{ fontSize: "12px", opacity: ".6", paddingTop: ".75rem" }}

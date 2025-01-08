@@ -16,6 +16,10 @@ export function RootLayout() {
     tg.expand();
     tg.setBackgroundColor("rgba(239, 239, 243, 1)");
 
+    const handleBackButtonClick = () => {
+      navigate(-1);
+    };
+
     // Only showing the back button if user is not on the homepage
     if (pathname !== "/") {
       tg.BackButton.show();
@@ -23,12 +27,14 @@ export function RootLayout() {
       tg.BackButton.hide();
     }
 
-    const handleBackButtonClick = () => {
-      navigate(-1);
-    };
-
-    tg.offEvent("backButtonClicked", handleBackButtonClick); // Removing any existing listeners before adding a new one
-    tg.onEvent("backButtonClicked", handleBackButtonClick);
+    if (pathname === "/bank-cards") {
+      tg.onEvent("backButtonClicked", () => navigate("/profile"));
+    } else if (pathname === "/add-card") {
+      tg.onEvent("backButtonClicked", () => navigate("/bank-cards"));
+    } else {
+      tg.offEvent("backButtonClicked", handleBackButtonClick); // Removing any existing listeners before adding a new one
+      tg.onEvent("backButtonClicked", handleBackButtonClick);
+    }
 
     return () => {
       tg.offEvent("backButtonClicked", handleBackButtonClick);
@@ -38,8 +44,11 @@ export function RootLayout() {
   // Scroll to top after navigating to a new page
   useEffect(() => {
     window.scrollTo(0, 0);
-    getAccessToken();
   }, [location.pathname]);
+
+  useEffect(() => {
+    getAccessToken();
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
@@ -57,7 +66,6 @@ export function RootLayout() {
               width: "100%",
               padding: "15px 22px",
               margin: "0 auto",
-              maxWidth: "400px",
             }}
           >
             <Outlet />

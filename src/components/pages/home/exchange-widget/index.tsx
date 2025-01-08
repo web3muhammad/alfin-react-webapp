@@ -274,11 +274,11 @@ export const CurrencyExchangeWidget: React.FC = () => {
         <Box sx={{ position: "relative", flex: 1 }}>
           <Box sx={{ display: "flex", gap: "4px", alignItems: "center" }}>
             <Typography>Вы получите</Typography>
-            {allCurrenciesData && (
+            {currenciesPairsData && (
               <Box
                 component="img"
                 src={
-                  allCurrenciesData?.find(
+                  currenciesPairsData?.find(
                     (currency) => currency.symbol === selectedExchangeCurrency
                   )?.icon
                 }

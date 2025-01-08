@@ -1,4 +1,4 @@
-import { ChevronRight } from "@mui/icons-material";
+import { ChevronRight, WhatsApp } from "@mui/icons-material";
 import {
   Box,
   List,
@@ -72,6 +72,65 @@ export function SocialMediaBlock() {
               primary={
                 <Typography sx={{ marginTop: "16px", paddingBottom: "8px" }}>
                   Telegram
+                </Typography>
+              }
+            />
+            <ChevronRight sx={{ color: "#b0b0b0", marginLeft: "auto" }} />
+          </Box>
+        </ListItem>
+
+        <ListItem
+          onClick={() => navigate("")}
+          sx={{
+            paddingTop: "0",
+            paddingInline: 0,
+            width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+            cursor: "pointer",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "flex-start",
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                backgroundColor: "primary.main",
+                minWidth: "32px",
+                minHeight: "32px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: "50%",
+                marginRight: "10px",
+              }}
+            >
+              <WhatsApp sx={{ width: "20px", color: "#fff" }} />
+            </ListItemIcon>
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexGrow: 1,
+              borderBottom: `1px solid ${
+                Telegram.WebApp.colorScheme === "dark"
+                  ? "rgba(56, 76, 96, 1)"
+                  : "rgba(239, 239, 243, 1)"
+              }`,
+              paddingBottom: "8px",
+            }}
+          >
+            <ListItemText
+              sx={{ margin: 0 }}
+              primary={
+                <Typography sx={{ marginTop: "16px", paddingBottom: "8px" }}>
+                  Whatsapp
                 </Typography>
               }
             />
