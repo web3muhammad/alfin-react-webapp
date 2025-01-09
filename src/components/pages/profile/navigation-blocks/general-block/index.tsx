@@ -142,7 +142,9 @@ export function GeneralNavigationBlock() {
         </ListItem>
 
         <ListItem
-          onClick={() => navigate("")}
+          onClick={() =>
+            Telegram.WebApp.openLink("https://senja.io/p/alfinex/r/P0w5ff")
+          }
           sx={{
             paddingTop: "0",
             paddingInline: 0,
@@ -202,7 +204,9 @@ export function GeneralNavigationBlock() {
         </ListItem>
 
         <ListItem
-          onClick={() => Telegram.WebApp.openTelegramLink("https://t.me/alfin_support")}
+          onClick={() =>
+            Telegram.WebApp.openTelegramLink("https://t.me/alfin_support")
+          }
           sx={{
             paddingTop: "0",
             paddingInline: 0,
@@ -252,7 +256,9 @@ export function GeneralNavigationBlock() {
                 </Typography>
               }
             />
-            <ChevronRight sx={{ color: "#b0b0b0", marginLeft: "auto", marginTop: '8px' }} />
+            <ChevronRight
+              sx={{ color: "#b0b0b0", marginLeft: "auto", marginTop: "8px" }}
+            />
           </Box>
         </ListItem>
       </List>

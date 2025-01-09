@@ -96,7 +96,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
     },
   });
 
-  const isDisabledSwap = selectedExchangeCurrency === "SAR";
+  const isDisabledSwap =
+    selectedExchangeCurrency === "SAR" ||
+    selectedMainCurrency === selectedExchangeCurrency;
 
   const isDisabled =
     isLoading ||
