@@ -34,7 +34,7 @@ root.render(
   <QueryClientProvider client={queryClient}>
     <SnackbarProvider
       anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
-      autoHideDuration={1500}
+      autoHideDuration={2500}
       disableWindowBlurListener
       preventDuplicate
       style={{
