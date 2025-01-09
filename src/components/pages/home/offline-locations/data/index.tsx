@@ -19,12 +19,12 @@ export const services: Service[] = [
     title: "Стамбул",
     adress: "Обмен Крипты и валюты, в Галатопорте",
     mapLink:
-      "https://www.google.com/maps?q=41.00882339477539,28.954137802124023",
+      "https://maps.app.goo.gl/GqzVDSuQ1pDVSCxD7",
   },
   {
     icon: <PlaceRounded sx={{ width: "20px" }} color="primary" />,
     title: "Стамбул",
-    adress: "Обмен Крипты и валюты, в Галатопорте",
+    adress: "",
     mapLink:
       "https://www.google.com/maps?q=41.00882339477539,28.954137802124023",
   },
