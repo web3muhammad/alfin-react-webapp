@@ -22,6 +22,7 @@ import {
   fetchExchangeRate,
   FetchExchangeRateResponse,
 } from "../../../../services/exchange-rate";
+import { enqueueSnackbar } from "notistack";
 
 export const CurrencyExchangeWidget: React.FC = () => {
   const [inputAmount1, setInputAmount1] = useState("");
@@ -54,11 +55,18 @@ export const CurrencyExchangeWidget: React.FC = () => {
     }) => {
       return fetchExchangeRate({ buyCurrency, sellCurrency });
     },
+
     {
       onSuccess: (data) => {
         const { rate } = data;
         setExchangeRate(rate);
         setIsTyping(false);
+      },
+      onError(e: any) {
+        const errorText = e.response?.data?.detail;
+        if (errorText === "Валютная пара не найдена") {
+          enqueueSnackbar(errorText, { variant: "error" });
+        }
       },
     }
   );
@@ -198,12 +206,14 @@ export const CurrencyExchangeWidget: React.FC = () => {
     setSelectedExchangeCurrency(selectedMainCurrency);
 
     setIsRotated((prev) => !prev);
+    setMainLimitError(false);
 
-    fetchExchangeRate({
+    fetchRate({
       sellCurrency: selectedMainCurrency,
       buyCurrency: selectedExchangeCurrency,
     }).then((data: FetchExchangeRateResponse) => {
       setExchangeRate(data.rate);
+      setMainCurrencySellLimit(data.sell_min_amount);
     });
     if (inputRef.current) inputRef.current.focus();
   };
@@ -235,11 +245,10 @@ export const CurrencyExchangeWidget: React.FC = () => {
     } else {
       setJustChangedInputId(2);
     }
-
+    setMainLimitError(false);
     setSelectedMainCurrency(newMainCurrency);
     setSelectedExchangeCurrency(newExchangeCurrency);
-
-    fetchExchangeRate({
+    fetchRate({
       sellCurrency: newMainCurrency,
       buyCurrency: newExchangeCurrency,
     }).then((data) => {
@@ -250,8 +259,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
       const mainAmount = Number(inputAmount1.replace(/\s/g, ""));
       const convertedValue = (mainAmount * rate).toFixed(2);
       setInputAmount2(formatNumber(convertedValue));
-
-      if (mainAmount > mainCurrencySellLimit) {
+      console.log(sell_min_amount, "sell_min_amount");
+      console.log(mainAmount, "mainAmount");
+      if (sell_min_amount > mainAmount) {
         setMainLimitError(true);
       } else {
         setMainLimitError(false);
