@@ -138,7 +138,7 @@ export function PaymentForm() {
         sellCurrency: selectedMainCurrency,
         buyCurrency: selectedExchangeCurrency,
       });
-      setRate(rate);
+      setRate(rate.rate);
     }
 
     getRate();

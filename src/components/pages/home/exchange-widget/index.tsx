@@ -308,6 +308,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
                 sx: {
                   marginLeft: "0 !important",
                   marginTop: "0 !important",
+                  fontFamily: '"Inter",system-ui',
                 },
               },
             }}
