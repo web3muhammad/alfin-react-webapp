@@ -243,13 +243,19 @@ export const CurrencyExchangeWidget: React.FC = () => {
       sellCurrency: newMainCurrency,
       buyCurrency: newExchangeCurrency,
     }).then((data) => {
-      const { rate, sell_min_amount, buy_min_amount } = data;
+      const { rate, sell_min_amount } = data;
       setExchangeRate(rate);
       setMainCurrencySellLimit(sell_min_amount);
 
       const mainAmount = Number(inputAmount1.replace(/\s/g, ""));
       const convertedValue = (mainAmount * rate).toFixed(2);
       setInputAmount2(formatNumber(convertedValue));
+
+      if (mainAmount > mainCurrencySellLimit) {
+        setMainLimitError(true);
+      } else {
+        setMainLimitError(false);
+      }
     });
   };
 
