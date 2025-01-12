@@ -202,8 +202,8 @@ export const CurrencyExchangeWidget: React.FC = () => {
     fetchExchangeRate({
       sellCurrency: selectedMainCurrency,
       buyCurrency: selectedExchangeCurrency,
-    }).then((rate: any) => {
-      setExchangeRate(rate);
+    }).then((data: FetchExchangeRateResponse) => {
+      setExchangeRate(data.rate);
     });
     if (inputRef.current) inputRef.current.focus();
   };

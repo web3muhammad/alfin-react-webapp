@@ -6,6 +6,7 @@ export interface FetchExchangeRateResponse {
   sell_min_amount: number;
   buy_min_amount: number;
 }
+
 export async function fetchExchangeRate({
   sellCurrency,
   buyCurrency,
