@@ -18,8 +18,10 @@ import { getAllCurrencies } from "../../../../services/currencies";
 import { getCurrenciesPairs } from "../../../../services/currencies/pairs";
 
 import { debounce } from "lodash";
-import { fetchExchangeRate } from "../../../../services/exchange-rate";
-import { enqueueSnackbar } from "notistack";
+import {
+  fetchExchangeRate,
+  FetchExchangeRateResponse,
+} from "../../../../services/exchange-rate";
 
 export const CurrencyExchangeWidget: React.FC = () => {
   const [inputAmount1, setInputAmount1] = useState("");
@@ -30,6 +32,8 @@ export const CurrencyExchangeWidget: React.FC = () => {
   const [selectedExchangeCurrency, setSelectedExchangeCurrency] =
     useState("TRY");
   const [exchangeRate, setExchangeRate] = useState(0);
+  const [mainCurrencySellLimit, setMainCurrencySellLimit] = useState(20000);
+  const [mainLimitError, setMainLimitError] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [justChangedInputId, setJustChangedInputId] = useState(0);
@@ -37,6 +41,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
   const navigate = useNavigate();
 
   const isDark = Telegram.WebApp.colorScheme === "dark";
+  console.log(mainCurrencySellLimit, "mainCurrencySellLimit");
 
   // React Query: useMutation для получения курса обмена
   const { mutateAsync: fetchRate, isLoading } = useMutation(
@@ -50,7 +55,8 @@ export const CurrencyExchangeWidget: React.FC = () => {
       return fetchExchangeRate({ buyCurrency, sellCurrency });
     },
     {
-      onSuccess: (rate) => {
+      onSuccess: (data) => {
+        const { rate } = data;
         setExchangeRate(rate);
         setIsTyping(false);
       },
@@ -60,17 +66,20 @@ export const CurrencyExchangeWidget: React.FC = () => {
   // Debounce для уменьшения количества запросов
   const debouncedFetchRate = useRef(
     debounce(
-      async (sell: string, buy: string, callback: (rate: number) => void) => {
+      async (
+        sell: string,
+        buy: string,
+        callback: (rate: FetchExchangeRateResponse) => void
+      ) => {
         try {
           const rate = await fetchRate({
             sellCurrency: sell,
             buyCurrency: buy,
           });
 
-          callback(rate as any);
+          callback(rate);
         } catch (error) {
           console.error("Ошибка при получении курса обмена:", error);
-          callback(0);
         }
       },
       300
@@ -108,40 +117,72 @@ export const CurrencyExchangeWidget: React.FC = () => {
     Number(inputAmount1) === 0 ||
     Number(inputAmount2) === 0 ||
     exchangeRate > Number(inputAmount1) ||
-    selectedMainCurrency === selectedExchangeCurrency;
+    selectedMainCurrency === selectedExchangeCurrency ||
+    mainLimitError;
 
   const handleAmountChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     field: "inputAmount1" | "inputAmount2"
   ) => {
-    let value = e.target.value.replace(/\D/g, ""); // Убираем нечисловые символы
-    if (value.startsWith("0") && value.length > 1) value = value.substring(1); // Убираем ведущий ноль
+    let value = e.target.value.replace(/\D/g, "");
+    if (value.startsWith("0") && value.length > 1) value = value.substring(1);
+
     setIsTyping(true);
+
     if (value.length <= 10) {
       const formattedValue = value === "0.00" ? "0" : formatNumber(value);
+
       if (field === "inputAmount1") {
         setJustChangedInputId(1);
         setInputAmount1(formattedValue);
+
         debouncedFetchRate(
           selectedMainCurrency,
           selectedExchangeCurrency,
-          (rate) => {
+          ({ rate, sell_min_amount }) => {
             setExchangeRate(rate);
+            setMainCurrencySellLimit(sell_min_amount);
 
-            // Пересчёт из основной валюты в обменную
             const convertedValue = (Number(value) * Number(rate)).toFixed(2);
+
+            // Explicitly handle the case where value is 0 or less
+            if (Number(value) <= 0 || Number(convertedValue) <= 0) {
+              setMainLimitError(false);
+            } else {
+              if (mainCurrencySellLimit > Number(value)) {
+                setMainLimitError(true);
+              } else {
+                setMainLimitError(false);
+              }
+            }
+
             setInputAmount2(formatNumber(convertedValue));
           }
         );
       } else {
         setJustChangedInputId(2);
         setInputAmount2(formattedValue);
+
         debouncedFetchRate(
           selectedExchangeCurrency,
           selectedMainCurrency,
-          (rate) => {
+          ({ rate, buy_min_amount }) => {
             setExchangeRate(rate);
+            setMainCurrencySellLimit(buy_min_amount);
+
             const convertedValue = (Number(value) * Number(rate)).toFixed(2);
+
+            // Explicitly handle the case where convertedValue is 0 or less
+            if (Number(convertedValue) <= 0) {
+              setMainLimitError(false);
+            } else {
+              if (mainCurrencySellLimit > Number(convertedValue)) {
+                setMainLimitError(true);
+              } else {
+                setMainLimitError(false);
+              }
+            }
+
             setInputAmount1(formatNumber(convertedValue));
           }
         );
@@ -201,8 +242,10 @@ export const CurrencyExchangeWidget: React.FC = () => {
     fetchExchangeRate({
       sellCurrency: newMainCurrency,
       buyCurrency: newExchangeCurrency,
-    }).then((rate: any) => {
+    }).then((data) => {
+      const { rate, sell_min_amount, buy_min_amount } = data;
       setExchangeRate(rate);
+      setMainCurrencySellLimit(sell_min_amount);
 
       const mainAmount = Number(inputAmount1.replace(/\s/g, ""));
       const convertedValue = (mainAmount * rate).toFixed(2);
@@ -246,6 +289,11 @@ export const CurrencyExchangeWidget: React.FC = () => {
           </Box>
 
           <TextField
+            error={mainLimitError}
+            helperText={
+              mainLimitError &&
+              `Минимальная сумма обмена от ${mainCurrencySellLimit} ${selectedMainCurrency}`
+            }
             inputRef={inputRef}
             placeholder="0"
             type="tel"
@@ -255,6 +303,12 @@ export const CurrencyExchangeWidget: React.FC = () => {
             slotProps={{
               htmlInput: {
                 maxLength: 10,
+              },
+              formHelperText: {
+                sx: {
+                  marginLeft: "0 !important",
+                  marginTop: "0 !important",
+                },
               },
             }}
             sx={{

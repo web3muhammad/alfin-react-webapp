@@ -111,7 +111,9 @@ export function PersonalDataForm() {
                   },
                   "& fieldset": { border: "none" },
                 }}
-                {...register("first_name", { required: "Name is required" })}
+                {...register("first_name", {
+                  required: "Обязятельно для ввода",
+                })}
                 error={!!errors.first_name}
                 helperText={errors.first_name?.message}
                 fullWidth
@@ -138,7 +140,7 @@ export function PersonalDataForm() {
                   "& fieldset": { border: "none" },
                 }}
                 {...register("last_name", {
-                  required: "Last name is required",
+                  required: "Обязятельно для ввода",
                 })}
                 error={!!errors.last_name}
                 helperText={errors.last_name?.message}

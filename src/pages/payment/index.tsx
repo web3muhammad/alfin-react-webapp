@@ -274,7 +274,7 @@ export function PaymentForm() {
                   },
                   "& fieldset": { border: "none" },
                 }}
-                {...register("name", { required: "Name is required" })}
+                {...register("name", { required: "Обязятельно для ввода" })}
                 error={!!errors.name}
                 slotProps={{
                   htmlInput: {
