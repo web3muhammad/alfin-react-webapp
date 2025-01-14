@@ -151,7 +151,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
             setExchangeRate(rate);
             setMainCurrencySellLimit(sell_min_amount);
 
-            const convertedValue = (Number(value) * Number(rate)).toFixed(2);
+            const convertedValue = (Number(value) * Number(rate)).toFixed(0);
 
             // Explicitly handle the case where value is 0 or less
             if (Number(value) <= 0 || Number(convertedValue) <= 0) {
@@ -178,7 +178,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
             setExchangeRate(rate);
             setMainCurrencySellLimit(buy_min_amount);
 
-            const convertedValue = (Number(value) * Number(rate)).toFixed(2);
+            const convertedValue = (Number(value) * Number(rate)).toFixed(0);
 
             // Explicitly handle the case where convertedValue is 0 or less
             if (Number(convertedValue) <= 0) {
@@ -257,7 +257,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
       setMainCurrencySellLimit(sell_min_amount);
 
       const mainAmount = Number(inputAmount1.replace(/\s/g, ""));
-      const convertedValue = (mainAmount * rate).toFixed(2);
+      const convertedValue = (mainAmount * rate).toFixed(0);
       setInputAmount2(formatNumber(convertedValue));
       console.log(sell_min_amount, "sell_min_amount");
       console.log(mainAmount, "mainAmount");
