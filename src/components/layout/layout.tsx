@@ -8,8 +8,6 @@ import { useSnackbar } from "notistack";
 export function RootLayout() {
   const theme = useTelegramTheme();
   const { tg } = useTelegram();
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
 
   useEffect(() => {
     tg.ready();

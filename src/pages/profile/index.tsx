@@ -6,12 +6,22 @@ import {
   SocialMediaBlock,
 } from "../../components/pages/profile";
 import { UserWelcomeBanner } from "../../components/shared";
-import { useTelegramBackButton } from "../../hooks/useTelegramBackButton";
 import { useNavigate } from "react-router-dom";
+import { useTelegram } from "../../hooks";
+import { useEffect } from "react";
 
 export function ProfilePage() {
   const navigate = useNavigate();
-  useTelegramBackButton(() => navigate("/"));
+  const { tg } = useTelegram();
+  useEffect(() => {
+    tg.BackButton.show();
+    tg.onEvent("backButtonClicked", () => navigate(`/`));
+
+    return () => {
+      tg.BackButton.hide();
+      tg.offEvent("backButtonClicked", () => navigate(`/`));
+    };
+  }, [navigate, tg]);
 
   return (
     <Box>

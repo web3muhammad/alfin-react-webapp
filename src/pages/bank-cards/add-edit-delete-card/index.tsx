@@ -1,5 +1,5 @@
 import InputMask from "react-input-mask";
-import { useState, MouseEvent } from "react";
+import { useState, MouseEvent, useEffect } from "react";
 import {
   Box,
   TextField,
@@ -20,18 +20,21 @@ import { getAllCurrencies } from "../../../services/currencies";
 import { editBankCard } from "../../../services/bank-cards/edit";
 import { deleteBankCard } from "../../../services/bank-cards/delete";
 import { useSnackbar } from "notistack";
-import { useTelegramBackButton } from "../../../hooks/useTelegramBackButton";
+import {
+  isCompleteCardNumber,
+  isValidIban,
+  isValidTrc20Address,
+} from "../../../utils";
+import { CreateBankCardRequestTypes } from "../../../services/bank-cards/interface";
+import { useTelegram } from "../../../hooks";
 
 type AddCardFormData = {
   cardName: string;
   ownerName: string;
   cardCurrency: string;
   cardNumber: string;
-};
-
-const isCompleteCardNumber = (cardNumber: string): boolean => {
-  const strippedPhone = cardNumber?.replace(/[^0-9]/g, "");
-  return strippedPhone?.length === 16;
+  trc_wallet: string;
+  iban: string;
 };
 
 export function AddCardForm() {
@@ -42,27 +45,46 @@ export function AddCardForm() {
     state.currency || ""
   );
   const navigate = useNavigate();
-  useTelegramBackButton(() => {
-    if (state.fromPage === "payment") {
-      navigate(-1);
-    } else {
-      navigate("/bank-cards");
-    }
-  });
+
+  const { tg } = useTelegram();
+  useEffect(() => {
+    tg.BackButton.show();
+    tg.onEvent("backButtonClicked", () => {
+      if (state.fromPage === "payment") {
+        navigate(-1);
+      } else {
+        navigate("/bank-cards");
+      }
+    });
+
+    return () => {
+      tg.BackButton.hide();
+      tg.offEvent("backButtonClicked", () => {
+        if (state.fromPage === "payment") {
+          navigate(-1);
+        } else {
+          navigate("/bank-cards");
+        }
+      });
+    };
+  }, [navigate, tg]);
 
   const {
     register,
     handleSubmit,
     watch,
+    resetField,
     setValue,
     formState: { errors, isValid },
   } = useForm<AddCardFormData>({
-    mode: "onChange", // Enables form validation to trigger on each change
+    mode: "onChange",
     defaultValues: {
       cardName: state.bankName || "",
       ownerName: state.ownerName || "",
       cardCurrency: state.currency || "",
       cardNumber: String(state.cardNumber) || "",
+      trc_wallet: "",
+      iban: "",
     },
   });
 
@@ -85,6 +107,11 @@ export function AddCardForm() {
           navigate("/bank-cards");
         }
       },
+      onError() {
+        enqueueSnackbar("Проверьте заполненные поля либо попробуйте позже.", {
+          variant: "error",
+        });
+      },
     });
 
   const { mutate: editBankCardMutation, isLoading: editCardLoading } =
@@ -95,6 +122,11 @@ export function AddCardForm() {
         navigate("/bank-cards");
         enqueueSnackbar("Данные банковской карты успешно изменены", {
           variant: "success",
+        });
+      },
+      onError() {
+        enqueueSnackbar("Проверьте заполненные поля либо попробуйте позже.", {
+          variant: "error",
         });
       },
     });
@@ -112,13 +144,19 @@ export function AddCardForm() {
     });
 
   const onSubmit = (data: AddCardFormData) => {
-    const { cardName, cardNumber, cardCurrency, ownerName } = data;
+    const { cardName, cardNumber, cardCurrency, ownerName, trc_wallet, iban } =
+      data;
 
-    const submitData = {
+    const submitData: CreateBankCardRequestTypes = {
       bank_name: cardName,
       owner_name: ownerName,
-      card_number: Number(cardNumber.replace(/\s/g, "")),
       currency: cardCurrency,
+      card_number:
+        cardCurrency === "USDT" || cardCurrency === "TRY"
+          ? null // Set to null if not required
+          : Number(cardNumber?.replace(/\s/g, "")),
+      trc_wallet: cardCurrency === "USDT" ? trc_wallet : null,
+      iban: cardCurrency === "TRY" ? iban : null,
     };
 
     if (state.formType === "create") {
@@ -144,7 +182,12 @@ export function AddCardForm() {
     handleMenuClose();
   };
 
-  const isDisabled = !isValid && !isCompleteCardNumber(watch("cardNumber"));
+  const isDisabled =
+    selectedCurrencyMenu === "USDT"
+      ? !isValid || !isValidTrc20Address(watch("trc_wallet"))
+      : selectedCurrencyMenu === "TRY"
+      ? !isValid || !isValidIban(watch("iban"))
+      : !isValid || !isCompleteCardNumber(watch("cardNumber"));
 
   return (
     <Fade in>
@@ -306,40 +349,94 @@ export function AddCardForm() {
             </Box>
             <Divider sx={{ margin: "12px 0px" }} />
 
-            {/* Card Number Input */}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-end",
-              }}
-            >
-              <Typography>Номер карты</Typography>
-              <InputMask
-                placeholder="0000 0000 0000 0000"
-                mask="9999 9999 9999 9999"
-                value={watch("cardNumber")}
-                onChange={(e) =>
-                  setValue("cardNumber", e.target.value, {
-                    shouldValidate: true,
-                  })
-                }
+            {selectedCurrencyMenu === "USDT" ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-end",
+                }}
               >
+                <Typography>TRC-20</Typography>
                 <TextField
+                  placeholder="Example: TPAgKfYzRdK83Qocc4gXvEVu4jPKfeuer5"
+                  {...register("trc_wallet")}
+                  error={!!errors.trc_wallet}
+                  helperText={errors.trc_wallet?.message}
                   sx={{
-                    width: "60%",
+                    width: "70%",
                     input: {
+                      paddingRight: "0px",
                       paddingBlock: "2px",
                       paddingLeft: "10px",
                       textAlign: "right",
                     },
                     "& fieldset": { border: "none" },
                   }}
-                  error={!!errors.cardNumber}
-                  fullWidth
                 />
-              </InputMask>
-            </Box>
+              </Box>
+            ) : selectedCurrencyMenu === "TRY" ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-end",
+                }}
+              >
+                <Typography>IBAN</Typography>
+                <TextField
+                  error={!!errors.iban}
+                  helperText={errors.iban?.message}
+                  placeholder="GB82 WEST 1234 5698 7654 32"
+                  {...register("iban")}
+                  sx={{
+                    width: "60%",
+                    input: {
+                      paddingRight: "0px",
+                      paddingBlock: "2px",
+                      paddingLeft: "10px",
+                      textAlign: "right",
+                    },
+                    "& fieldset": { border: "none" },
+                  }}
+                />
+              </Box>
+            ) : (
+              // Card Number Input
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-end",
+                }}
+              >
+                <Typography>Номер карты</Typography>
+                <InputMask
+                  placeholder="0000 0000 0000 0000"
+                  mask="9999 9999 9999 9999"
+                  value={watch("cardNumber")}
+                  onChange={(e) =>
+                    setValue("cardNumber", e.target.value, {
+                      shouldValidate: true,
+                    })
+                  }
+                >
+                  <TextField
+                    sx={{
+                      width: "60%",
+                      input: {
+                        paddingBlock: "2px",
+                        paddingLeft: "10px",
+                        textAlign: "right",
+                      },
+                      "& fieldset": { border: "none" },
+                    }}
+                    error={!!errors.cardNumber}
+                    fullWidth
+                  />
+                </InputMask>
+              </Box>
+            )}
           </Box>
         </Block>
 

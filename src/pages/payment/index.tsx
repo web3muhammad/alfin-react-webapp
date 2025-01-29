@@ -21,8 +21,8 @@ import { CreateOrderRequestTypes } from "../../services/orders/interface";
 import { getAllBankCards } from "../../services/bank-cards";
 import { BankCard } from "../../services/bank-cards/interface";
 import { useSnackbar } from "notistack";
-import { useTelegramBackButton } from "../../hooks/useTelegramBackButton";
 import { fetchExchangeRate } from "../../services/exchange-rate";
+import { useTelegram } from "../../hooks";
 
 type FormData = {
   name: string;
@@ -50,6 +50,7 @@ function MenuComponent({
   onSelect,
   menuType,
 }: MenuComponentProps) {
+  const navigate = useNavigate();
   const isDark = Telegram.WebApp.colorScheme === "dark";
 
   return (
@@ -102,14 +103,58 @@ function MenuComponent({
           )}
         </Box>
       ))}
+
+      {menuType === "card" && (
+        <Box>
+          <Divider
+            sx={{
+              margin: "0 !important",
+              borderColor: `${isDark ? "#31475E" : "#EFEFF3"}`,
+            }}
+          />
+          <MenuItem
+            sx={{ paddingBlock: "0", marginBlock: "0" }}
+            onClick={() =>
+              navigate("/add-card", {
+                state: { formType: "create", fromPage: "payment" },
+              })
+            }
+          >
+            <Typography>Добавить реквизиты</Typography>
+          </MenuItem>
+        </Box>
+      )}
     </Menu>
   );
 }
 
+const clearStorage = () => {
+  localStorage.removeItem("paymentMethod");
+  localStorage.removeItem("bankCardName");
+  localStorage.removeItem("bankCardId");
+  localStorage.removeItem("phoneNumber");
+};
+
 export function PaymentForm() {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
-  useTelegramBackButton(() => navigate(-1));
+  const { tg } = useTelegram();
+  useEffect(() => {
+    tg.BackButton.show();
+    tg.onEvent("backButtonClicked", () => {
+      navigate(-1);
+      clearStorage();
+    });
+
+    return () => {
+      tg.BackButton.hide();
+      tg.offEvent("backButtonClicked", () => {
+        navigate(-1);
+        clearStorage();
+      });
+    };
+  }, [navigate, tg]);
+
   const [rate, setRate] = useState<number | undefined>();
   const { state } = useLocation();
   const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
@@ -125,9 +170,12 @@ export function PaymentForm() {
   } = state || {};
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState<string>("");
-  const [selectedBankCard, setSelectedBankCard] = useState<string>("");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>(
+    localStorage.getItem("paymentMethod") || ""
+  );
+  const [selectedBankCard, setSelectedBankCard] = useState<string>(
+    localStorage.getItem("bankCardName") || ""
+  );
   const [menuType, setMenuType] = useState<"payment-method" | "cards">(
     "payment-method"
   );
@@ -154,9 +202,9 @@ export function PaymentForm() {
     mode: "onChange",
     defaultValues: {
       name: userName || "",
-      phone: userPhone || "",
-      paymentMethod: "",
-      bankCardId: undefined,
+      phone: localStorage.getItem("phoneNumber") || userPhone || "",
+      paymentMethod: localStorage.getItem("paymentMethod") || "",
+      bankCardId: Number(localStorage.getItem("bankCardId")) || undefined,
       promocode: "",
       comment: "",
     },
@@ -166,6 +214,7 @@ export function PaymentForm() {
     mutationFn: CreateOrder,
     mutationKey: ["create-order"],
     onSuccess() {
+      clearStorage();
       navigate("/");
       enqueueSnackbar(
         "Заявка создана успешно, менеджер сейчас с вами свяжется",
@@ -180,6 +229,10 @@ export function PaymentForm() {
     queryFn: getAllBankCards,
     queryKey: ["all-cards"],
   });
+
+  const filteredCardsBySelectedCurrency = allBankCards?.filter(
+    (bankCard) => bankCard.currency === selectedExchangeCurrency
+  );
 
   const name = watch("name");
   const phone = watch("phone");
@@ -216,9 +269,12 @@ export function PaymentForm() {
   const handleSelection = (item: string | BankCard) => {
     if (menuType === "payment-method" && typeof item === "string") {
       setSelectedPaymentMethod(item);
+      localStorage.setItem("paymentMethod", item);
       setValue("paymentMethod", item);
     } else if (menuType === "cards" && typeof item !== "string") {
       setSelectedBankCard(item.bank_name);
+      localStorage.setItem("bankCardName", item.bank_name);
+      localStorage.setItem("bankCardId", JSON.stringify(item.id));
       setValue("bankCardId", item.id);
     }
     handleMenuClose();
@@ -297,8 +353,11 @@ export function PaymentForm() {
               <Typography>Телефон</Typography>
               <InputMask
                 mask="+7 (999) 999-99-99"
-                value={phone}
-                onChange={(e) => setValue("phone", e.target.value)}
+                value={localStorage.getItem("phoneNumber") || phone}
+                onChange={(e) => {
+                  setValue("phone", e.target.value);
+                  localStorage.setItem("phoneNumber", e.target.value);
+                }}
               >
                 <TextField
                   placeholder="+7 900 000-00-00"
@@ -363,7 +422,7 @@ export function PaymentForm() {
                   marginTop: "1rem",
                 }}
               >
-                <Typography>Карта зачисления</Typography>
+                <Typography>Куда зачислить средства</Typography>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <Typography
                     sx={{
@@ -372,7 +431,7 @@ export function PaymentForm() {
                       paddingRight: "3px",
                     }}
                     onClick={(e) => {
-                      if (allBankCards?.length === 0) {
+                      if (filteredCardsBySelectedCurrency?.length === 0) {
                         navigate("/add-card", {
                           state: { formType: "create", fromPage: "payment" },
                         });
@@ -380,17 +439,19 @@ export function PaymentForm() {
                       handleMenuOpen(e, "cards");
                     }}
                   >
-                    {allBankCards?.length === 0
-                      ? "Добавить карту"
+                    {filteredCardsBySelectedCurrency?.length === 0
+                      ? "Добавить"
                       : selectedBankCard || "Выберите карту"}
                   </Typography>
-                  {allBankCards?.length !== 0 && <SelectArrowsIcon />}
+                  {filteredCardsBySelectedCurrency?.length !== 0 && (
+                    <SelectArrowsIcon />
+                  )}
                 </Box>
                 <MenuComponent
                   anchorEl={anchorEl}
                   open={menuType === "cards" && Boolean(anchorEl)}
                   onClose={handleMenuClose}
-                  items={allBankCards || []}
+                  items={filteredCardsBySelectedCurrency || []}
                   onSelect={handleSelection}
                   menuType="card"
                 />

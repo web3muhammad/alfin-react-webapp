@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
   TextField,
@@ -42,7 +42,6 @@ export const CurrencyExchangeWidget: React.FC = () => {
   const navigate = useNavigate();
 
   const isDark = Telegram.WebApp.colorScheme === "dark";
-  console.log(mainCurrencySellLimit, "mainCurrencySellLimit");
 
   // React Query: useMutation для получения курса обмена
   const { mutateAsync: fetchRate, isLoading } = useMutation(
@@ -172,13 +171,13 @@ export const CurrencyExchangeWidget: React.FC = () => {
         setInputAmount2(formattedValue);
 
         debouncedFetchRate(
-          selectedExchangeCurrency,
           selectedMainCurrency,
+          selectedExchangeCurrency,
           ({ rate, buy_min_amount }) => {
             setExchangeRate(rate);
             setMainCurrencySellLimit(buy_min_amount);
 
-            const convertedValue = (Number(value) * Number(rate)).toFixed(0);
+            const convertedValue = (Number(value) / Number(rate)).toFixed(0);
 
             // Explicitly handle the case where convertedValue is 0 or less
             if (Number(convertedValue) <= 0) {
@@ -259,8 +258,6 @@ export const CurrencyExchangeWidget: React.FC = () => {
       const mainAmount = Number(inputAmount1.replace(/\s/g, ""));
       const convertedValue = (mainAmount * rate).toFixed(0);
       setInputAmount2(formatNumber(convertedValue));
-      console.log(sell_min_amount, "sell_min_amount");
-      console.log(mainAmount, "mainAmount");
       if (sell_min_amount > mainAmount) {
         setMainLimitError(true);
       } else {

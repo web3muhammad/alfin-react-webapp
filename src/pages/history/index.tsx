@@ -10,58 +10,21 @@ import { TransactionCard } from "../../components/pages/history";
 import { useQuery } from "react-query";
 import { getOrderHistory } from "../../services/orders/history";
 import { useNavigate } from "react-router-dom";
-import { useTelegramBackButton } from "../../hooks/useTelegramBackButton";
-const transactions = [
-  {
-    id: "210488",
-    date: "26.08.2024 16:40:24",
-    status: "in-progress",
-    amount: "5190 TRY",
-    price: "2.89 RUB",
-    paid: "15 000 RUB",
-    manager: "Ахмед",
-  },
-  {
-    id: "210489",
-    date: "27.08.2024 14:30:00",
-    status: "done",
-    amount: "4200 TRY",
-    price: "2.70 RUB",
-    paid: "11 340 RUB",
-    manager: "Виктор",
-  },
-  {
-    id: "210489",
-    date: "27.08.2024 14:30:00",
-    status: "done",
-    amount: "4200 TRY",
-    price: "2.70 RUB",
-    paid: "11 340 RUB",
-    manager: "Виктор",
-  },
-  {
-    id: "210489",
-    date: "27.08.2024 14:30:00",
-    status: "done",
-    amount: "4200 TRY",
-    price: "2.70 RUB",
-    paid: "11 340 RUB",
-    manager: "Виктор",
-  },
-  {
-    id: "210490",
-    date: "28.08.2024 12:20:45",
-    status: "canceled",
-    amount: "3500 TRY",
-    price: "2.60 RUB",
-    paid: "9 100 RUB",
-    manager: "Дмитрий",
-  },
-];
+import { useEffect } from "react";
+import { useTelegram } from "../../hooks";
 
 export function TransactionHistoryPage() {
   const navigate = useNavigate();
-  useTelegramBackButton(() => navigate("/"));
+  const { tg } = useTelegram();
+  useEffect(() => {
+    tg.BackButton.show();
+    tg.onEvent("backButtonClicked", () => navigate(`/`));
+
+    return () => {
+      tg.BackButton.hide();
+      tg.offEvent("backButtonClicked", () => navigate(`/`));
+    };
+  }, [navigate, tg]);
   const { data: orderHistoryData, isLoading } = useQuery({
     queryFn: getOrderHistory,
     queryKey: ["order-history"],
@@ -83,7 +46,8 @@ export function TransactionHistoryPage() {
             <Typography
               sx={{ textAlign: "center", opacity: ".5", margin: "0 auto" }}
             >
-              Вы еще не совершили ни одной транзакции
+              Здесь будет отображаться история ваших операций.Создайте первую
+              заявку, чтобы увидеть, как это работает!
             </Typography>
           </Box>
         ) : isLoading ? (

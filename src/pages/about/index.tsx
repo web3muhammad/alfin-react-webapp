@@ -1,11 +1,22 @@
 import { Box, Fade, Typography } from "@mui/material";
 import { Block, Title } from "../../components/shared";
 import { useNavigate } from "react-router-dom";
-import { useTelegramBackButton } from "../../hooks/useTelegramBackButton";
+import { useEffect } from "react";
+import { useTelegram } from "../../hooks";
 
 export function AboutPage() {
   const navigate = useNavigate();
-  useTelegramBackButton(() => navigate("/profile"));
+  const { tg } = useTelegram();
+  useEffect(() => {
+    tg.BackButton.show();
+    tg.onEvent("backButtonClicked", () => navigate(`/profile`));
+
+    return () => {
+      tg.BackButton.hide();
+      tg.offEvent("backButtonClicked", () => navigate(`/profile`));
+    };
+  }, [navigate, tg]);
+
   return (
     <Fade in>
       <Box>
