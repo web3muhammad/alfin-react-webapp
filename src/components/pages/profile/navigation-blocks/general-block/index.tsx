@@ -143,7 +143,9 @@ export function GeneralNavigationBlock() {
 
         <ListItem
           onClick={() =>
-            Telegram.WebApp.openLink("https://senja.io/p/alfinex/r/P0w5ff")
+            Telegram.WebApp.openLink(
+              "https://widget.senja.io/widget/9ddf2097-0044-4319-bfb5-6a553c879dac"
+            )
           }
           sx={{
             paddingTop: "0",
