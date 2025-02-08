@@ -52,7 +52,6 @@ function MenuComponent({
 }: MenuComponentProps) {
   const navigate = useNavigate();
   const isDark = Telegram.WebApp.colorScheme === "dark";
-  console.log(items);
 
   return (
     <Menu
