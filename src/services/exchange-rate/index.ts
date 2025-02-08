@@ -5,6 +5,7 @@ export interface FetchExchangeRateResponse {
   rate: number;
   sell_min_amount: number;
   buy_min_amount: number;
+  show_rate: number;
 }
 
 export async function fetchExchangeRate({

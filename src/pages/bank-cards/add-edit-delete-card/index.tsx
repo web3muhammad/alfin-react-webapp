@@ -33,7 +33,7 @@ type AddCardFormData = {
   ownerName: string;
   cardCurrency: string;
   cardNumber: string;
-  trc_wallet: string;
+  trc_20: string;
   iban: string;
 };
 
@@ -83,7 +83,7 @@ export function AddCardForm() {
       ownerName: state.ownerName || "",
       cardCurrency: state.currency || "",
       cardNumber: String(state.cardNumber) || "",
-      trc_wallet: "",
+      trc_20: "",
       iban: "",
     },
   });
@@ -144,20 +144,28 @@ export function AddCardForm() {
     });
 
   const onSubmit = (data: AddCardFormData) => {
-    const { cardName, cardNumber, cardCurrency, ownerName, trc_wallet, iban } =
-      data;
+    const {
+      cardName,
+      cardNumber,
+      cardCurrency,
+      ownerName,
+      trc_20,
+      iban,
+    } = data;
 
-    const submitData: CreateBankCardRequestTypes = {
-      bank_name: cardName,
-      owner_name: ownerName,
-      currency: cardCurrency,
-      card_number:
-        cardCurrency === "USDT" || cardCurrency === "TRY"
-          ? null // Set to null if not required
-          : Number(cardNumber?.replace(/\s/g, "")),
-      trc_wallet: cardCurrency === "USDT" ? trc_wallet : null,
-      iban: cardCurrency === "TRY" ? iban : null,
-    };
+    const submitData: CreateBankCardRequestTypes = JSON.parse(
+      JSON.stringify({
+        account_name: cardName,
+        owner_name: ownerName,
+        currency: cardCurrency,
+        card_number:
+          cardCurrency === "USDT" || cardCurrency === "TRY"
+            ? undefined // Set to null if not required
+            : Number(cardNumber?.replace(/\s/g, "")),
+        trc_20: cardCurrency === "USDT" ? trc_20 : undefined,
+        iban: cardCurrency === "TRY" ? iban : undefined,
+      })
+    );
 
     if (state.formType === "create") {
       createBankCardMutation(submitData);
@@ -180,11 +188,14 @@ export function AddCardForm() {
     setSelectedCurrencyMenu(item);
     setValue("cardCurrency", item, { shouldValidate: true });
     handleMenuClose();
+    resetField("iban");
+    resetField("cardNumber");
+    resetField("trc_20");
   };
 
   const isDisabled =
     selectedCurrencyMenu === "USDT"
-      ? !isValid || !isValidTrc20Address(watch("trc_wallet"))
+      ? !isValid || !isValidTrc20Address(watch("trc_20"))
       : selectedCurrencyMenu === "TRY"
       ? !isValid || !isValidIban(watch("iban"))
       : !isValid || !isCompleteCardNumber(watch("cardNumber"));
@@ -316,7 +327,12 @@ export function AddCardForm() {
                 alignItems: "flex-end",
               }}
             >
-              <Typography>Имя на карте</Typography>
+              <Typography>
+                {selectedCurrencyMenu === "USDT" ||
+                selectedCurrencyMenu === "TRY"
+                  ? "Имя владельца"
+                  : "Имя на карте"}
+              </Typography>
               <TextField
                 placeholder="MAGOMED MAGOMEDOV"
                 sx={{
@@ -360,9 +376,9 @@ export function AddCardForm() {
                 <Typography>TRC-20</Typography>
                 <TextField
                   placeholder="Example: TPAgKfYzRdK83Qocc4gXvEVu4jPKfeuer5"
-                  {...register("trc_wallet")}
-                  error={!!errors.trc_wallet}
-                  helperText={errors.trc_wallet?.message}
+                  {...register("trc_20")}
+                  error={!!errors.trc_20}
+                  helperText={errors.trc_20?.message}
                   sx={{
                     width: "70%",
                     input: {
@@ -387,7 +403,7 @@ export function AddCardForm() {
                 <TextField
                   error={!!errors.iban}
                   helperText={errors.iban?.message}
-                  placeholder="GB82 WEST 1234 5698 7654 32"
+                  placeholder="GB82WEST12345698765432"
                   {...register("iban")}
                   sx={{
                     width: "60%",

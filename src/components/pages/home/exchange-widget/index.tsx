@@ -33,6 +33,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
   const [selectedExchangeCurrency, setSelectedExchangeCurrency] =
     useState("TRY");
   const [exchangeRate, setExchangeRate] = useState(0);
+  const [showRate, setShowRate] = useState(0);
   const [mainCurrencySellLimit, setMainCurrencySellLimit] = useState(20000);
   const [mainLimitError, setMainLimitError] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
@@ -57,8 +58,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
 
     {
       onSuccess: (data) => {
-        const { rate } = data;
+        const { rate, show_rate } = data;
         setExchangeRate(rate);
+        setShowRate(show_rate);
         setIsTyping(false);
       },
       onError(e: any) {
@@ -146,8 +148,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
         debouncedFetchRate(
           selectedMainCurrency,
           selectedExchangeCurrency,
-          ({ rate, sell_min_amount }) => {
+          ({ rate, sell_min_amount, show_rate }) => {
             setExchangeRate(rate);
+            setShowRate(show_rate);
             setMainCurrencySellLimit(sell_min_amount);
 
             const convertedValue = (Number(value) * Number(rate)).toFixed(0);
@@ -173,8 +176,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
         debouncedFetchRate(
           selectedMainCurrency,
           selectedExchangeCurrency,
-          ({ rate, buy_min_amount }) => {
+          ({ rate, buy_min_amount, show_rate }) => {
             setExchangeRate(rate);
+            setShowRate(show_rate);
             setMainCurrencySellLimit(buy_min_amount);
 
             const convertedValue = (Number(value) / Number(rate)).toFixed(0);
@@ -210,10 +214,13 @@ export const CurrencyExchangeWidget: React.FC = () => {
     fetchRate({
       sellCurrency: selectedMainCurrency,
       buyCurrency: selectedExchangeCurrency,
-    }).then((data: FetchExchangeRateResponse) => {
-      setExchangeRate(data.rate);
-      setMainCurrencySellLimit(data.sell_min_amount);
-    });
+    }).then(
+      ({ rate, show_rate, sell_min_amount }: FetchExchangeRateResponse) => {
+        setExchangeRate(rate);
+        setShowRate(show_rate);
+        setMainCurrencySellLimit(sell_min_amount);
+      }
+    );
     if (inputRef.current) inputRef.current.focus();
   };
   // Handlers for the first menu
@@ -251,8 +258,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
       sellCurrency: newMainCurrency,
       buyCurrency: newExchangeCurrency,
     }).then((data) => {
-      const { rate, sell_min_amount } = data;
+      const { rate, sell_min_amount, show_rate } = data;
       setExchangeRate(rate);
+      setShowRate(show_rate);
       setMainCurrencySellLimit(sell_min_amount);
 
       const mainAmount = Number(inputAmount1.replace(/\s/g, ""));
@@ -297,7 +305,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
               />
             )}
             <Typography>
-              {justChangedInputId === 2 && exchangeRate !== 0 && exchangeRate}
+              {justChangedInputId === 2 &&
+                showRate !== 0 &&
+                showRate.toFixed(3)}
             </Typography>
           </Box>
 
@@ -407,7 +417,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
               />
             )}
             <Typography>
-              {justChangedInputId === 1 && exchangeRate !== 0 && exchangeRate}
+              {justChangedInputId === 1 &&
+                showRate !== 0 &&
+                showRate.toFixed(3)}
             </Typography>
           </Box>
           <TextField

@@ -1,17 +1,20 @@
 export interface CreateBankCardRequestTypes {
-  bank_name: string;
+  account_name: string;
   owner_name: string;
-  card_number: number | null;
   currency: string;
-  trc_wallet: string | null;
-  iban: string | null;
+  card_number?: number;
+  trc_20?: string;
+  iban?: string;
 }
 
 export interface BankCard {
-  bank_name: string;
+  account_name: string;
   owner_name: string;
-  card_number: number;
+  card_number?: number;
+  trc_20?: string;
+  iban?: string;
   currency: string;
   id: number;
+
   user_telegram_id: number;
 }

@@ -4,9 +4,11 @@ import { BankCard as BankCardProps } from "../../../../services/bank-cards/inter
 import { useNavigate } from "react-router-dom";
 
 export function BankCard({
-  bank_name,
+  account_name,
   currency,
   card_number,
+  trc_20,
+  iban,
   owner_name,
   id,
 }: BankCardProps) {
@@ -18,7 +20,7 @@ export function BankCard({
           state: {
             formType: "edit",
             cardId: id,
-            bankName: bank_name,
+            bankName: account_name,
             currency,
             cardNumber: card_number,
             ownerName: owner_name,
@@ -35,7 +37,7 @@ export function BankCard({
           paddingInline: "16px",
         }}
       >
-        <Typography>{bank_name}</Typography>
+        <Typography>{account_name}</Typography>
         <Typography sx={{ color: "primary.main" }}>{currency}</Typography>
       </Box>
       <Divider sx={{ marginBlock: "5px" }} />
@@ -45,7 +47,11 @@ export function BankCard({
         }}
       >
         <Typography sx={{ fontSize: "18px" }}>
-          {String(card_number).replace(/(\d{4})(?=\d)/g, "$1 ")}
+          {currency === "USDT"
+            ? trc_20
+            : currency === "TRY"
+            ? iban
+            : String(card_number).replace(/(\d{4})(?=\d)/g, "$1 ")}
         </Typography>
         <Typography sx={{ fontSize: "12px", color: "rgba(140, 140, 141, 1)" }}>
           {owner_name}

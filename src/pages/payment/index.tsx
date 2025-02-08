@@ -52,6 +52,7 @@ function MenuComponent({
 }: MenuComponentProps) {
   const navigate = useNavigate();
   const isDark = Telegram.WebApp.colorScheme === "dark";
+  console.log(items);
 
   return (
     <Menu
@@ -83,11 +84,17 @@ function MenuComponent({
               onClick={() => onSelect(item)}
             >
               <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                <Typography>{item.bank_name}</Typography>
+                <Typography>{item.account_name}</Typography>
                 <Typography
                   sx={{ fontSize: "12px", color: "rgba(140, 140, 141, 1)" }}
                 >
-                  {(item.card_number % 10000).toString().padStart(4, "0")}
+                  {item.card_number
+                    ? item.card_number.toString().slice(-4)
+                    : item.trc_20
+                    ? item.trc_20.toString().slice(0, 4)
+                    : item.iban
+                    ? item.iban.toString().slice(0, 4)
+                    : "0000"}
                 </Typography>
               </Box>
             </MenuItem>
@@ -272,8 +279,8 @@ export function PaymentForm() {
       localStorage.setItem("paymentMethod", item);
       setValue("paymentMethod", item);
     } else if (menuType === "cards" && typeof item !== "string") {
-      setSelectedBankCard(item.bank_name);
-      localStorage.setItem("bankCardName", item.bank_name);
+      setSelectedBankCard(item.account_name);
+      localStorage.setItem("bankCardName", item.account_name);
       localStorage.setItem("bankCardId", JSON.stringify(item.id));
       setValue("bankCardId", item.id);
     }
@@ -304,7 +311,8 @@ export function PaymentForm() {
             {inputAmount1 + " " + selectedMainCurrency}
           </Typography>
           <Typography sx={{ opacity: ".5", fontSize: "1rem" }}>
-            = {inputAmount2 + " " + selectedExchangeCurrency} • {rate}
+            = {inputAmount2 + " " + selectedExchangeCurrency} •{" "}
+            {rate?.toFixed(2)}
           </Typography>
         </Box>
 

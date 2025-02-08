@@ -12,6 +12,7 @@ import { useEffect } from "react";
 
 export function ProfilePage() {
   const navigate = useNavigate();
+
   const { tg } = useTelegram();
   useEffect(() => {
     tg.BackButton.show();
