@@ -28,7 +28,7 @@ type FormData = {
   name: string;
   phone: string;
   paymentMethod: string;
-  bankCardId: number;
+  accountId: number | string;
   promocode: string;
   comment: string;
 };
@@ -137,7 +137,7 @@ function MenuComponent({
 const clearStorage = () => {
   localStorage.removeItem("paymentMethod");
   localStorage.removeItem("bankCardName");
-  localStorage.removeItem("bankCardId");
+  localStorage.removeItem("accountId");
   localStorage.removeItem("phoneNumber");
 };
 
@@ -210,7 +210,7 @@ export function PaymentForm() {
       name: userName || "",
       phone: localStorage.getItem("phoneNumber") || userPhone || "",
       paymentMethod: localStorage.getItem("paymentMethod") || "",
-      bankCardId: Number(localStorage.getItem("bankCardId")) || undefined,
+      accountId: Number(localStorage.getItem("accountId")) || undefined,
       promocode: "",
       comment: "",
     },
@@ -253,7 +253,7 @@ export function PaymentForm() {
       payment_method: data.paymentMethod === "Наличными" ? "CASH" : "CARD",
       status: "NEW",
       comment: data.comment,
-      bank_card_id: data.bankCardId,
+      account_id: data.accountId,
       phone_number: data.phone,
     };
 
@@ -280,8 +280,8 @@ export function PaymentForm() {
     } else if (menuType === "cards" && typeof item !== "string") {
       setSelectedBankCard(item.account_name);
       localStorage.setItem("bankCardName", item.account_name);
-      localStorage.setItem("bankCardId", JSON.stringify(item.id));
-      setValue("bankCardId", item.id);
+      localStorage.setItem("accountId", JSON.stringify(item.id));
+      setValue("accountId", item.id);
     }
     handleMenuClose();
   };

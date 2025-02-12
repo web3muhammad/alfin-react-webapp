@@ -8,7 +8,7 @@ export interface CreateOrderRequestTypes {
   comment?: string;
   status: string;
   promo_code_id?: number;
-  bank_card_id: number;
+  account_id: number | string | null;
   phone_number: string;
 }
 
@@ -24,6 +24,6 @@ export interface Order {
   id: number;
   user_telegram_id: number;
   promo_code_id: number | null;
-  bank_card_id: number | null;
+  account_id: number | string | null;
   created_at: string;
 }
