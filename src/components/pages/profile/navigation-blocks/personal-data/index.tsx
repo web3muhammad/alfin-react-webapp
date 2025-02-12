@@ -122,7 +122,7 @@ export function PersonalDataBlock() {
               sx={{ margin: 0 }}
               primary={
                 <Typography sx={{ paddingTop: "10px" }}>
-                  Банковские карты
+                  Ваши реквизиты
                 </Typography>
               }
             />

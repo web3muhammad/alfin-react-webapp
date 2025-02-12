@@ -46,7 +46,7 @@ export function BankCard({
           paddingInline: "16px",
         }}
       >
-        <Typography sx={{ fontSize: "18px" }}>
+        <Typography sx={{ fontSize: "15px" }}>
           {currency === "USDT"
             ? trc_20
             : currency === "TRY"

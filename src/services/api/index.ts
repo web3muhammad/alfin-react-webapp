@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "https://web3muhammad-alfin-exchange-bot-23b5.twc1.net/api/v1",
+  baseURL: "https://web3muhammad-alfin-exchange-bot-5d7c.twc1.net/api/v1",
 });
 
 api.interceptors.request.use(
