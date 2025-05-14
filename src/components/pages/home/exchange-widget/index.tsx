@@ -90,10 +90,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
   const isDark = Telegram.WebApp.colorScheme === "dark";
 
   const handlePaymentChange = (_: React.SyntheticEvent, newType: string) => {
-    if (
-      selectedExchangeCurrency === "USDT" ||
-      selectedMainCurrency === "USDT"
-    ) {
+    if (selectedMainCurrency === "USDT") {
       enqueueSnackbar("Операции с USDT обрабатываются только переводом", {
         variant: "warning",
       });
@@ -374,6 +371,11 @@ export const CurrencyExchangeWidget: React.FC = () => {
     setShouldRequestManager(false);
     setDiscountPercentage(0);
     setBuyAmountWithoutPercentage(0);
+
+    if (selectedExchangeCurrency === "USDT") {
+      setPaymentType("CARD");
+    }
+
     setSelectedMainCurrency(selectedExchangeCurrency);
     setSelectedExchangeCurrency(selectedMainCurrency);
 
@@ -395,7 +397,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
     newExchangeCurrency: string,
     menuTriggered: 1 | 2
   ) => {
-    if (newMainCurrency === "USDT" || newExchangeCurrency === "USDT") {
+    if (newMainCurrency === "USDT") {
       setPaymentType("CARD");
     }
     setJustChangedInputId(menuTriggered);
