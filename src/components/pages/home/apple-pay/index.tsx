@@ -22,7 +22,7 @@ export function ApplePayBlock() {
       <Box
         sx={{
           position: "relative",
-          zIndex: "9999",
+          zIndex: "99",
           display: "grid",
           placeItems: "center",
         }}

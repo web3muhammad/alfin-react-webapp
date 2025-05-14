@@ -7,8 +7,12 @@ import {
   Menu,
   MenuItem,
   Divider,
+  styled,
+  Tabs,
+  Tab,
+  TabProps,
 } from "@mui/material";
-import { SwapVertRounded } from "@mui/icons-material";
+import { BorderRight, SwapVertRounded } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { Block, Button } from "../../../shared";
 import { formatNumber } from "../../../../utils";
@@ -24,11 +28,47 @@ import {
 } from "../../../../services/exchange-rate";
 import { enqueueSnackbar } from "notistack";
 
+// Плавные Tabs для выбора способа оплаты
+const AnimatedTabs = styled(Tabs)(({ theme }) => ({
+  borderRadius: "999px",
+  backgroundColor: theme.palette.secondary.light,
+  padding: 4,
+  minHeight: "36px",
+  "& .MuiTabs-indicator": {
+    display: "flex",
+    justifyContent: "center",
+    backgroundColor: "transparent",
+    transition: "all 0.3s ease",
+  },
+}));
+
+const AnimatedTab = styled((props: TabProps) => (
+  <Tab disableRipple {...props} />
+))(({ theme }) => ({
+  textTransform: "none",
+  flex: 1,
+  color: theme.palette.text.secondary,
+  transition: "color 0.3s, background-color 0.3s",
+  minHeight: "28px",
+  borderRadius: "30px",
+  "&.Mui-selected": {
+    backgroundColor: theme.palette.mode === "dark" ? "#21303f" : "#ffffff9c",
+    color: theme.palette.mode === "dark" ? "#fff" : "#000",
+  },
+}));
+
 export const CurrencyExchangeWidget: React.FC = () => {
   const [inputAmount1, setInputAmount1] = useState("");
   const [inputAmount2, setInputAmount2] = useState("");
-  const [anchorEl1, setAnchorEl1] = useState<null | HTMLElement>(null); // For the first menu
-  const [anchorEl2, setAnchorEl2] = useState<null | HTMLElement>(null); // For the second menu
+  const [discountPercentage, setDiscountPercentage] = useState(0);
+  const [buyAmountWithoutPercentage, setBuyAmountWithoutPercentage] = useState<
+    number | undefined
+  >();
+  const [input1Error, setInput1Error] = useState("");
+  const [input2Error, setInput2Error] = useState("");
+
+  const [anchorEl1, setAnchorEl1] = useState<null | HTMLElement>(null);
+  const [anchorEl2, setAnchorEl2] = useState<null | HTMLElement>(null);
   const [selectedMainCurrency, setSelectedMainCurrency] = useState("RUB");
   const [selectedExchangeCurrency, setSelectedExchangeCurrency] =
     useState("TRY");
@@ -39,59 +79,184 @@ export const CurrencyExchangeWidget: React.FC = () => {
   const [isRotated, setIsRotated] = useState(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [justChangedInputId, setJustChangedInputId] = useState(0);
+  const [shouldRequestManager, setShouldRequestManager] =
+    useState<boolean>(false);
+  const [requestManagerError, setRequestManagerError] = useState("");
+  const [paymentType, setPaymentType] = useState<"CARD" | "CASH">("CARD");
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   const isDark = Telegram.WebApp.colorScheme === "dark";
 
-  // React Query: useMutation для получения курса обмена
+  const handlePaymentChange = (_: React.SyntheticEvent, newType: string) => {
+    if (
+      selectedExchangeCurrency === "USDT" ||
+      selectedMainCurrency === "USDT"
+    ) {
+      enqueueSnackbar("Операции с USDT обрабатываются только переводом", {
+        variant: "warning",
+      });
+      return;
+    }
+    if (newType && (newType === "CARD" || newType === "CASH")) {
+      setPaymentType(newType);
+    }
+  };
+
+  // При изменении способа оплаты пересылаем запрос с актуальным paymentType
+  useEffect(() => {
+    if (!inputAmount1 && !inputAmount2) return;
+
+    setIsTyping(true);
+    setShouldRequestManager(false);
+    setRequestManagerError("");
+    setInput1Error("");
+    setInput2Error("");
+
+    const sellAmountParam = Number(inputAmount1.replace(/\s/g, ""));
+
+    fetchRate({
+      sellCurrency: selectedMainCurrency,
+      buyCurrency: selectedExchangeCurrency,
+      sellAmount: sellAmountParam,
+    })
+      .then(
+        ({
+          rate,
+          buy_amount,
+          show_rate,
+          discount_percentage,
+          buy_amount_without_discount,
+        }) => {
+          setExchangeRate(rate);
+          if (buy_amount != null) {
+            setInputAmount2(formatNumber(String(buy_amount)));
+          }
+          setShowRate(show_rate);
+          setDiscountPercentage(discount_percentage);
+          setBuyAmountWithoutPercentage(buy_amount_without_discount);
+        }
+      )
+      .catch((e) => {
+        if (e.status === 404) {
+          setShouldRequestManager(true);
+          setRequestManagerError(e.response?.data?.detail ?? "Ошибка запроса");
+        }
+
+        if (e.status === 400) {
+          const detail = e.response?.data?.detail || "Ошибка лимита";
+          enqueueSnackbar(detail, { variant: "error" });
+          if (justChangedInputId === 1) setInputAmount2("");
+          else setInputAmount1("");
+          if (justChangedInputId === 1) setInput1Error(detail);
+          else setInput2Error(detail);
+        }
+      });
+  }, [paymentType]);
+
   const { mutateAsync: fetchRate, isLoading } = useMutation(
     async ({
       sellCurrency,
       buyCurrency,
+      sellAmount,
+      buyAmount,
     }: {
       sellCurrency: string;
       buyCurrency: string;
+      sellAmount?: number;
+      buyAmount?: number;
     }) => {
-      return fetchExchangeRate({ buyCurrency, sellCurrency });
+      return fetchExchangeRate({
+        fromCurrency: sellCurrency,
+        toCurrency: buyCurrency,
+        ...(sellAmount != null ? { sellAmount } : {}),
+        ...(buyAmount != null ? { buyAmount } : {}),
+        paymentType,
+      });
     },
-
     {
-      onSuccess: (data) => {
-        const { rate, show_rate } = data;
+      onSuccess: ({
+        rate,
+        show_rate,
+        discount_percentage,
+        buy_amount_without_discount,
+      }) => {
         setExchangeRate(rate);
         setShowRate(show_rate);
         setIsTyping(false);
+        setShouldRequestManager(false);
+        setInput1Error("");
+        setInput2Error("");
+        setDiscountPercentage(discount_percentage);
+        setBuyAmountWithoutPercentage(buy_amount_without_discount);
       },
       onError(e: any) {
-        const errorText = e.response?.data?.detail;
-        if (errorText === "Валютная пара не найдена") {
-          enqueueSnackbar(errorText, { variant: "error" });
+        const detail = e.response?.data?.detail;
+        if (e.status === 400) {
+          enqueueSnackbar(detail, { variant: "error" });
+          if (justChangedInputId === 1) {
+            setInputAmount2("");
+            setInput1Error(detail);
+          } else {
+            setInputAmount1("");
+            setInput2Error(detail);
+          }
+        } else if (
+          detail === "Валютная пара не найдена" ||
+          detail === "Not Found"
+        ) {
+          enqueueSnackbar("Валютная пара не найдена", { variant: "error" });
         }
       },
     }
   );
 
-  // Debounce для уменьшения количества запросов
+  // Debounce для уменьшения количества запросов (с учётом, какой input изменился)
   const debouncedFetchRate = useRef(
     debounce(
       async (
         sell: string,
         buy: string,
-        callback: (rate: FetchExchangeRateResponse) => void
+        field: number,
+        value: string,
+        onSuccess: (res: FetchExchangeRateResponse) => void
       ) => {
         try {
-          const rate = await fetchRate({
-            sellCurrency: sell,
-            buyCurrency: buy,
-          });
-
-          callback(rate);
-        } catch (error) {
-          console.error("Ошибка при получении курса обмена:", error);
+          let response: FetchExchangeRateResponse;
+          if (field === 1) {
+            response = await fetchRate({
+              sellCurrency: sell,
+              buyCurrency: buy,
+              sellAmount: Number(value),
+            });
+          } else {
+            response = await fetchRate({
+              sellCurrency: sell,
+              buyCurrency: buy,
+              buyAmount: Number(value),
+            });
+          }
+          onSuccess(response);
+        } catch (e: any) {
+          if (e.status === 404) {
+            setShouldRequestManager(true);
+            setRequestManagerError(
+              e.response?.data?.detail || "Ошибка запроса"
+            );
+          } else if (e.status === 400) {
+            const detail = e.response?.data?.detail;
+            enqueueSnackbar(detail, { variant: "error" });
+            if (field === 1) {
+              setInputAmount2("");
+              setInput1Error(detail);
+            } else {
+              setInputAmount1("");
+              setInput2Error(detail);
+            }
+          }
         }
       },
-      300
+      500
     )
   ).current;
 
@@ -109,7 +274,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
         (currency) => currency.symbol === selectedMainCurrency
       );
       if (defaultCurrency?.rate) {
-        setExchangeRate(defaultCurrency?.rate);
+        setExchangeRate(defaultCurrency.rate);
       }
     },
   });
@@ -135,8 +300,14 @@ export const CurrencyExchangeWidget: React.FC = () => {
   ) => {
     let value = e.target.value.replace(/\D/g, "");
     if (value.startsWith("0") && value.length > 1) value = value.substring(1);
-
+    setShouldRequestManager(false);
+    setRequestManagerError("");
     setIsTyping(true);
+    setDiscountPercentage(0);
+    setBuyAmountWithoutPercentage(0);
+    if (field === "inputAmount1") {
+      setInput1Error("");
+    } else setInput2Error("");
 
     if (value.length <= 10) {
       const formattedValue = value === "0.00" ? "0" : formatNumber(value);
@@ -148,22 +319,19 @@ export const CurrencyExchangeWidget: React.FC = () => {
         debouncedFetchRate(
           selectedMainCurrency,
           selectedExchangeCurrency,
+          1,
+          value,
           ({ rate, sell_min_amount, show_rate }) => {
             setExchangeRate(rate);
             setShowRate(show_rate);
             setMainCurrencySellLimit(sell_min_amount);
 
-            const convertedValue = (Number(value) * Number(rate)).toFixed(0);
+            const convertedValue = (Number(value) * rate).toFixed(0);
 
-            // Explicitly handle the case where value is 0 or less
             if (Number(value) <= 0 || Number(convertedValue) <= 0) {
               setMainLimitError(false);
             } else {
-              if (mainCurrencySellLimit > Number(value)) {
-                setMainLimitError(true);
-              } else {
-                setMainLimitError(false);
-              }
+              setMainLimitError(sell_min_amount > Number(value));
             }
 
             setInputAmount2(formatNumber(convertedValue));
@@ -176,22 +344,19 @@ export const CurrencyExchangeWidget: React.FC = () => {
         debouncedFetchRate(
           selectedMainCurrency,
           selectedExchangeCurrency,
+          2,
+          value,
           ({ rate, buy_min_amount, show_rate }) => {
             setExchangeRate(rate);
             setShowRate(show_rate);
             setMainCurrencySellLimit(buy_min_amount);
 
-            const convertedValue = (Number(value) / Number(rate)).toFixed(0);
+            const convertedValue = (Number(value) / rate).toFixed(0);
 
-            // Explicitly handle the case where convertedValue is 0 or less
             if (Number(convertedValue) <= 0) {
               setMainLimitError(false);
             } else {
-              if (mainCurrencySellLimit > Number(convertedValue)) {
-                setMainLimitError(true);
-              } else {
-                setMainLimitError(false);
-              }
+              setMainLimitError(buy_min_amount > Number(convertedValue));
             }
 
             setInputAmount1(formatNumber(convertedValue));
@@ -204,81 +369,82 @@ export const CurrencyExchangeWidget: React.FC = () => {
   const handleSwapClick = () => {
     setInputAmount1("");
     setInputAmount2("");
-
+    setShowRate(0);
+    setShouldRequestManager(false);
+    setDiscountPercentage(0);
+    setBuyAmountWithoutPercentage(0);
     setSelectedMainCurrency(selectedExchangeCurrency);
     setSelectedExchangeCurrency(selectedMainCurrency);
 
     setIsRotated((prev) => !prev);
     setMainLimitError(false);
 
-    fetchRate({
-      sellCurrency: selectedMainCurrency,
-      buyCurrency: selectedExchangeCurrency,
-    }).then(
-      ({ rate, show_rate, sell_min_amount }: FetchExchangeRateResponse) => {
-        setExchangeRate(rate);
-        setShowRate(show_rate);
-        setMainCurrencySellLimit(sell_min_amount);
-      }
-    );
     if (inputRef.current) inputRef.current.focus();
   };
-  // Handlers for the first menu
-  const handleMenu1Open = (e: React.MouseEvent<HTMLElement>) => {
+
+  const handleMenu1Open = (e: React.MouseEvent<HTMLElement>) =>
     setAnchorEl1(e.currentTarget);
-  };
-
-  const handleMenu1Close = () => {
-    setAnchorEl1(null);
-  };
-
-  // Handlers for the second menu
-  const handleMenu2Open = (e: React.MouseEvent<HTMLElement>) => {
+  const handleMenu1Close = () => setAnchorEl1(null);
+  const handleMenu2Open = (e: React.MouseEvent<HTMLElement>) =>
     setAnchorEl2(e.currentTarget);
-  };
-
-  const handleMenu2Close = () => {
-    setAnchorEl2(null);
-  };
+  const handleMenu2Close = () => setAnchorEl2(null);
 
   const handleCurrencyChange = (
     newMainCurrency: string,
     newExchangeCurrency: string,
     menuTriggered: 1 | 2
   ) => {
-    if (menuTriggered === 1) {
-      setJustChangedInputId(1);
-    } else {
-      setJustChangedInputId(2);
+    if (newMainCurrency === "USDT" || newExchangeCurrency === "USDT") {
+      setPaymentType("CARD");
     }
-    setMainLimitError(false);
+    setJustChangedInputId(menuTriggered);
     setSelectedMainCurrency(newMainCurrency);
     setSelectedExchangeCurrency(newExchangeCurrency);
+    setInput1Error("");
+    setInput2Error("");
+    setShouldRequestManager(false);
+
+    if (menuTriggered === 1 && !inputAmount1) return;
+    if (menuTriggered === 2 && !inputAmount2) return;
+
+    const sellAmt = Number(inputAmount1.replace(/\s/g, ""));
+
     fetchRate({
       sellCurrency: newMainCurrency,
       buyCurrency: newExchangeCurrency,
+      sellAmount: sellAmt,
     }).then((data) => {
-      const { rate, sell_min_amount, show_rate } = data;
+      const {
+        rate,
+        sell_min_amount,
+        buy_min_amount,
+        show_rate,
+        buy_amount,
+        discount_percentage,
+        buy_amount_without_discount,
+      } = data as FetchExchangeRateResponse & { buy_min_amount?: number };
+
       setExchangeRate(rate);
       setShowRate(show_rate);
-      setMainCurrencySellLimit(sell_min_amount);
+      setDiscountPercentage(discount_percentage);
+      setBuyAmountWithoutPercentage(buy_amount_without_discount);
+      setMainCurrencySellLimit(
+        menuTriggered === 1
+          ? sell_min_amount
+          : buy_min_amount ?? sell_min_amount
+      );
 
-      const mainAmount = Number(inputAmount1.replace(/\s/g, ""));
-      const convertedValue = (mainAmount * rate).toFixed(0);
-      setInputAmount2(formatNumber(convertedValue));
-      if (sell_min_amount > mainAmount) {
-        setMainLimitError(true);
+      if (menuTriggered === 1) {
+        const converted = (sellAmt! * rate).toFixed(0);
+        setInputAmount2(formatNumber(converted));
+        setMainLimitError(sell_min_amount > sellAmt!);
       } else {
-        setMainLimitError(false);
+        setInputAmount2(formatNumber(String(buy_amount)));
       }
     });
   };
 
-  useEffect(() => {
-    return () => {
-      debouncedFetchRate.cancel();
-    };
-  }, []);
+  useEffect(() => () => debouncedFetchRate.cancel(), []);
 
   return (
     <Block
@@ -307,16 +473,11 @@ export const CurrencyExchangeWidget: React.FC = () => {
             <Typography>
               {justChangedInputId === 2 &&
                 showRate !== 0 &&
-                showRate.toFixed(3)}
+                showRate.toFixed(2)}
             </Typography>
           </Box>
 
           <TextField
-            error={mainLimitError}
-            helperText={
-              mainLimitError &&
-              `Минимальная сумма обмена от ${mainCurrencySellLimit} ${selectedMainCurrency}`
-            }
             inputRef={inputRef}
             placeholder="0"
             type="tel"
@@ -342,6 +503,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
                 fontSize: "3rem",
                 fontWeight: "medium",
                 padding: "0",
+                color: input1Error ? "#FF3C14" : "unset",
               },
               "& fieldset": { border: "none" },
             }}
@@ -416,31 +578,68 @@ export const CurrencyExchangeWidget: React.FC = () => {
                 sx={{ width: "32px", height: "16px" }}
               />
             )}
-            <Typography>
+            <Typography
+              sx={{
+                color:
+                  paymentType === "CASH" &&
+                  !isLoading &&
+                  inputAmount2 !== "" &&
+                  !shouldRequestManager
+                    ? "#00CA48"
+                    : "unset",
+              }}
+            >
               {justChangedInputId === 1 &&
                 showRate !== 0 &&
-                showRate.toFixed(3)}
+                showRate.toFixed(2)}
             </Typography>
           </Box>
           <TextField
+            multiline={shouldRequestManager}
+            minRows={shouldRequestManager ? 2 : 1}
             placeholder="0"
             type="tel"
-            value={inputAmount2}
+            value={shouldRequestManager ? requestManagerError : inputAmount2}
             onChange={(e) => handleAmountChange(e as any, "inputAmount2")}
             variant="outlined"
+            disabled={shouldRequestManager}
             slotProps={{
+              input: {
+                sx: {
+                  p: 0,
+                  "& .MuiOutlinedInput-input": {
+                    paddingBlock: "5px",
+                    paddingInline: "0",
+                  },
+                  "& .MuiOutlinedInput-inputMultiline": {
+                    paddingBlock: "10px",
+                  },
+                },
+              },
               htmlInput: {
                 maxLength: 10,
-                readOnly: isDisabledSwap,
+                readOnly: isDisabledSwap || shouldRequestManager,
+                style: {
+                  whiteSpace: shouldRequestManager ? "pre-wrap" : "nowrap",
+                  wordBreak: shouldRequestManager ? "break-word" : "normal",
+                },
               },
             }}
             sx={{
               width: "100%",
+              padding: "0 !important",
               input: {
                 border: "none",
-                fontSize: "3rem",
+                fontSize: !shouldRequestManager ? "3rem" : "12px",
+                minHeight: "50px",
                 fontWeight: "medium",
-                padding: "0",
+                padding: "0 !important",
+                color:
+                  paymentType === "CASH" && !isLoading && inputAmount2 !== ""
+                    ? "#00CA48"
+                    : input2Error
+                    ? "#FF3C14"
+                    : "unset",
               },
               "& fieldset": { border: "none" },
             }}
@@ -467,11 +666,49 @@ export const CurrencyExchangeWidget: React.FC = () => {
         </Box>
       </Box>
 
+      <AnimatedTabs
+        value={paymentType}
+        onChange={handlePaymentChange}
+        variant="fullWidth"
+        TabIndicatorProps={{ children: <span /> }}
+      >
+        <AnimatedTab
+          value="CASH"
+          label={
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography sx={{ color: "inherit" }}>Наличными</Typography>
+              <Box
+                sx={{
+                  padding: "2px 4px",
+                  backgroundColor: "#00CA481A",
+                  borderRadius: "4px",
+                }}
+              >
+                <Typography
+                  sx={{ fontSize: "11px", fontWeight: 600, color: "#00CA48" }}
+                >
+                  +1.6%
+                </Typography>
+              </Box>
+            </Box>
+          }
+        />
+        <AnimatedTab label="Переводом" value="CARD" />
+      </AnimatedTabs>
+
       {/* Action button */}
       <Button
         sx={{ marginTop: ".5rem" }}
-        disabled={isDisabled}
+        disabled={!shouldRequestManager ? isDisabled : false}
         onClick={() => {
+          if (shouldRequestManager) {
+            Telegram.WebApp.openTelegramLink(
+              `https://t.me/alfin_manager?text=Здравствуйте! Хочу обменять ${
+                formatNumber(inputAmount1) + " " + selectedMainCurrency
+              } на ${selectedExchangeCurrency} наличной оплатой.`
+            );
+            return;
+          }
           navigate("/payment", {
             state: {
               selectedMainCurrency,
@@ -479,11 +716,14 @@ export const CurrencyExchangeWidget: React.FC = () => {
               inputAmount1,
               inputAmount2,
               exchangeRate,
+              paymentType,
+              buyAmountWithoutPercentage,
+              discountPercentage,
             },
           });
         }}
       >
-        Обменять
+        {shouldRequestManager ? "Написать менеджеру" : "Обменять"}
       </Button>
 
       {/* Currency Selection Menu (First Input)*/}
