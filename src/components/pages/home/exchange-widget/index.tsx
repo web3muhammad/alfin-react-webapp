@@ -47,6 +47,7 @@ const AnimatedTab = styled((props: TabProps) => (
 ))(({ theme }) => ({
   textTransform: "none",
   flex: 1,
+  padding: "8px 12px !important",
   color: theme.palette.text.secondary,
   transition: "color 0.3s, background-color 0.3s",
   minHeight: "28px",
