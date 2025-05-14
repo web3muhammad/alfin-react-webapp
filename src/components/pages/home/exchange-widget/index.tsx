@@ -638,7 +638,10 @@ export const CurrencyExchangeWidget: React.FC = () => {
                 fontWeight: "medium",
                 padding: "0 !important",
                 color:
-                  paymentType === "CASH" && !isLoading && inputAmount2 !== ""
+                  paymentType === "CASH" &&
+                  !isLoading &&
+                  inputAmount2 !== "" &&
+                  !input2Error
                     ? "#00CA48"
                     : input2Error
                     ? "#FF3C14"
