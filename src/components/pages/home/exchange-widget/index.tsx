@@ -33,6 +33,7 @@ const AnimatedTabs = styled(Tabs)(({ theme }) => ({
   borderRadius: "999px",
   backgroundColor: theme.palette.secondary.light,
   padding: 4,
+  marginBottom: "6px",
   minHeight: "36px",
   "& .MuiTabs-indicator": {
     display: "flex",
@@ -617,6 +618,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
                   "& .MuiOutlinedInput-inputMultiline": {
                     paddingBlock: "10px",
                   },
+                  fontSize: shouldRequestManager ? "14px" : "unset",
                 },
               },
               htmlInput: {
