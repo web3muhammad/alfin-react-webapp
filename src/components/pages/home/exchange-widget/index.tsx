@@ -589,7 +589,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
                   inputAmount2 !== "" &&
                   !shouldRequestManager
                     ? "#00CA48"
-                    : "unset",
+                    : "text.primary",
               }}
             >
               {justChangedInputId === 1 &&
