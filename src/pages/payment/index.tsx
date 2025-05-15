@@ -13,7 +13,7 @@ import {
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Block, Button } from "../../components/shared";
-import { isPhoneComplete } from "../../utils";
+import { formatNumber, isPhoneComplete } from "../../utils";
 import { SelectArrowsIcon } from "../../icons";
 import { useMutation, useQueries, useQuery } from "react-query";
 import { CreateOrder } from "../../services/orders/create";
@@ -39,7 +39,6 @@ interface MenuComponentProps {
   onClose: () => void;
   items: string[] | BankCard[];
   onSelect: (item: string | BankCard) => void;
-  menuType: "bank" | "card";
 }
 
 function MenuComponent({
@@ -48,14 +47,13 @@ function MenuComponent({
   onClose,
   items,
   onSelect,
-  menuType,
 }: MenuComponentProps) {
   const navigate = useNavigate();
   const isDark = Telegram.WebApp.colorScheme === "dark";
 
   return (
     <Menu
-      id={`${menuType}-menu`}
+      id={`cards-menu`}
       anchorEl={anchorEl}
       open={open}
       onClose={onClose}
@@ -110,26 +108,24 @@ function MenuComponent({
         </Box>
       ))}
 
-      {menuType === "card" && (
-        <Box>
-          <Divider
-            sx={{
-              margin: "0 !important",
-              borderColor: `${isDark ? "#31475E" : "#EFEFF3"}`,
-            }}
-          />
-          <MenuItem
-            sx={{ paddingBlock: "0", marginBlock: "0" }}
-            onClick={() =>
-              navigate("/add-card", {
-                state: { formType: "create", fromPage: "payment" },
-              })
-            }
-          >
-            <Typography>Добавить реквизиты</Typography>
-          </MenuItem>
-        </Box>
-      )}
+      <Box>
+        <Divider
+          sx={{
+            margin: "0 !important",
+            borderColor: `${isDark ? "#31475E" : "#EFEFF3"}`,
+          }}
+        />
+        <MenuItem
+          sx={{ paddingBlock: "0", marginBlock: "0" }}
+          onClick={() =>
+            navigate("/add-card", {
+              state: { formType: "create", fromPage: "payment" },
+            })
+          }
+        >
+          <Typography>Добавить реквизиты</Typography>
+        </MenuItem>
+      </Box>
     </Menu>
   );
 }
@@ -161,7 +157,6 @@ export function PaymentForm() {
     };
   }, [navigate, tg]);
 
-  const [rate, setRate] = useState<number | undefined>();
   const { state } = useLocation();
   const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
 
@@ -176,27 +171,9 @@ export function PaymentForm() {
   } = state || {};
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>(
-    localStorage.getItem("paymentMethod") || ""
-  );
   const [selectedBankCard, setSelectedBankCard] = useState<string>(
     localStorage.getItem("bankCardName") || ""
   );
-  const [menuType, setMenuType] = useState<"payment-method" | "cards">(
-    "payment-method"
-  );
-
-  useEffect(() => {
-    async function getRate() {
-      const rate = await fetchExchangeRate({
-        sellCurrency: selectedMainCurrency,
-        buyCurrency: selectedExchangeCurrency,
-      });
-      setRate(rate.rate);
-    }
-
-    getRate();
-  }, []);
 
   const {
     register,
@@ -255,6 +232,7 @@ export function PaymentForm() {
       comment: data.comment,
       account_id: data.accountId,
       phone_number: data.phone,
+      buy_amount_without_discount: state.buyAmountWithoutPercentage,
     };
 
     createOrderMutation(createOrderRequestData);
@@ -264,7 +242,6 @@ export function PaymentForm() {
     event: MouseEvent<HTMLElement>,
     type: "payment-method" | "cards"
   ) => {
-    setMenuType(type);
     setAnchorEl(event.currentTarget);
   };
 
@@ -273,11 +250,7 @@ export function PaymentForm() {
   };
 
   const handleSelection = (item: string | BankCard) => {
-    if (menuType === "payment-method" && typeof item === "string") {
-      setSelectedPaymentMethod(item);
-      localStorage.setItem("paymentMethod", item);
-      setValue("paymentMethod", item);
-    } else if (menuType === "cards" && typeof item !== "string") {
+    if (typeof item !== "string") {
       setSelectedBankCard(item.account_name);
       localStorage.setItem("bankCardName", item.account_name);
       localStorage.setItem("accountId", JSON.stringify(item.id));
@@ -290,7 +263,6 @@ export function PaymentForm() {
   const isButtonDisabled = !(
     name &&
     isPhoneComplete(phone) &&
-    selectedPaymentMethod &&
     selectedBankCard
   );
 
@@ -299,20 +271,74 @@ export function PaymentForm() {
       <Box sx={{ width: "100%" }}>
         <Box
           sx={{
+            mt: 1,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
           }}
         >
           <Typography
-            sx={{ fontSize: "3rem", fontWeight: "500", textAlign: "center" }}
+            sx={{
+              fontSize: "16px",
+              fontWeight: "400",
+              opacity: ".5",
+              textAlign: "center",
+            }}
           >
-            {inputAmount1 + " " + selectedMainCurrency}
+            {inputAmount1 + " " + selectedMainCurrency + " ="}
           </Typography>
-          <Typography sx={{ opacity: ".5", fontSize: "1rem" }}>
-            = {inputAmount2 + " " + selectedExchangeCurrency} •{" "}
-            {rate?.toFixed(2)}
+          <Typography
+            sx={{ fontSize: "3rem", lineHeight: "1.15", fontWeight: "500" }}
+          >
+            {inputAmount2 + " " + selectedExchangeCurrency}
           </Typography>
+          {state.discountPercentage && (
+            <Box
+              sx={{
+                fontSize: "16px",
+                fontWeight: 400,
+                display: "flex",
+                gap: "4px",
+                mt: 0.5,
+              }}
+            >
+              <Typography
+                sx={{
+                  textDecoration: "line-through",
+                  opacity: ".5",
+                  fontSize: "inherit",
+                  fontWeight: "inherit",
+                }}
+              >
+                {formatNumber(String(state.buyAmountWithoutPercentage))}
+              </Typography>
+
+              <Typography
+                sx={{
+                  opacity: ".5",
+                  fontSize: "inherit",
+                  fontWeight: "inherit",
+                }}
+              >
+                {selectedExchangeCurrency}
+              </Typography>
+              <Box
+                sx={{
+                  padding: "2px 6px",
+                  backgroundColor: "#00CA481A",
+                  borderRadius: "5px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  ml: ".5",
+                }}
+              >
+                <Typography
+                  sx={{ color: "#00CA48", fontWeight: "500", fontSize: "12px" }}
+                >{`Ваш бонус ${state.discountPercentage}%`}</Typography>
+              </Box>
+            </Box>
+          )}
         </Box>
 
         <Block sx={{ marginTop: "1.25rem" }}>
@@ -395,27 +421,9 @@ export function PaymentForm() {
               }}
             >
               <Typography>Способ оплаты</Typography>
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Typography
-                  sx={{
-                    cursor: "pointer",
-                    color: "primary.main",
-                    paddingRight: "3px",
-                  }}
-                  onClick={(e) => handleMenuOpen(e, "payment-method")}
-                >
-                  {selectedPaymentMethod || "Выберите метод оплаты"}
-                </Typography>
-                <SelectArrowsIcon />
-              </Box>
-              <MenuComponent
-                anchorEl={anchorEl}
-                open={menuType === "payment-method" && Boolean(anchorEl)}
-                onClose={handleMenuClose}
-                items={["Перевод", "Наличными"]}
-                onSelect={handleSelection}
-                menuType="bank"
-              />
+              <Typography>
+                {state.paymentType === "CARD" ? "Переводом" : "Наличными"}
+              </Typography>
             </Box>
             <Divider sx={{ margin: "12px 0px" }} />
 
@@ -456,11 +464,10 @@ export function PaymentForm() {
                 </Box>
                 <MenuComponent
                   anchorEl={anchorEl}
-                  open={menuType === "cards" && Boolean(anchorEl)}
+                  open={Boolean(anchorEl)}
                   onClose={handleMenuClose}
                   items={filteredCardsBySelectedCurrency || []}
                   onSelect={handleSelection}
-                  menuType="card"
                 />
               </Box>
 

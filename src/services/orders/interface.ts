@@ -10,6 +10,7 @@ export interface CreateOrderRequestTypes {
   promo_code_id?: number;
   account_id: number | string | null;
   phone_number: string;
+  buy_amount_without_discount: number;
 }
 
 export interface Order {
