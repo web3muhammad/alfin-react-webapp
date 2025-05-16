@@ -227,7 +227,7 @@ export function PaymentForm() {
       sell_amount: parseFloat(inputAmount1.replace(/\s/g, "")),
       buy_amount: parseFloat(inputAmount2.replace(/\s/g, "")),
       rate: exchangeRate,
-      payment_method: data.paymentMethod === "Наличными" ? "CASH" : "CARD",
+      payment_method: state.paymentType,
       status: "NEW",
       comment: data.comment,
       account_id: data.accountId,
