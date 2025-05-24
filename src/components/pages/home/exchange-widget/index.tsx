@@ -297,6 +297,8 @@ export const CurrencyExchangeWidget: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     field: "inputAmount1" | "inputAmount2"
   ) => {
+    setMainLimitError(false);
+
     let value = e.target.value.replace(/\D/g, "");
     if (value.startsWith("0") && value.length > 1) value = value.substring(1);
     setShouldRequestManager(false);
@@ -348,17 +350,13 @@ export const CurrencyExchangeWidget: React.FC = () => {
           ({ rate, buy_min_amount, show_rate }) => {
             setExchangeRate(rate);
             setShowRate(show_rate);
+
+            const buyAmt = Number(value);
             setMainCurrencySellLimit(buy_min_amount);
+            setMainLimitError(buy_min_amount > buyAmt);
 
-            const convertedValue = (Number(value) / rate).toFixed(0);
-
-            if (Number(convertedValue) <= 0) {
-              setMainLimitError(false);
-            } else {
-              setMainLimitError(buy_min_amount > Number(convertedValue));
-            }
-
-            setInputAmount1(formatNumber(convertedValue));
+            const convertedSell = (buyAmt / rate).toFixed(0);
+            setInputAmount1(formatNumber(convertedSell));
           }
         );
       }
@@ -398,9 +396,14 @@ export const CurrencyExchangeWidget: React.FC = () => {
     newExchangeCurrency: string,
     menuTriggered: 1 | 2
   ) => {
+    // Сброс старой ошибки лимита
+    setMainLimitError(false);
+
+    // Если новая основная валюта — USDT, переключаем способ оплаты на CARD
     if (newMainCurrency === "USDT") {
       setPaymentType("CARD");
     }
+
     setJustChangedInputId(menuTriggered);
     setSelectedMainCurrency(newMainCurrency);
     setSelectedExchangeCurrency(newExchangeCurrency);
@@ -408,9 +411,11 @@ export const CurrencyExchangeWidget: React.FC = () => {
     setInput2Error("");
     setShouldRequestManager(false);
 
+    // Ранний выход, если поле, из которого будем считать, пустое
     if (menuTriggered === 1 && !inputAmount1) return;
     if (menuTriggered === 2 && !inputAmount2) return;
 
+    // Для запросов всегда используем sellAmount из первого поля
     const sellAmt = Number(inputAmount1.replace(/\s/g, ""));
 
     fetchRate({
@@ -428,10 +433,13 @@ export const CurrencyExchangeWidget: React.FC = () => {
         buy_amount_without_discount,
       } = data as FetchExchangeRateResponse & { buy_min_amount?: number };
 
+      // Общие обновления
       setExchangeRate(rate);
       setShowRate(show_rate);
       setDiscountPercentage(discount_percentage);
       setBuyAmountWithoutPercentage(buy_amount_without_discount);
+
+      // Сохраняем текущий лимит исходя из того, из какого поля вызов
       setMainCurrencySellLimit(
         menuTriggered === 1
           ? sell_min_amount
@@ -439,11 +447,18 @@ export const CurrencyExchangeWidget: React.FC = () => {
       );
 
       if (menuTriggered === 1) {
-        const converted = (sellAmt! * rate).toFixed(0);
+        // Пользователь менял первую валюту (sell)
+        const converted = (sellAmt * rate).toFixed(0);
         setInputAmount2(formatNumber(converted));
-        setMainLimitError(sell_min_amount > sellAmt!);
+        setMainLimitError(sell_min_amount > sellAmt);
       } else {
         setInputAmount2(formatNumber(String(buy_amount)));
+
+        const buyAmt = Number(inputAmount2.replace(/\s/g, ""));
+        setMainLimitError((buy_min_amount ?? 0) > buyAmt);
+
+        const convertedSell = (buyAmt / rate).toFixed(0);
+        setInputAmount1(formatNumber(convertedSell));
       }
     });
   };
