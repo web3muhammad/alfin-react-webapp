@@ -1,9 +1,7 @@
 // src/components/WelcomeNavBlock/WelcomeNavBlock.tsx
 import { Box, Typography } from "@mui/material";
 
-import { DiscountBadge, Navigation } from "./components";
-import { useTelegram } from "../../../hooks";
-import { SegmentedProgressBar, Title } from "..";
+import { Block, SegmentedProgressBar, Title } from "..";
 import { useQuery } from "react-query";
 import { getUserInfo } from "../../../services/me";
 
@@ -30,43 +28,41 @@ export function UserWelcomeBanner() {
         Добро пожаловать, {data?.first_name}
       </Title>
 
-      {volume <= 0 && (
-        <Typography
-          sx={{
-            fontSize: "13px",
-            maxWidth: "70%",
-            margin: "0 auto",
-            fontWeight: 400,
-            textAlign: "center",
-            opacity: ".5",
-          }}
-        >
-          Начните обменивать валюту, чтобы получить персональную скидку
-        </Typography>
-      )}
-
-      {volume > 0 && (
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: ".5rem",
-          }}
-        >
+      <Block sx={{ marginTop: "1rem" }}>
+        {volume <= 0 && (
           <Typography
-            sx={{ fontSize: "14px", fontWeight: 400, textAlign: "center" }}
+            sx={{
+              fontSize: "13px",
+              fontWeight: 400,
+              textAlign: "center",
+              opacity: ".5",
+            }}
           >
-            Вы обернули {volume.toLocaleString()}₽
+            Начните обменивать валюту, чтобы получить персональную скидку
           </Typography>
+        )}
 
-          {/* <DiscountBadge discount={getDiscount()} /> */}
-        </Box>
-      )}
+        {volume > 0 && (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: ".5rem",
+            }}
+          >
+            <Typography
+              sx={{ fontSize: "14px", fontWeight: 400, textAlign: "center" }}
+            >
+              Вы обернули {volume.toLocaleString()}₽
+            </Typography>
 
-      <SegmentedProgressBar value={volume} />
+            {/* <DiscountBadge discount={getDiscount()} /> */}
+          </Box>
+        )}
 
-      <Navigation />
+        <SegmentedProgressBar value={volume} />
+      </Block>
     </Box>
   );
 }

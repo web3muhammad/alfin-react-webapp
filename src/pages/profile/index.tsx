@@ -2,7 +2,7 @@ import { Box } from "@mui/material";
 import {
   GeneralNavigationBlock,
   PersonalDataBlock,
-  ReferralProgramBlock,
+  ReferralBlock,
   SocialMediaBlock,
 } from "../../components/pages/profile";
 import { UserWelcomeBanner } from "../../components/shared";
@@ -25,10 +25,16 @@ export function ProfilePage() {
   }, [navigate, tg]);
 
   return (
-    <Box>
+    <Box
+      sx={{
+        marginBlock: "100px",
+      }}
+    >
       <UserWelcomeBanner />
       <Box sx={{ display: "grid", gap: "15px", marginTop: "30px" }}>
         {/* <ReferralProgramBlock /> */}
+        <ReferralBlock />
+
         <PersonalDataBlock />
         <GeneralNavigationBlock />
         <SocialMediaBlock />

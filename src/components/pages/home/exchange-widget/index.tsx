@@ -11,6 +11,7 @@ import {
   Tabs,
   Tab,
   TabProps,
+  useTheme,
 } from "@mui/material";
 import { BorderRight, SwapVertRounded } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -54,7 +55,7 @@ const AnimatedTab = styled((props: TabProps) => (
   minHeight: "28px",
   borderRadius: "30px",
   "&.Mui-selected": {
-    backgroundColor: theme.palette.mode === "dark" ? "#21303f" : "#ffffff9c",
+    backgroundColor: theme.palette.mode === "dark" ? "#2C2C2E" : "#ffffff9c",
     color: theme.palette.mode === "dark" ? "#fff" : "#000",
   },
 }));
@@ -87,8 +88,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
   const [paymentType, setPaymentType] = useState<"CARD" | "CASH">("CARD");
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-
-  const isDark = Telegram.WebApp.colorScheme === "dark";
+  const theme = useTheme();
 
   const handlePaymentChange = (_: React.SyntheticEvent, newType: string) => {
     if (selectedMainCurrency === "USDT") {
@@ -471,6 +471,8 @@ export const CurrencyExchangeWidget: React.FC = () => {
         display: "flex",
         flexDirection: "column",
         padding: "10px 16px",
+        position: "relative",
+        zIndex: 999,
       }}
     >
       {/* Input section */}
@@ -553,7 +555,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
         {/* Divider */}
         <Divider
           sx={{
-            borderColor: `${isDark ? "#31475E" : "#EFEFF3"}`,
+            borderColor: `${theme.palette.mode === "dark" ? "#3C3C3F" : "#EFEFF3"}`,
             flex: 1,
             margin: "0 -16px",
           }}
@@ -566,7 +568,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
             position: "absolute",
             right: "16px",
             backgroundColor: "secondary.main",
-            border: `1px solid ${isDark ? "#31475E" : "#EFEFF3"}`,
+            border: `1px solid ${theme.palette.mode === "dark" ? "#3C3C3F" : "#EFEFF3"}`,
             ":hover": {
               backgroundColor: "secondary.main",
             },
@@ -840,7 +842,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
               <Divider
                 sx={{
                   margin: "0 !important",
-                  borderColor: "#EFEFF3",
+                  borderColor: `${theme.palette.mode === "dark" ? "#3C3C3F" : "#EFEFF3"}`,
                 }}
               />
             )}
@@ -949,7 +951,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
               <Divider
                 sx={{
                   margin: "0 !important",
-                  borderColor: "#EFEFF3",
+                  borderColor: `${theme.palette.mode === "dark" ? "#3C3C3F" : "#EFEFF3"}`,
                 }}
               />
             )}

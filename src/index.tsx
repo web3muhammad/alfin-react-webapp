@@ -44,6 +44,7 @@ root.render(
         padding: "6px 12px",
         fontSize: "14px",
         fontWeight: "500",
+        marginBottom: "90px"
       }}
       iconVariant={{
         success: <SuccessSnackbarIcon />,

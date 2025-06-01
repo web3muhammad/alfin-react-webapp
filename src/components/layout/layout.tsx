@@ -4,6 +4,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTelegram, useTelegramTheme } from "../../hooks";
 import { getAccessToken } from "../../services/login";
 import { useSnackbar } from "notistack";
+import { Navigation } from "./Navigation";
 
 export function RootLayout() {
   const theme = useTelegramTheme();
@@ -12,8 +13,14 @@ export function RootLayout() {
   useEffect(() => {
     tg.ready();
     tg.expand();
-    tg.setBackgroundColor("rgba(239, 239, 243, 1)");
-  }, [tg]);
+    tg.setBackgroundColor(
+      theme.palette.mode === "dark"
+        ? "rgba(28, 28, 29, 0.75)"
+        : "rgba(255, 255, 255, 0.75)"
+    );
+
+    tg.requestFullscreen(); // Only for production
+  }, [tg, theme.palette.mode]);
 
   // Scroll to top after navigating to a new page
   useEffect(() => {
@@ -43,6 +50,7 @@ export function RootLayout() {
             }}
           >
             <Outlet />
+            <Navigation />
           </Box>
         </Fade>
       </Box>

@@ -18,7 +18,7 @@ export const SegmentedProgressBar: React.FC<SegmentedProgressBarProps> = ({
   const theme = useTheme();
 
   // Defining the thresholds and colors for each segment
-  const thresholds = [1000000, 3000000, 10000000, 20000000];
+  const thresholds = [100000, 3000000, 10000000, 20000000];
   const colors = [
     "rgba(47, 188, 47, 1)", // first segment
     "rgba(235, 195, 0, 1)", // second segment
@@ -70,8 +70,8 @@ export const SegmentedProgressBar: React.FC<SegmentedProgressBarProps> = ({
       <Box
         sx={{
           display: "flex",
-          gap: "15px",
           marginTop: "4px",
+          width: "100%",
         }}
       >
         {textValues.map(({ threshold, text }, index) => (
@@ -81,6 +81,9 @@ export const SegmentedProgressBar: React.FC<SegmentedProgressBarProps> = ({
               fontSize: "10px",
               fontWeight: "500",
               opacity: getOpacity(value, threshold),
+              flex: 1,
+              textAlign: "start",
+              paddingRight: index < 3 ? "4px" : 0, // Match segment spacing
             }}
           >
             {text}

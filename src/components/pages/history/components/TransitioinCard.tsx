@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Divider, Typography } from "@mui/material";
+import { Box, Divider, Typography, useTheme } from "@mui/material";
 import { Block, Button } from "../../../shared";
 import { Order } from "../../../../services/orders/interface";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +15,7 @@ export const TransactionCard: React.FC<Order> = ({
   created_at,
 }) => {
   const navigate = useNavigate();
+  const theme = useTheme();
   return (
     <Block>
       <Box
@@ -126,7 +127,7 @@ export const TransactionCard: React.FC<Order> = ({
           sx={{
             // backgroundColor: "primary.main",
             backgroundColor: "secondary.light",
-            color: Telegram.WebApp.colorScheme === "dark" ? "#fff" : "unset",
+            color: theme.palette.mode === "dark" ? "#fff" : "unset",
             marginTop: "1rem",
           }}
         >

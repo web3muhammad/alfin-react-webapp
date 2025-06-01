@@ -5,6 +5,7 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { services } from "./data";
 import { ChevronRight } from "@mui/icons-material";
@@ -12,6 +13,8 @@ import { Block } from "../../../shared";
 import { enqueueSnackbar } from "notistack";
 
 export function AdditionalServicesCard() {
+  const theme = useTheme();
+  
   return (
     <Block>
       <Typography
@@ -76,8 +79,8 @@ export function AdditionalServicesCard() {
                 borderBottom:
                   index !== services.length - 1
                     ? `1px solid ${
-                        Telegram.WebApp.colorScheme === "dark"
-                          ? "rgba(56, 76, 96, 1)"
+                        theme.palette.mode === "dark"
+                          ? "#3C3C3F"
                           : "rgba(239, 239, 243, 1)"
                       }`
                     : "none",

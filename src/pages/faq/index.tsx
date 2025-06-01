@@ -18,7 +18,7 @@ export function FAQPage() {
   }, [navigate, tg]);
   return (
     <Fade in>
-      <Box>
+      <Box sx={{ marginBlock: "100px" }}>
         <Title>Частые вопросы</Title>
         <Box sx={{ display: "grid", gap: ".75rem" }}>
           <Block>

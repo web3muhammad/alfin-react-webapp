@@ -28,15 +28,17 @@ const darkTheme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: "rgba(46, 166, 255, 1)", // Dark theme primary color
+      main: "#3377FF", // Dark theme primary color
     },
     background: {
-      default: "rgba(24, 34, 45, 1)", // Dark theme background color
+      default: "#1C1C1D", // Dark theme background color
+      paper: "#2C2C2E", // Color for blocks/cards
     },
     secondary: {
-      main: "rgba(33, 48, 63, 1)",
-      light: "rgba(42, 61, 80, 1)",
+      main: "#2C2C2E",
+      light: "#3C3C3F",
     },
+    divider: "#3C3C3F", // Color for dividers
     text: {
       primary: "#FFFFFF", // Dark theme text color
     },

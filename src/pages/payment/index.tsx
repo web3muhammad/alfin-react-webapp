@@ -101,7 +101,7 @@ function MenuComponent({
             <Divider
               sx={{
                 margin: "0 !important",
-                borderColor: `${isDark ? "#31475E" : "#EFEFF3"}`,
+                borderColor: `${isDark ? "#3C3C3F" : "#EFEFF3"}`,
               }}
             />
           )}
@@ -112,7 +112,7 @@ function MenuComponent({
         <Divider
           sx={{
             margin: "0 !important",
-            borderColor: `${isDark ? "#31475E" : "#EFEFF3"}`,
+            borderColor: `${isDark ? "#3C3C3F" : "#EFEFF3"}`,
           }}
         />
         <MenuItem
@@ -268,7 +268,7 @@ export function PaymentForm() {
 
   return (
     <Fade in>
-      <Box sx={{ width: "100%" }}>
+      <Box sx={{ width: "100%", marginBlock: "100px" }}>
         <Box
           sx={{
             mt: 1,

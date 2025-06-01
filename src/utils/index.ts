@@ -19,3 +19,22 @@ export const isValidTrc20Address = (address: string): boolean => {
 export const isValidIban = (iban: string): boolean => {
   return /^[A-Z]{2}\d{2}[A-Z0-9]{1,30}$/.test(iban.replace(/\s+/g, ""));
 };
+
+export const getDeclinedWord = (count: number): string => {
+  const lastDigit = count % 10;
+  const lastTwoDigits = count % 100;
+
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+    return "проверок";
+  }
+
+  if (lastDigit === 1) {
+    return "проверка";
+  }
+
+  if (lastDigit >= 2 && lastDigit <= 4) {
+    return "проверки";
+  }
+
+  return "проверок";
+};

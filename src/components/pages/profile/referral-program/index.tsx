@@ -18,7 +18,7 @@ export function ReferralProgramBlock() {
             Получайте дополнительные скидки за приглашенных друзей!
           </Typography>
           <Typography
-            onClick={() => navigate("/referral-info")}
+            onClick={() => navigate("/referral")}
             sx={{
               color: "primary.main",
               fontSize: "12px",

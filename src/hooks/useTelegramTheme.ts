@@ -8,7 +8,7 @@ const isDarkTheme = () => Telegram.WebApp.colorScheme === "dark";
 // Function to set Telegram-specific theme parameters
 const setTelegramThemeParams = (isDarkMode: boolean) => {
   const headerColor = isDarkMode
-    ? "rgba(24, 34, 45, 1)"
+    ? "#1C1C1D"
     : "rgba(239, 239, 243, 1)";
 
   // Set Telegram's background color

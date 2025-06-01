@@ -4,7 +4,7 @@ import { SxProps, Theme } from "@mui/material";
 export const getSegmentStyle = (index: number, theme: Theme): SxProps => ({
   backgroundColor:
     theme.palette.mode === "dark"
-      ? theme.palette.secondary.main
+      ? "#3C3C3F"
       : "rgba(220, 220, 229, 1)", // Background color for non-filled sections
   height: "12px",
   position: "relative",
@@ -32,10 +32,10 @@ export const getFillStyle = (
 
 // Define thresholds and text values
 export const textValues = [
-  { threshold: 1000000, text: "1 000 000₽ • 5%" },
-  { threshold: 3000000, text: "3 000 000₽ • 10%" },
-  { threshold: 10000000, text: "10 000 000₽ • 15%" },
-  { threshold: 20000000, text: "20 000 000₽ • 20%" },
+  { threshold: 100000, text: "100K • 5%" },
+  { threshold: 3000000, text: "3МЛН • 10%" },
+  { threshold: 10000000, text: "10МЛН • 15%" },
+  { threshold: 20000000, text: "20МЛН • 20%" },
 ];
 
 // Helper function to determine opacity

@@ -28,7 +28,7 @@ export function BankCardsPage() {
 
   return (
     <Fade in>
-      <Box sx={{ width: "100%" }}>
+      <Box sx={{ width: "100%", marginBlock: "100px" }}>
         <Title>Ваши реквизиты</Title>
         {isLoading ? (
           <Box
@@ -44,7 +44,7 @@ export function BankCardsPage() {
         ) : allBankCards?.length === 0 ? (
           <Box
             sx={{
-              height: "70vh",
+              height: "55vh",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",

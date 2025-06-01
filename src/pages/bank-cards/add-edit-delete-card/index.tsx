@@ -9,6 +9,7 @@ import {
   Menu,
   Fade,
   CircularProgress,
+  useTheme,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -47,6 +48,8 @@ export function AddCardForm() {
   const navigate = useNavigate();
 
   const { tg } = useTelegram();
+  const theme = useTheme();
+
   useEffect(() => {
     tg.BackButton.show();
     tg.onEvent("backButtonClicked", () => {
@@ -202,7 +205,7 @@ export function AddCardForm() {
 
   return (
     <Fade in>
-      <Box sx={{ width: "100%" }}>
+      <Box sx={{ width: "100%", marginTop: "100px" }}>
         <Title>Новая карта</Title>
         <Block sx={{ marginTop: "1.25rem" }}>
           <Box component="form">
@@ -305,11 +308,7 @@ export function AddCardForm() {
                       <Divider
                         sx={{
                           margin: "0 !important",
-                          borderColor: `${
-                            Telegram.WebApp.colorScheme === "dark"
-                              ? "#31475E"
-                              : "#EFEFF3"
-                          }`,
+                          borderColor: `${theme.palette.mode === "dark" ? "#3C3C3F" : "#EFEFF3"}`,
                         }}
                       />
                     )}
@@ -475,10 +474,7 @@ export function AddCardForm() {
           <Button
             sx={{
               marginTop: ".75rem",
-              backgroundColor:
-                Telegram.WebApp.colorScheme === "dark"
-                  ? "rgba(44, 44, 46, 1)"
-                  : "#fff",
+              backgroundColor: theme.palette.mode === "dark" ? "#2C2C2E" : "#FFFFFF",
               color: "error.light",
             }}
             onClick={() => deleteBankCardMutation(state.cardId)}

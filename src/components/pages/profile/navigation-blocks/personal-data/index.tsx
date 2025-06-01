@@ -5,6 +5,7 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { Block } from "../../../../shared";
 import { ChevronRight, CreditCardRounded, Person } from "@mui/icons-material";
@@ -12,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 
 export function PersonalDataBlock() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   return (
     <Block sx={{ paddingTop: "8px", paddingBottom: "8px" }}>
@@ -56,8 +58,8 @@ export function PersonalDataBlock() {
               justifyContent: "space-between",
               flexGrow: 1,
               borderBottom: `1px solid ${
-                Telegram.WebApp.colorScheme === "dark"
-                  ? "rgba(56, 76, 96, 1)"
+                theme.palette.mode === "dark"
+                  ? "#3C3C3F"
                   : "rgba(239, 239, 243, 1)"
               }`,
               paddingBottom: "8px",

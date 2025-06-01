@@ -5,11 +5,14 @@ import { PaymentForm } from "./pages/payment";
 import { ProfilePage } from "./pages/profile";
 import { AboutPage } from "./pages/about";
 import { FAQPage } from "./pages/faq";
-import { ReferralInfoPage } from "./pages/referral-info";
+import { ReferralPage } from "./pages/referral";
 import { TransactionHistoryPage } from "./pages/history";
 import { PersonalDataForm } from "./pages/personal-data";
 import { BankCardsPage } from "./pages/bank-cards";
 import { AddCardForm } from "./pages/bank-cards/add-edit-delete-card";
+import { AmlPage } from "./pages/aml";
+import { WithdrawlPage } from "./pages/referral/withdrawl";
+import { AmlResultPage } from "./pages/aml/aml-result";
 
 function App() {
   const router = createBrowserRouter([
@@ -26,8 +29,11 @@ function App() {
         { path: "/add-card", element: <AddCardForm /> },
         { path: "/about", element: <AboutPage /> },
         { path: "/faq", element: <FAQPage /> },
-        { path: "/referral-info", element: <ReferralInfoPage /> },
-      ],
+        { path: "/referral", element: <ReferralPage /> },
+        { path: "/aml", element: <AmlPage /> },
+        { path: "/withdrawl", element: <WithdrawlPage /> },
+        { path: "/aml-result", element: <AmlResultPage /> },
+      ],  
     },
   ]);
   return <RouterProvider router={router}></RouterProvider>;
