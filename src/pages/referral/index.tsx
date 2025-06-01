@@ -37,7 +37,9 @@ export function ReferralPage() {
   }, [navigate, tg]);
 
   const handleInviteFriend = () => {
-    tg.openTelegramLink(referralStats?.referral_link ?? "");
+    const referralLink = referralStats?.referral_link ?? "";
+    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=Присоединяйся к Alfin!`;
+    tg.openTelegramLink(shareUrl);
   };
 
   const handleWithdrawFunds = () => {
