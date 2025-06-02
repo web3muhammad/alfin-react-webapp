@@ -74,7 +74,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
   const [anchorEl2, setAnchorEl2] = useState<null | HTMLElement>(null);
   const [selectedMainCurrency, setSelectedMainCurrency] = useState("RUB");
   const [selectedExchangeCurrency, setSelectedExchangeCurrency] =
-    useState("TRY");
+    useState("USDT");
   const [exchangeRate, setExchangeRate] = useState(0);
   const [showRate, setShowRate] = useState(0);
   const [mainCurrencySellLimit, setMainCurrencySellLimit] = useState(20000);
