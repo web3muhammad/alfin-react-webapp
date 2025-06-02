@@ -54,6 +54,7 @@ export function Home() {
           src="/alfin-logo.svg"
           alt="Alfin Logo"
           sx={{
+            paddingBottom: isMobile ? "0px" : "40px",
             width: "120px",
             height: "auto",
           }}
