@@ -25,16 +25,16 @@ export const getDeclinedWord = (count: number): string => {
   const lastTwoDigits = count % 100;
 
   if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
-    return "проверок";
+    return "бесплатных проверок";
   }
 
   if (lastDigit === 1) {
-    return "проверка";
+    return "бесплатная проверка";
   }
 
   if (lastDigit >= 2 && lastDigit <= 4) {
-    return "проверки";
+    return "бесплатные проверки";
   }
 
-  return "проверок";
+  return "бесплатных проверок";
 };
