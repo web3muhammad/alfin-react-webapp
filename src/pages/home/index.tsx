@@ -9,16 +9,21 @@ import {
 } from "../../components/pages/home";
 import { UserWelcomeBanner } from "../../components/shared";
 import { useTheme } from "@mui/material/styles";
+import { useTelegram } from "../../hooks";
 
 export function Home() {
   const theme = useTheme();
-
+  const { tg } = useTelegram();
+  const isMobile =
+    tg.platform !== "tdesktop" &&
+    tg.platform !== "weba" &&
+    tg.platform !== "macos";
   return (
     <Box
       sx={{
         display: "grid",
         gap: "25px",
-        marginTop: "100px",
+        marginTop: isMobile ? "100px" : "200px",
         marginBottom: "100px",
       }}
     >
