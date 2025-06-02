@@ -55,7 +55,7 @@ export function Home() {
           alt="Alfin Logo"
           sx={{
             paddingBottom: isMobile ? "0px" : "40px",
-            width: "120px",
+            width: isMobile ? "120px" : "145px",
             height: "auto",
           }}
         />
