@@ -189,7 +189,7 @@ export function AmlPage() {
             <Button
               type="submit"
               fullWidth
-              disabled={!isValid || isLoading}
+              disabled={!isValid || isLoading || amlAttemptsLeft === 0}
               sx={{
                 marginTop: "12px",
               }}

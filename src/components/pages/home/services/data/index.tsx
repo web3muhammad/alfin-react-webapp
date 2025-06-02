@@ -56,7 +56,6 @@ export const services: Service[] = [
     icon: <AddCardOutlined sx={{ width: "20px" }} color="primary" />,
     title: "Открытие иностранной карты (скоро)",
     description: "",
-    link: "https://t.me/alfin_manager?text=",
-    soon: true,
+    link: "https://t.me/alfin_manager?text=Хочу открыть иностранную карту",
   },
 ];
