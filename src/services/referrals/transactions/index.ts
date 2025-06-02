@@ -4,7 +4,7 @@ interface ReferralTransaction {
   referral_id: number;
   order_id: number;
   amount: number;
-  status: "PENDING" | "COMPLETED" | "WITHDRAWN";
+  status: "COMMISSION" | "WITHDRAWN";
   id: number;
   created_at: string;
 }

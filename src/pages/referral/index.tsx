@@ -65,7 +65,7 @@ export function ReferralPage() {
             transactions={
               referralTransactions?.map((transaction) => ({
                 type:
-                  transaction.status === "COMPLETED"
+                  transaction.status === 'COMMISSION'
                     ? "reward"
                     : "withdraw",
                 title: transaction.status,

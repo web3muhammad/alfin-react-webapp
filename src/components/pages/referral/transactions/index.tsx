@@ -85,7 +85,7 @@ export function ReferralTransactions({ transactions }: ReferralTransactionsProps
                       fontWeight: 500,
                     }}
                   >
-                    {tx.title}
+                    {tx.type === "reward" ? "Вознаграждение за друга" : "Вывод средств"}
                   </Typography>
                   <Typography
                     sx={{
