@@ -1,32 +1,25 @@
 import { useEffect, useState } from "react";
 
-export function useKeyboardOpen(threshold = 150) {
+export function useKeyboardOpen() {
   const [keyboardOpen, setKeyboardOpen] = useState(false);
-  const [initialHeight, setInitialHeight] = useState(window.innerHeight);
 
   useEffect(() => {
-    // Set initial height after a small delay to ensure proper initialization
-    const timer = setTimeout(() => {
-      setInitialHeight(window.innerHeight);
-    }, 100);
+    if (!window.visualViewport) {
+      console.warn('VisualViewport API не поддерживается в этом браузере');
+      return;
+    }
 
-    let resizeTimeout: number;
-    const handleResize = () => {
-      // Debounce the resize handler
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        const heightDiff = initialHeight - window.innerHeight;
-        setKeyboardOpen(heightDiff > threshold);
-      }, 50);
+    const handleVisualViewportResize = () => {
+      const isKeyboardOpen = window.visualViewport!.height < window.innerHeight;
+      setKeyboardOpen(isKeyboardOpen);
     };
 
-    window.addEventListener("resize", handleResize);
+    window.visualViewport?.addEventListener('resize', handleVisualViewportResize);
+    
     return () => {
-      window.removeEventListener("resize", handleResize);
-      clearTimeout(timer);
-      clearTimeout(resizeTimeout);
+      window.visualViewport?.removeEventListener('resize', handleVisualViewportResize);
     };
-  }, [threshold, initialHeight]);
+  }, []);
 
   return keyboardOpen;
 }
