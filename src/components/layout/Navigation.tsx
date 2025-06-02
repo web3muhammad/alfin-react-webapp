@@ -7,10 +7,8 @@ import {
 } from "../../icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMemo } from "react";
-import { useKeyboardOpen } from "../../hooks/useKeyboardOpen";
 
 export function Navigation() {
-  const isKeyboardOpen = useKeyboardOpen();
   const location = useLocation();
   const navigate = useNavigate();
   const theme = useTheme();
@@ -64,8 +62,6 @@ export function Navigation() {
   };
 
   const bottomPadding = isIOS ? "env(safe-area-inset-bottom)" : "0px";
-
-  if (isKeyboardOpen) return null;
 
   return (
     <>

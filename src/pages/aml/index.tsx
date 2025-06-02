@@ -17,6 +17,7 @@ import { useMutation, useQuery } from "react-query";
 import { getAmlStats } from "../../services/aml/stats";
 import { getDeclinedWord } from "../../utils";
 import { checkAddress } from "../../services/aml/check-address";
+import { useInputFocus } from "../../hooks/useInputFocus";
 
 const schema = yup.object({
   trc20_wallet: yup
@@ -73,6 +74,8 @@ export function AmlPage() {
       },
     }
   );
+
+  const { handleFocus } = useInputFocus();
 
   const onSubmit = (data: FormData) => {
     checkAddressMutation(data.trc20_wallet);
@@ -154,7 +157,10 @@ export function AmlPage() {
                 placeholder="Введите кошелек"
                 {...register("trc20_wallet")}
                 error={!!errors.trc20_wallet}
-                onFocus={() => setIsInputFocused(true)}
+                onFocus={(e) => {
+                  setIsInputFocused(true);
+                  handleFocus(e);
+                }}
                 onBlur={() => setIsInputFocused(false)}
                 sx={{
                   width: "60%",
