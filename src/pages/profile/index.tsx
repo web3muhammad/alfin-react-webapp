@@ -28,6 +28,7 @@ export function ProfilePage() {
     <Box
       sx={{
         marginBlock: "100px",
+        width: "100%",
       }}
     >
       <UserWelcomeBanner />
