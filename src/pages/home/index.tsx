@@ -18,7 +18,7 @@ export function Home() {
       sx={{
         display: "grid",
         gap: "25px",
-        marginTop: "100px",
+        marginTop: "200px",
         marginBottom: "100px",
       }}
     >

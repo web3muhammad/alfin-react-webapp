@@ -54,7 +54,7 @@ export function RootLayout() {
               width: "100%",
               padding: "15px 22px",
               margin: "0 auto",
-              paddingTop: isMobile ? "100px" : 0,
+              paddingTop: isMobile ? "100px" : '20px',
             }}
           >
             <Outlet />
