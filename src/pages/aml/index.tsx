@@ -17,7 +17,7 @@ import { useMutation, useQuery } from "react-query";
 import { getAmlStats } from "../../services/aml/stats";
 import { getDeclinedWord } from "../../utils";
 import { checkAddress } from "../../services/aml/check-address";
-import { useInputFocus } from "../../hooks/useInputFocus";
+import { useNavigation } from "../../contexts/NavigationContext";
 
 const schema = yup.object({
   trc20_wallet: yup
@@ -32,6 +32,7 @@ type FormData = {
 
 export function AmlPage() {
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const { setIsNavigationVisible } = useNavigation();
 
   const navigate = useNavigate();
   const { tg } = useTelegram();
@@ -75,8 +76,6 @@ export function AmlPage() {
     }
   );
 
-  const { handleFocus } = useInputFocus();
-
   const onSubmit = (data: FormData) => {
     checkAddressMutation(data.trc20_wallet);
   };
@@ -91,6 +90,10 @@ export function AmlPage() {
     };
   }, [navigate, tg]);
 
+  useEffect(() => {
+    setIsNavigationVisible(!isInputFocused);
+  }, [isInputFocused, setIsNavigationVisible]);
+
   return (
     <Fade in>
       <Box
@@ -100,7 +103,7 @@ export function AmlPage() {
           alignItems: "center",
           position: "relative",
           paddingTop: "20%",
-          paddingBottom: isInputFocused ? "300px" : "0",
+          paddingBottom: "0",
         }}
       >
         <Box
@@ -157,10 +160,7 @@ export function AmlPage() {
                 placeholder="Введите кошелек"
                 {...register("trc20_wallet")}
                 error={!!errors.trc20_wallet}
-                onFocus={(e) => {
-                  setIsInputFocused(true);
-                  handleFocus(e);
-                }}
+                onFocus={() => setIsInputFocused(true)}
                 onBlur={() => setIsInputFocused(false)}
                 sx={{
                   width: "60%",

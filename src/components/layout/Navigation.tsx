@@ -7,12 +7,14 @@ import {
 } from "../../icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMemo } from "react";
+import { useNavigation } from "../../contexts/NavigationContext";
 
 export function Navigation() {
   const location = useLocation();
   const navigate = useNavigate();
   const theme = useTheme();
   const isIOS = Telegram.WebApp.platform === "ios";
+  const { isNavigationVisible } = useNavigation();
 
   const { isHome, isHistory, isProfile } = useMemo(
     () => ({
@@ -76,6 +78,8 @@ export function Navigation() {
           height: `calc(90px + ${bottomPadding})`,
           backdropFilter: "blur(10px)",
           WebkitBackdropFilter: "blur(10px)",
+          transform: isNavigationVisible ? "translateY(0)" : "translateY(100%)",
+          transition: "transform 0.3s ease-in-out",
         }}
       />
       {/* Background layer */}
@@ -95,6 +99,8 @@ export function Navigation() {
           borderTop: `1px solid ${
             theme.palette.mode === "dark" ? "#3C3C3F" : "rgba(0, 0, 0, 0.1)"
           }`,
+          transform: isNavigationVisible ? "translateY(0)" : "translateY(100%)",
+          transition: "transform 0.3s ease-in-out",
         }}
       />
       {/* Content layer */}
@@ -114,6 +120,8 @@ export function Navigation() {
           pb: isIOS ? `calc(24px + ${bottomPadding})` : "16px",
           pt: 3,
           background: "transparent",
+          transform: isNavigationVisible ? "translateY(0)" : "translateY(100%)",
+          transition: "transform 0.3s ease-in-out",
         }}
       >
         {navLinks.map((link) => (
