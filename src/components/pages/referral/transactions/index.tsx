@@ -14,6 +14,15 @@ interface ReferralTransactionsProps {
   transactions: Transaction[];
 }
 
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  }).replace(/\./g, '.');
+};
+
 export function ReferralTransactions({ transactions }: ReferralTransactionsProps) {
   const theme = useTheme();
 
@@ -84,7 +93,7 @@ export function ReferralTransactions({ transactions }: ReferralTransactionsProps
                       opacity: 0.5,
                     }}
                   >
-                    {tx.date}
+                    {formatDate(tx.date)}
                   </Typography>
                 </Box>
 
