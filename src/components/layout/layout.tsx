@@ -9,6 +9,7 @@ import { Navigation } from "./Navigation";
 export function RootLayout() {
   const theme = useTelegramTheme();
   const { tg } = useTelegram();
+  const isMobile = tg.platform !== 'tdesktop' && tg.platform !== 'weba';
 
   useEffect(() => {
     tg.ready();
@@ -19,8 +20,11 @@ export function RootLayout() {
         : "rgba(255, 255, 255, 0.75)"
     );
 
-    tg.requestFullscreen(); // Only for production
-  }, [tg, theme.palette.mode]);
+    // Request fullscreen only on mobile devices
+    if (isMobile) {
+      tg.requestFullscreen();
+    }
+  }, [tg, theme.palette.mode, isMobile]);
 
   // Scroll to top after navigating to a new page
   useEffect(() => {
@@ -47,6 +51,7 @@ export function RootLayout() {
               width: "100%",
               padding: "15px 22px",
               margin: "0 auto",
+              paddingTop: isMobile ? "100px" : 0,
             }}
           >
             <Outlet />

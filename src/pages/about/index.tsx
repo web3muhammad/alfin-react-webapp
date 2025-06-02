@@ -19,7 +19,7 @@ export function AboutPage() {
 
   return (
     <Fade in>
-      <Box sx={{ marginBlock: "100px" }}>
+      <Box sx={{ marginBottom: "100px", width: "100%" }}>
         <Title>О нас</Title>
         <Block sx={{ display: "grid", rowGap: "10px" }}>
           <Typography>

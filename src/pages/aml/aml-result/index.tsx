@@ -42,7 +42,7 @@ export function AmlResultPage() {
 
   return (
     <Fade in timeout={800}>
-      <Box sx={{ marginBlock: "100px" }}>
+      <Box sx={{ width: "100%" }}>
         <Title>Результат AML-проверки</Title>
 
         {/* Прогресс бар */}

@@ -27,7 +27,7 @@ export function ProfilePage() {
   return (
     <Box
       sx={{
-        marginBlock: "100px",
+        marginBottom: "100px",
         width: "100%",
       }}
     >

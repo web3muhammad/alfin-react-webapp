@@ -72,7 +72,8 @@ export function WithdrawlPage() {
   }, [navigate, tg]);
 
   const amount = watch("amount");
-  const isDisabled = amount === "" || watch("wallet") === "" || Number(amount) > balance;
+  const isDisabled =
+    amount === "" || watch("wallet") === "" || Number(amount) > balance;
 
   useEffect(() => {
     const numAmount = Number(amount);
@@ -85,7 +86,7 @@ export function WithdrawlPage() {
 
   return (
     <Fade in>
-      <Box sx={{ width: "100%", marginTop: "100px" }}>
+      <Box sx={{ width: "100%" }}>
         <Title>Вывод средств</Title>
         <Block>
           <Box component="form">
@@ -115,9 +116,10 @@ export function WithdrawlPage() {
                     const numValue = Number(value);
                     if (isNaN(numValue)) return "Введите корректное число";
                     if (numValue <= 0) return "Сумма должна быть больше 0";
-                    if (numValue > balance) return `Максимальная сумма: ${balance} ₽`;
+                    if (numValue > balance)
+                      return `Максимальная сумма: ${balance} ₽`;
                     return true;
-                  }
+                  },
                 })}
                 error={!!errors.amount}
                 helperText={errors.amount?.message}

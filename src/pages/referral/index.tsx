@@ -48,7 +48,7 @@ export function ReferralPage() {
 
   return (
     <Fade in>
-      <Box sx={{ marginBlock: "100px" }}>
+      <Box sx={{ marginBottom: "100px" }}>
         <Title>Реферальная программа</Title>
         <ReferralStats
           invitedFriends={referralStats?.referrals_count ?? 0}

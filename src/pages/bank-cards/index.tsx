@@ -28,7 +28,7 @@ export function BankCardsPage() {
 
   return (
     <Fade in>
-      <Box sx={{ width: "100%", marginBlock: "100px" }}>
+      <Box sx={{ width: "100%", marginBottom: "100px" }}>
         <Title>Ваши реквизиты</Title>
         {isLoading ? (
           <Box

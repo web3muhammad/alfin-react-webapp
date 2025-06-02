@@ -99,7 +99,7 @@ export function PersonalDataForm() {
 
   return (
     <Fade in>
-      <Box sx={{ width: "100%", marginBlock: "100px" }}>
+      <Box sx={{ width: "100%", marginBottom: "100px" }}>
         <Title>Личные данные</Title>
 
         <Block>
@@ -214,7 +214,7 @@ export function PersonalDataForm() {
             "Сохранить изменения"
           )}
         </Button>
-      </Box>
+      </Box>  
     </Fade>
   );
 }
