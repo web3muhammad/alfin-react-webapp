@@ -43,7 +43,7 @@ export function ReferralPage() {
   };
 
   const handleWithdrawFunds = () => {
-    navigate("/withdrawl");
+    navigate("/withdrawl", { state: { balance: referralStats?.referral_balance ?? 0 } });
   };
 
   return (

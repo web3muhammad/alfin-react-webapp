@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { Block, Button, Title } from "../../../components/shared";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTelegram } from "../../../hooks";
 import { useMutation } from "react-query";
 import { withdrawMoney } from "../../../services/withdraw";
@@ -20,9 +20,15 @@ interface WithdrawFormData {
   wallet: string;
 }
 
+interface LocationState {
+  balance: number;
+}
+
 export function WithdrawlPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { tg } = useTelegram();
+  const { balance } = (location.state as LocationState) || { balance: 0 };
 
   const {
     watch,
@@ -65,7 +71,17 @@ export function WithdrawlPage() {
     };
   }, [navigate, tg]);
 
-  const isDisabled = watch("amount") === "" || watch("wallet") === "";
+  const amount = watch("amount");
+  const isDisabled = amount === "" || watch("wallet") === "" || Number(amount) > balance;
+
+  useEffect(() => {
+    const numAmount = Number(amount);
+    if (!isNaN(numAmount) && numAmount > balance) {
+      enqueueSnackbar(`Сумма превышает доступный баланс: ${balance} ₽`, {
+        variant: "warning",
+      });
+    }
+  }, [amount, balance]);
 
   return (
     <Fade in>
@@ -95,6 +111,13 @@ export function WithdrawlPage() {
                 }}
                 {...register("amount", {
                   required: "Обязательно для ввода",
+                  validate: (value) => {
+                    const numValue = Number(value);
+                    if (isNaN(numValue)) return "Введите корректное число";
+                    if (numValue <= 0) return "Сумма должна быть больше 0";
+                    if (numValue > balance) return `Максимальная сумма: ${balance} ₽`;
+                    return true;
+                  }
                 })}
                 error={!!errors.amount}
                 helperText={errors.amount?.message}
