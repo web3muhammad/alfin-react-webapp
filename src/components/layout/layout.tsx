@@ -9,7 +9,10 @@ import { Navigation } from "./Navigation";
 export function RootLayout() {
   const theme = useTelegramTheme();
   const { tg } = useTelegram();
-  const isMobile = tg.platform !== 'tdesktop' && tg.platform !== 'weba';
+  const isMobile =
+    tg.platform !== "tdesktop" &&
+    tg.platform !== "weba" &&
+    tg.platform !== "macos";
 
   useEffect(() => {
     tg.ready();
