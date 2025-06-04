@@ -38,10 +38,10 @@ export function ReferralPage() {
 
   const handleInviteFriend = () => {
     const referralLink = referralStats?.referral_link ?? "";
-    const referralText = `Присоединяйся к Alfin — это проверенный бот, которым я сам пользуюсь для обмена USDT и перевода денег за границу. Всё быстро, удобно и без бюрократии.
+    const referralText = `Присоединяйся к Alfin — это проверенный бот, которым я сам пользуюсь для обмена USDT и перевода денег за границу. Очень выручает, особенно в путешествиях. Всё быстро, удобно и без лишней бюрократии.
 
-Я лично отправляю тебе эту ссылку — хочу, чтобы у тебя тоже был под рукой надёжный инструмент. Попробуй, тебе точно пригодится 👇`;
-    const shareUrl = `https://t.me/share/url?text=${encodeURIComponent(referralText)}`;
+Я лично отправляю тебе эту ссылку — хочу, чтобы у тебя тоже был под рукой надёжный инструмент. Попробуй, уверен, пригодится.`;
+    const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(referralText)}`;
     tg.openTelegramLink(shareUrl);
   };
 
