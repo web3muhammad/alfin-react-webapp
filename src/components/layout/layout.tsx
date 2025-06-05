@@ -26,8 +26,12 @@ export function RootLayout() {
 
     // Request fullscreen only on mobile devices
     if (isMobile) {
-      tg.requestFullscreen();
-    } // Only for production
+      try {
+        tg.requestFullscreen();
+      } catch (error) {
+        console.warn('Fullscreen request not supported:', error);
+      }
+    } 
   }, [tg, theme.palette.mode, isMobile]);
 
   // Scroll to top after navigating to a new page
