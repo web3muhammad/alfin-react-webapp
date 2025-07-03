@@ -25,6 +25,7 @@ export function TransactionHistoryPage() {
       tg.offEvent("backButtonClicked", () => navigate(`/`));
     };
   }, [navigate, tg]);
+
   const { data: orderHistoryData, isLoading } = useQuery({
     queryFn: getOrderHistory,
     queryKey: ["order-history"],

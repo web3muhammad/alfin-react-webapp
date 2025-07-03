@@ -27,4 +27,6 @@ export interface Order {
   promo_code_id: number | null;
   account_id: number | string | null;
   created_at: string;
+  buy_amount_without_discount?: number;
+  discount_percentage?: number;
 }

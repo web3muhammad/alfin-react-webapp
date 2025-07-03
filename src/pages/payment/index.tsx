@@ -1,5 +1,5 @@
 import InputMask from "react-input-mask";
-import { useState, MouseEvent, useEffect } from "react";
+import { useState, MouseEvent, useEffect, useCallback } from "react";
 import {
   Box,
   TextField,
@@ -141,21 +141,21 @@ export function PaymentForm() {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const { tg } = useTelegram();
+
+  const handleBackButton = useCallback(() => {
+    navigate(-1);
+    clearStorage();
+  }, [navigate]);
+
   useEffect(() => {
     tg.BackButton.show();
-    tg.onEvent("backButtonClicked", () => {
-      navigate(-1);
-      clearStorage();
-    });
+    tg.onEvent("backButtonClicked", handleBackButton);
 
     return () => {
+      tg.offEvent("backButtonClicked", handleBackButton);
       tg.BackButton.hide();
-      tg.offEvent("backButtonClicked", () => {
-        navigate(-1);
-        clearStorage();
-      });
     };
-  }, [navigate, tg]);
+  }, [tg, handleBackButton]);
 
   const { state } = useLocation();
   const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");

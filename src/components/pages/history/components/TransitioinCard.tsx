@@ -13,6 +13,9 @@ export const TransactionCard: React.FC<Order> = ({
   buy_currency,
   rate,
   created_at,
+  payment_method,
+  buy_amount_without_discount,
+  discount_percentage,
 }) => {
   const navigate = useNavigate();
   const theme = useTheme();
@@ -117,15 +120,18 @@ export const TransactionCard: React.FC<Order> = ({
           onClick={() =>
             navigate("/payment", {
               state: {
-                inputAmount1: buy_amount,
-                inputAmount2: sell_amount,
                 selectedMainCurrency: buy_currency,
                 selectedExchangeCurrency: sell_currency,
+                inputAmount1: sell_amount,
+                inputAmount2: buy_amount,
+                exchangeRate: rate,
+                paymentType: payment_method,
+                buyAmountWithoutPercentage: buy_amount_without_discount,
+                discountPercentage: discount_percentage,
               },
             })
           }
           sx={{
-            // backgroundColor: "primary.main",
             backgroundColor: "secondary.light",
             color: theme.palette.mode === "dark" ? "#fff" : "unset",
             marginTop: "1rem",
