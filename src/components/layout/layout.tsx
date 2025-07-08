@@ -13,7 +13,9 @@ export function RootLayout() {
   const isMobile =
     tg.platform !== "tdesktop" &&
     tg.platform !== "weba" &&
-    tg.platform !== "macos";
+    tg.platform !== "macos" &&
+    tg.platform !== "webk" &&
+    !tg.platform.startsWith("web");
 
   useEffect(() => {
     tg.ready();
@@ -29,9 +31,9 @@ export function RootLayout() {
       try {
         tg.requestFullscreen();
       } catch (error) {
-        console.warn('Fullscreen request not supported:', error);
+        console.warn("Fullscreen request not supported:", error);
       }
-    } 
+    }
   }, [tg, theme.palette.mode, isMobile]);
 
   // Scroll to top after navigating to a new page

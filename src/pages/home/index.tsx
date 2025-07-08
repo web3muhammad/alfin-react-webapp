@@ -6,6 +6,7 @@ import {
   CurrencyExchangeWidget,
   OfflineExchangeLocationsCard,
   RatesBlock,
+  ServicesPayment,
 } from "../../components/pages/home";
 import { UserWelcomeBanner } from "../../components/shared";
 import { useTheme } from "@mui/material/styles";
@@ -62,7 +63,11 @@ export function Home() {
       </Box>
       <CurrencyExchangeWidget />
       <RatesBlock />
-      <Aml />
+      <Box sx={{ display: "flex", gap: "25px" }}>
+        <ServicesPayment />
+        <Aml />
+      </Box>
+
       <ApplePayBlock />
       <AdditionalServicesCard />
       <OfflineExchangeLocationsCard />

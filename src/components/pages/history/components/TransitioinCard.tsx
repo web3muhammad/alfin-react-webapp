@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Divider, Typography, useTheme } from "@mui/material";
 import { Block, Button } from "../../../shared";
-import { Order } from "../../../../services/orders/interface";
+import { Order, OrderType } from "../../../../services/orders/interface";
 import { useNavigate } from "react-router-dom";
 
 export const TransactionCard: React.FC<Order> = ({
@@ -11,14 +11,72 @@ export const TransactionCard: React.FC<Order> = ({
   sell_currency,
   buy_amount,
   buy_currency,
-  rate,
+  exchange_rate,
   created_at,
   payment_method,
   buy_amount_without_discount,
   discount_percentage,
+  order_type,
+  service_name,
 }) => {
   const navigate = useNavigate();
   const theme = useTheme();
+
+  const getStatusDisplay = () => {
+    if (order_type === "EXCHANGE") {
+      switch (status) {
+        case "IN_PROGRESS":
+        case "NEW":
+          return { text: "В работе", color: "rgba(234, 194, 0, 1)", bgColor: "rgba(234, 194, 0, 0.1)" };
+        case "SUCCEEDED":
+          return { text: "Завершено", color: "rgba(0, 234, 0, 1)", bgColor: "rgba(0, 234, 0, 0.1)" };
+        case "CANCELLED":
+          return { text: "Отменено", color: "rgba(234, 0, 0, 1)", bgColor: "rgba(234, 0, 0, 0.1)" };
+        default:
+          return { text: "Неизвестно", color: "rgba(128, 128, 128, 1)", bgColor: "rgba(128, 128, 128, 0.1)" };
+      }
+    } else {
+      switch (status) {
+        case "PENDING":
+          return { text: "В работе", color: "rgba(234, 194, 0, 1)", bgColor: "rgba(234, 194, 0, 0.1)" };
+        case "PAID":
+        case "COMPLETED":
+          return { text: "Завершено", color: "rgba(0, 234, 0, 1)", bgColor: "rgba(0, 234, 0, 0.1)" };
+        case "CANCELLED":
+          return { text: "Отменено", color: "rgba(234, 0, 0, 1)", bgColor: "rgba(234, 0, 0, 0.1)" };
+        default:
+          return { text: "Неизвестно", color: "rgba(128, 128, 128, 1)", bgColor: "rgba(128, 128, 128, 0.1)" };
+      }
+    }
+  };
+
+  const handleRepeatTransaction = () => {
+    if (order_type === "EXCHANGE") {
+      navigate("/payment", {
+        state: {
+          selectedMainCurrency: buy_currency,
+          selectedExchangeCurrency: sell_currency,
+          inputAmount1: sell_amount,
+          inputAmount2: buy_amount,
+          exchangeRate: exchange_rate,
+          paymentType: payment_method,
+          buyAmountWithoutPercentage: buy_amount_without_discount,
+          discountPercentage: discount_percentage,
+        },
+      });
+    } else {
+      navigate("/service-payment", {
+        state: {
+          selectedService: service_name,
+          amount: buy_amount,
+          currency: buy_currency,
+        },
+      });
+    }
+  };
+
+  const statusInfo = getStatusDisplay();
+
   return (
     <Block>
       <Box
@@ -30,7 +88,7 @@ export const TransactionCard: React.FC<Order> = ({
       >
         <Box>
           <Box sx={{ display: "flex", gap: "5px" }}>
-            <Typography>Покупка</Typography>
+            <Typography>{order_type === "EXCHANGE" ? "Покупка" : "Оплата сервиса"}</Typography>
             <Typography sx={{ color: "primary.main" }} component="span">
               #{id}
             </Typography>
@@ -38,16 +96,16 @@ export const TransactionCard: React.FC<Order> = ({
           <Typography sx={{ fontSize: "10px", opacity: ".5" }}>
             {created_at}
           </Typography>
+          {order_type === "SERVICE" && (
+            <Typography sx={{ fontSize: "12px", color: "primary.main" }}>
+              {service_name}
+            </Typography>
+          )}
         </Box>
 
         <Box
           sx={{
-            background:
-              status === "IN_PROGRESS"
-                ? "rgba(234, 194, 0, 0.1)"
-                : status === "SUCCEEDED"
-                ? "rgba(0, 234, 0, 0.1)"
-                : "rgba(234, 0, 0, 0.1)",
+            background: statusInfo.bgColor,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -59,19 +117,10 @@ export const TransactionCard: React.FC<Order> = ({
             sx={{
               fontWeight: "700",
               fontSize: "12px",
-              color:
-                status === "IN_PROGRESS" || status === "NEW"
-                  ? "rgba(234, 194, 0, 1)"
-                  : status === "SUCCEEDED"
-                  ? "rgba(0, 234, 0, 1)"
-                  : "rgba(234, 0, 0, 1)",
+              color: statusInfo.color,
             }}
           >
-            {status === "IN_PROGRESS" || status === "NEW"
-              ? "В работе"
-              : status === "SUCCEEDED"
-              ? "Завершено"
-              : "Отменено"}
+            {statusInfo.text}
           </Typography>
         </Box>
       </Box>
@@ -86,10 +135,19 @@ export const TransactionCard: React.FC<Order> = ({
             alignItems: "center",
           }}
         >
-          <Typography sx={{ opacity: ".5" }}>Получили</Typography>
-          <Typography sx={{ fontSize: "18px" }}>
-            {buy_amount + " " + buy_currency}
+          <Typography sx={{ opacity: ".5" }}>
+            {order_type === "EXCHANGE" ? "Получили" : "Стоимость подписки"}
           </Typography>
+          <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <Typography sx={{ fontSize: "18px" }}>
+              {buy_amount}
+            </Typography>
+            {order_type === "SERVICE" ? (
+              <Typography sx={{ fontSize: "18px" }}>$</Typography>
+            ) : (
+              <Typography sx={{ fontSize: "18px" }}>{buy_currency}</Typography>
+            )}
+          </Box>
         </Box>
 
         <Box
@@ -100,7 +158,7 @@ export const TransactionCard: React.FC<Order> = ({
           }}
         >
           <Typography sx={{ opacity: ".5" }}>Курс</Typography>
-          <Typography>{rate}</Typography>
+          <Typography>{exchange_rate.toFixed(2)}</Typography>
         </Box>
 
         <Box
@@ -110,27 +168,17 @@ export const TransactionCard: React.FC<Order> = ({
             alignItems: "center",
           }}
         >
-          <Typography sx={{ opacity: ".5" }}>Отдали</Typography>
-          <Typography>{sell_amount + " " + sell_currency}</Typography>
+          <Typography sx={{ opacity: ".5" }}>
+            {order_type === "EXCHANGE" ? "Отдали" : "Оплатили"}
+          </Typography>
+          <Typography>{sell_amount.toFixed(2) + " " + sell_currency}</Typography>
         </Box>
       </Box>
 
-      {status === "SUCCEEDED" && (
+      {((order_type === "EXCHANGE" && status === "SUCCEEDED") ||
+        (order_type === "SERVICE" && (status === "PAID" || status === "COMPLETED"))) && (
         <Button
-          onClick={() =>
-            navigate("/payment", {
-              state: {
-                selectedMainCurrency: buy_currency,
-                selectedExchangeCurrency: sell_currency,
-                inputAmount1: sell_amount,
-                inputAmount2: buy_amount,
-                exchangeRate: rate,
-                paymentType: payment_method,
-                buyAmountWithoutPercentage: buy_amount_without_discount,
-                discountPercentage: discount_percentage,
-              },
-            })
-          }
+          onClick={handleRepeatTransaction}
           sx={{
             backgroundColor: "secondary.light",
             color: theme.palette.mode === "dark" ? "#fff" : "unset",

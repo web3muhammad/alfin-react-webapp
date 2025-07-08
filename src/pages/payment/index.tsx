@@ -233,6 +233,7 @@ export function PaymentForm() {
       account_id: data.accountId,
       phone_number: data.phone,
       buy_amount_without_discount: state.buyAmountWithoutPercentage,
+      order_type: "EXCHANGE" // Add this line
     };
 
     createOrderMutation(createOrderRequestData);

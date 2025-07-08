@@ -13,7 +13,7 @@ export function Aml() {
           alignItems: "center",
           gap: "16px",
           position: "relative",
-          maxWidth: "73%",
+          maxWidth: "100%",
           zIndex: 1,
         }}
       >
@@ -21,9 +21,18 @@ export function Aml() {
           sx={{
             display: "flex",
             flexDirection: "column",
+            width: "100%",
           }}
         >
-          <Typography sx={{ fontSize: 15, fontWeight: 500 }}>
+          <Box
+            component="img"
+            src="/aml.svg"
+            sx={{
+              maxWidth: "44px",
+              height: "auto",
+            }}
+          />
+          <Typography sx={{ fontSize: 15, fontWeight: 500, pt: 0.5 }}>
             AML-проверка
           </Typography>
           <Typography
@@ -36,8 +45,7 @@ export function Aml() {
               pb: 1.2,
             }}
           >
-            Проверьте свой кошелек на AML-статус, чтобы обеспечить законность и
-            безопасность операций
+            Проверьте кошелек на безопасность операций
           </Typography>
           <Box>
             <Button
@@ -46,13 +54,14 @@ export function Aml() {
                 bgcolor: theme.palette.mode === "dark" ? "#3C3C3F" : "#e0e0e0",
                 color: theme.palette.mode === "dark" ? "#fff" : "#000",
                 borderRadius: "40px",
-                padding: "0px 16px",
-                fontSize: "12px",
+                padding: "0px 10px",
+                fontSize: "11px",
                 fontWeight: "500",
                 width: "auto",
                 minHeight: "35px",
                 "&:hover": {
-                  bgcolor: theme.palette.mode === "dark" ? "#3C3C3F" : "#e0e0e0",
+                  bgcolor:
+                    theme.palette.mode === "dark" ? "#3C3C3F" : "#e0e0e0",
                 },
               }}
             >
@@ -61,21 +70,6 @@ export function Aml() {
           </Box>
         </Box>
       </Box>
-
-      <Box
-        component="img"
-        src="/aml-icon.png"
-        sx={{
-          position: "absolute",
-          right: 0,
-          left: "44%",
-          top: "50%",
-          transform: "translateY(-50%)",
-          maxWidth: "300px",
-          height: "auto",
-          objectFit: "cover",
-        }}
-      />
     </Block>
   );
 }

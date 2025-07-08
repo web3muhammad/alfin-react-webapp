@@ -1,3 +1,7 @@
+export type OrderType = 'EXCHANGE' | 'SERVICE';
+export type ExchangeOrderStatus = 'IN_PROGRESS' | 'SUCCEEDED' | 'NEW' | 'CANCELLED';
+export type ServiceOrderStatus = 'PENDING' | 'CANCELLED' | 'PAID' | 'COMPLETED';
+
 export interface CreateOrderRequestTypes {
   sell_currency: string;
   buy_currency: string;
@@ -11,6 +15,7 @@ export interface CreateOrderRequestTypes {
   account_id: number | string | null;
   phone_number: string;
   buy_amount_without_discount: number;
+  order_type: OrderType;
 }
 
 export interface Order {
@@ -18,10 +23,10 @@ export interface Order {
   buy_currency: string;
   sell_amount: number;
   buy_amount: number;
-  rate: number;
+  exchange_rate: number;
   payment_method: string;
   comment: string;
-  status: string;
+  status: ExchangeOrderStatus | ServiceOrderStatus;
   id: number;
   user_telegram_id: number;
   promo_code_id: number | null;
@@ -29,4 +34,6 @@ export interface Order {
   created_at: string;
   buy_amount_without_discount?: number;
   discount_percentage?: number;
+  order_type: OrderType;
+  service_name?: string; // For SERVICE type orders
 }
