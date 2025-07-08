@@ -565,9 +565,9 @@ export function ServicePaymentPage() {
                   onFocus={handlePriceFieldFocus}
                   error={!!priceError && (isPriceFieldTouched || isFormSubmitted)}
                   sx={{
-                    width: "40%",
+                    width: "49%",
                     input: {
-                      paddingBlock: "2px",
+                      paddingBlock: "0px",
                       paddingLeft: "10px",
                       textAlign: "right",
                     },
