@@ -2,10 +2,7 @@
 
 A modern Telegram Web App for seamless cryptocurrency exchange and financial services.
 
-![Hayat Crypto](public/alfin-logo.svg)
-
 ## 🚀 Version 1.3 - Latest Updates
-
 We're excited to announce our latest update that makes cryptocurrency exchange even more convenient and user-friendly!
 
 ### ✨ New Features
