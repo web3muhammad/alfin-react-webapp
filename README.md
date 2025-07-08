@@ -1,46 +1,91 @@
-# Getting Started with Create React App
+# Hayat Crypto Web App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern Telegram Web App for seamless cryptocurrency exchange and financial services.
 
-## Available Scripts
+![Hayat Crypto](public/alfin-logo.svg)
 
-In the project directory, you can run:
+## 🚀 Version 1.3 - Latest Updates
 
-### `npm start`
+We're excited to announce our latest update that makes cryptocurrency exchange even more convenient and user-friendly!
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### ✨ New Features
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+#### 📱 Full-Screen Experience
+- Enhanced UI with modern design
+- Bottom navigation for better accessibility
+- Cleaner interface for improved user experience
 
-### `npm test`
+#### 💱 Advanced Exchange Features
+- Smart calculator with real-time rates
+- Flexible payment options (cash/transfer)
+- Real-time accumulative discount display
+- Minimum transaction amount: $300
+- Extended operating hours: 9:00 - 22:00 daily
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+#### 🤝 Referral Program
+- Earn 10% commission from friends' transactions
+- Instant RUB rewards to internal balance
+- Use rewards for commission payments or withdraw
 
-### `npm run build`
+#### 🛡️ Free USDT AML Verification
+- Up to 5 wallet checks per month
+- Supports USDT on TRC-20 network
+- Enhanced security for crypto transactions
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+#### 💳 Additional Services
+- Subscription payments
+- Offline exchange services
+- Direct manager contact feature
+- Personalized support
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🛠️ Technical Stack
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- React
+- TypeScript
+- Telegram Web App SDK
+- Modern UI Components
+- Real-time API Integration
 
-### `npm run eject`
+## 🔒 Security Features
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- Built-in AML verification
+- Secure transaction processing
+- Protected user data handling
+- Real-time risk assessment
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 💼 Business Features
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+- Dynamic exchange rates
+- Accumulative discount system
+- Multi-payment options
+- Transaction history tracking
+- User profile management
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## 📱 User Interface
 
-## Learn More
+- Intuitive bottom navigation
+- Real-time calculators
+- Progress tracking
+- Transaction history
+- Profile management
+- Referral dashboard
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🌐 Supported Networks
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- USDT (TRC-20)
+- More networks coming soon
+
+## 📞 Support
+
+Available daily from 9:00 to 22:00
+- In-app manager contact
+- Quick support response
+- Professional consultation
+
+## 🔄 Regular Updates
+
+We continuously improve our service with regular updates and new features to provide the best possible experience for our users.
+
+---
+
+© 2025 Hayat Crypto. All rights reserved.
