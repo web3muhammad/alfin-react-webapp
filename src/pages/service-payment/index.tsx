@@ -419,18 +419,6 @@ export function ServicePaymentPage() {
               alignItems: "flex-end",
             }}
           >
-            <Typography>Текущий курс</Typography>
-            <Typography>{serviceRate?.show_rate}₽</Typography>
-          </Box>
-          <Divider sx={{ margin: "12px 0px" }} />
-
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-            }}
-          >
             <Typography sx={{ fontSize: 14, fontWeight: 400, width: "100%" }}>
               Итого к оплате
             </Typography>

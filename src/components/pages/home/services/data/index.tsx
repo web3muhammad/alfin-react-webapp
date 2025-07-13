@@ -24,17 +24,6 @@ export const services: Service[] = [
     link: "https://t.me/alfin_manager?text=Хочу оплатить инвойс/перевод Swift",
   },
   {
-    icon: (
-      <ReplayRounded
-        sx={{ width: "20px", transform: "rotate(30deg) scale(-1, 1)" }}
-        color="primary"
-      />
-    ),
-    title: "Оплата подписок (ChatGPT, Netflix, Skype и т.д.)",
-    description: "",
-    link: "https://t.me/alfin_manager?text=Хочу оплатить подписку на интернет сервис",
-  },
-  {
     icon: <PersonPinCircleRounded sx={{ width: "20px" }} color="primary" />,
     title: "Выдача наличных заграницей (перестановка)",
     description: "Перестановка валюты в разных странах",
