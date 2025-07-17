@@ -130,6 +130,7 @@ export function ServicePaymentPage() {
   const [priceError, setPriceError] = useState<string>("");
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [isPriceFieldTouched, setIsPriceFieldTouched] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const { data: services, isLoading } = useQuery("services", getServices);
   const { data: serviceRate } = useQuery("services-rate", getServiceRate);
@@ -240,6 +241,14 @@ export function ServicePaymentPage() {
     setIsPriceFieldTouched(true);
   };
 
+  const handleInputFocus = () => {
+    setIsInputFocused(true);
+  };
+
+  const handleInputBlur = () => {
+    setIsInputFocused(false);
+  };
+
   const clearStorage = () => {
     localStorage.removeItem("paymentMethod");
     localStorage.removeItem("bankCardName");
@@ -262,6 +271,10 @@ export function ServicePaymentPage() {
       setIsNavigationVisible(true);
     };
   }, [tg, handleBackButton, setIsNavigationVisible]);
+
+  useEffect(() => {
+    setIsNavigationVisible(!isInputFocused);
+  }, [isInputFocused, setIsNavigationVisible]);
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -314,6 +327,8 @@ export function ServicePaymentPage() {
                   placeholder="Введите название"
                   value={customServiceName}
                   onChange={(e) => setCustomServiceName(e.target.value)}
+                  onFocus={handleInputFocus}
+                  onBlur={handleInputBlur}
                   sx={{
                     width: "60%",
                     input: {
@@ -348,6 +363,8 @@ export function ServicePaymentPage() {
                   placeholder="Если есть"
                   value={paymentLink}
                   onChange={(e) => setPaymentLink(e.target.value)}
+                  onFocus={handleInputFocus}
+                  onBlur={handleInputBlur}
                   sx={{
                     width: "60%",
                     input: {
@@ -391,7 +408,11 @@ export function ServicePaymentPage() {
               placeholder="Введите сумму"
               value={subscriptionPrice}
               onChange={handlePriceChange}
-              onFocus={handlePriceFieldFocus}
+              onFocus={(e) => {
+                handlePriceFieldFocus();
+                handleInputFocus();
+              }}
+              onBlur={handleInputBlur}
               error={!!priceError && (isPriceFieldTouched || isFormSubmitted)}
               sx={{
                 width: "49%",
