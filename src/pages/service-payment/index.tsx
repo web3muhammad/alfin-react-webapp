@@ -123,7 +123,8 @@ export function ServicePaymentPage() {
   const { setIsNavigationVisible } = useNavigation();
   const { enqueueSnackbar } = useSnackbar();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedSubscription, setSelectedSubscription] = useState<Service | null>(null);
+  const [selectedSubscription, setSelectedSubscription] =
+    useState<Service | null>(null);
   const [subscriptionPrice, setSubscriptionPrice] = useState<string>("");
   const [customServiceName, setCustomServiceName] = useState<string>("");
   const [paymentLink, setPaymentLink] = useState<string>("");
@@ -138,10 +139,10 @@ export function ServicePaymentPage() {
   // Handle initial state from transaction repeat
   useEffect(() => {
     if (state?.selectedService && services) {
-      const service = services.find(s => s.name === state.selectedService);
+      const service = services.find((s) => s.name === state.selectedService);
       if (service) {
         setSelectedSubscription(service);
-        if (state.amount && state.currency === 'USDT') {
+        if (state.amount && state.currency === "USDT") {
           setSubscriptionPrice(state.amount.toString());
           setIsPriceFieldTouched(true);
           validatePrice(state.amount.toString());
@@ -199,24 +200,29 @@ export function ServicePaymentPage() {
   const { mutate: createPaymentMutation, isLoading: isCreatingPayment } =
     useMutation(createPayment, {
       onSuccess: (data) => {
-        console.log('Payment created successfully:', data);
+        console.log("Payment created successfully:", data);
         tg.close();
       },
       onError: (error) => {
-        console.error('Failed to create payment:', error);
-        enqueueSnackbar("Не удалось создать платеж", { 
-          variant: 'error',
+        console.error("Failed to create payment:", error);
+        enqueueSnackbar("Не удалось создать платеж", {
+          variant: "error",
+          anchorOrigin: { horizontal: "center", vertical: "bottom" },
         });
-      }
+      },
     });
 
   const handleSubmit = async () => {
     setIsFormSubmitted(true);
-    
+
     // Проверяем, заполнено ли название сервиса для "Другой сервис"
-    if (selectedSubscription?.name === "Другой сервис" && !customServiceName.trim()) {
-      enqueueSnackbar("Введите название сервиса", { 
-        variant: 'error',
+    if (
+      selectedSubscription?.name === "Другой сервис" &&
+      !customServiceName.trim()
+    ) {
+      enqueueSnackbar("Введите название сервиса", {
+        variant: "error",
+        anchorOrigin: { horizontal: "center", vertical: "bottom" },
       });
       return;
     }
@@ -224,9 +230,10 @@ export function ServicePaymentPage() {
     const isValid = await validatePrice(subscriptionPrice);
     if (isValid) {
       createPaymentMutation({
-        service_name: selectedSubscription?.name === "Другой сервис" 
-          ? customServiceName.trim()
-          : (selectedSubscription?.name || ""),
+        service_name:
+          selectedSubscription?.name === "Другой сервис"
+            ? customServiceName.trim()
+            : selectedSubscription?.name || "",
         amount_usd: parseFloat(subscriptionPrice),
         amount_rub: totalAmountInRubles,
         exchange_rate: serviceRate?.show_rate ?? 0,
@@ -262,7 +269,7 @@ export function ServicePaymentPage() {
   useEffect(() => {
     tg.BackButton.show();
     tg.onEvent("backButtonClicked", handleBackButton);
-    
+
     return () => {
       tg.offEvent("backButtonClicked", handleBackButton);
       tg.BackButton.hide();
