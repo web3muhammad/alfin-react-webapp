@@ -206,7 +206,6 @@ export function ServicePaymentPage() {
         console.error('Failed to create payment:', error);
         enqueueSnackbar("Не удалось создать платеж", { 
           variant: 'error',
-          anchorOrigin: { vertical: 'top', horizontal: 'center' }
         });
       }
     });
@@ -218,7 +217,6 @@ export function ServicePaymentPage() {
     if (selectedSubscription?.name === "Другой сервис" && !customServiceName.trim()) {
       enqueueSnackbar("Введите название сервиса", { 
         variant: 'error',
-        anchorOrigin: { vertical: 'top', horizontal: 'center' }
       });
       return;
     }
