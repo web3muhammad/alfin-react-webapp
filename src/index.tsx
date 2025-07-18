@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
@@ -6,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { SnackbarProvider, enqueueSnackbar } from "notistack";
 import { ErrorSnackbarIcon, SuccessSnackbarIcon } from "./icons";
 import { InfoRounded } from "@mui/icons-material";
+import { NavigationProvider, useNavigation } from "./contexts/NavigationContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,12 +26,10 @@ const queryClient = new QueryClient({
   },
 });
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
+const SnackbarWrapper = () => {
+  const { isNavigationVisible } = useNavigation();
 
-root.render(
-  <QueryClientProvider client={queryClient}>
+  return (
     <SnackbarProvider
       anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
       autoHideDuration={2500}
@@ -44,7 +42,7 @@ root.render(
         padding: "6px 12px",
         fontSize: "14px",
         fontWeight: "500",
-        marginBottom: "90px"
+        marginBottom: isNavigationVisible ? "90px" : "20px",
       }}
       iconVariant={{
         success: <SuccessSnackbarIcon />,
@@ -56,5 +54,17 @@ root.render(
     >
       <App />
     </SnackbarProvider>
+  );
+};
+
+const root = ReactDOM.createRoot(
+  document.getElementById("root") as HTMLElement
+);
+
+root.render(
+  <QueryClientProvider client={queryClient}>
+    <NavigationProvider>
+      <SnackbarWrapper />
+    </NavigationProvider>
   </QueryClientProvider>
 );
