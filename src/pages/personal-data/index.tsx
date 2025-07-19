@@ -15,7 +15,6 @@ import { editPersonalData } from "../../services/me/edit";
 import { EditPersonalDataTypes } from "../../services/me/interface";
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
-import { WhatsApp } from "@mui/icons-material";
 import { WhatsappIcon } from "../../icons";
 import { useTelegram } from "../../hooks";
 import { useEffect } from "react";

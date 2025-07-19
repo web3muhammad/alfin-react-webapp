@@ -24,6 +24,7 @@ import {
 import { Service } from "../../services/service-payment/interface";
 import { useTelegram } from "../../hooks";
 import { useNavigate, useLocation } from "react-router-dom";
+import { AxiosError } from "axios";
 
 interface MenuComponentProps {
   anchorEl: null | HTMLElement;
@@ -136,6 +137,13 @@ export function ServicePaymentPage() {
   const { data: services, isLoading } = useQuery("services", getServices);
   const { data: serviceRate } = useQuery("services-rate", getServiceRate);
 
+  const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
+  const userData = {
+    first_name: userInfo.first_name,
+    last_name: userInfo.last_name,
+    phone: userInfo.phone_number,
+  };
+
   // Handle initial state from transaction repeat
   useEffect(() => {
     if (state?.selectedService && services) {
@@ -203,11 +211,21 @@ export function ServicePaymentPage() {
         console.log("Payment created successfully:", data);
         tg.close();
       },
-      onError: (error) => {
-        console.error("Failed to create payment:", error);
-        enqueueSnackbar("Не удалось создать платеж", {
-          variant: "error",
-        });
+      onError: (error: AxiosError) => {
+        if (error.response?.status === 422) {
+          enqueueSnackbar("Пожалуйста, заполните ваш номер телефона", {
+            variant: "error",
+          });
+          navigate("/personal-data", {
+            state: {
+              from: "/service-payment",
+            },
+          });
+        } else {
+          enqueueSnackbar("Не удалось создать платеж", {
+            variant: "error",
+          });
+        }
       },
     });
 

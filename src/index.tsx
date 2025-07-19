@@ -5,7 +5,11 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { SnackbarProvider, enqueueSnackbar } from "notistack";
 import { ErrorSnackbarIcon, SuccessSnackbarIcon } from "./icons";
 import { InfoRounded } from "@mui/icons-material";
-import { NavigationProvider, useNavigation } from "./contexts/NavigationContext";
+import {
+  NavigationProvider,
+  useNavigation,
+} from "./contexts/NavigationContext";
+import { AxiosError } from "axios";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,10 +21,17 @@ const queryClient = new QueryClient({
       },
     },
     mutations: {
-      onError() {
-        enqueueSnackbar("Что-то пошло не так, попробуйте позже", {
-          variant: "error",
-        });
+      onError(error: unknown) {
+        const axiosError = error as AxiosError<{ detail: string }>;
+        if (axiosError?.response?.status === 422) {
+          enqueueSnackbar(axiosError.response.data.detail, {
+            variant: "error",
+          });
+        } else {
+          enqueueSnackbar("Что-то пошло не так, попробуйте позже", {
+            variant: "error",
+          });
+        }
       },
     },
   },
