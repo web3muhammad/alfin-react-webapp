@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const api = axios.create({
   baseURL: "https://24alfin.ru/api/v1", // Test API
-  // baseURL: "https://web3muhammad-alfin-exchange-bot-5d7c.twc1.net/api/v1",
+  // baseURL: "https://alfin-ex.ru/api/v1", // Production API
 });
 
 api.interceptors.request.use(

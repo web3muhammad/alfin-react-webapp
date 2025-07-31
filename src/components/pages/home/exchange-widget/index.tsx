@@ -28,6 +28,7 @@ import {
   FetchExchangeRateResponse,
 } from "../../../../services/exchange-rate";
 import { enqueueSnackbar } from "notistack";
+import { ScheduleInfoBlock } from "../../../shared/ScheduleInfoBlock";
 
 // Плавные Tabs для выбора способа оплаты
 const AnimatedTabs = styled(Tabs)(({ theme }) => ({
@@ -555,7 +556,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
         {/* Divider */}
         <Divider
           sx={{
-            borderColor: `${theme.palette.mode === "dark" ? "#3C3C3F" : "#EFEFF3"}`,
+            borderColor: `${
+              theme.palette.mode === "dark" ? "#3C3C3F" : "#EFEFF3"
+            }`,
             flex: 1,
             margin: "0 -16px",
           }}
@@ -568,7 +571,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
             position: "absolute",
             right: "16px",
             backgroundColor: "secondary.main",
-            border: `1px solid ${theme.palette.mode === "dark" ? "#3C3C3F" : "#EFEFF3"}`,
+            border: `1px solid ${
+              theme.palette.mode === "dark" ? "#3C3C3F" : "#EFEFF3"
+            }`,
             ":hover": {
               backgroundColor: "secondary.main",
             },
@@ -689,6 +694,10 @@ export const CurrencyExchangeWidget: React.FC = () => {
             sx={{ fontSize: "22px", color: "rgba(140, 140, 141, 1)" }}
           />
         </Box>
+      </Box>
+
+      <Box sx={{ marginBottom: "16px" }}>
+        <ScheduleInfoBlock />
       </Box>
 
       <AnimatedTabs
@@ -842,7 +851,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
               <Divider
                 sx={{
                   margin: "0 !important",
-                  borderColor: `${theme.palette.mode === "dark" ? "#3C3C3F" : "#EFEFF3"}`,
+                  borderColor: `${
+                    theme.palette.mode === "dark" ? "#3C3C3F" : "#EFEFF3"
+                  }`,
                 }}
               />
             )}
@@ -951,7 +962,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
               <Divider
                 sx={{
                   margin: "0 !important",
-                  borderColor: `${theme.palette.mode === "dark" ? "#3C3C3F" : "#EFEFF3"}`,
+                  borderColor: `${
+                    theme.palette.mode === "dark" ? "#3C3C3F" : "#EFEFF3"
+                  }`,
                 }}
               />
             )}

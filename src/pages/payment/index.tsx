@@ -23,6 +23,7 @@ import { BankCard } from "../../services/bank-cards/interface";
 import { useSnackbar } from "notistack";
 import { fetchExchangeRate } from "../../services/exchange-rate";
 import { useTelegram } from "../../hooks";
+import { ScheduleInfoBlock } from "../../components/shared/ScheduleInfoBlock";
 
 type FormData = {
   name: string;
@@ -233,7 +234,8 @@ export function PaymentForm() {
       account_id: data.accountId,
       phone_number: data.phone,
       buy_amount_without_discount: state.buyAmountWithoutPercentage,
-      order_type: "EXCHANGE" // Add this line
+      discount_percentage: state.discountPercentage,
+      order_type: "EXCHANGE",
     };
 
     createOrderMutation(createOrderRequestData);
@@ -342,7 +344,11 @@ export function PaymentForm() {
           )}
         </Box>
 
-        <Block sx={{ marginTop: "1.25rem" }}>
+        <Box sx={{ marginTop: "2rem" }}>
+          <ScheduleInfoBlock />
+        </Box>
+
+        <Block sx={{ marginTop: ".75rem" }}>
           <Box component="form">
             {/* Name Input */}
             <Box

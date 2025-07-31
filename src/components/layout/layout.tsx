@@ -1,21 +1,16 @@
 import { Box, Fade, ThemeProvider } from "@mui/material";
 import { useEffect } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { useTelegram, useTelegramTheme } from "../../hooks";
 import { getAccessToken } from "../../services/login";
-import { useSnackbar } from "notistack";
 import { Navigation } from "./Navigation";
 import { NavigationProvider } from "../../contexts/NavigationContext";
+import { LevelProgressBarBlock } from "../shared/ProgressBar/LevelProgressBarBlock";
+import { isMobileWebApp } from "../../utils";
 
 export function RootLayout() {
   const theme = useTelegramTheme();
   const { tg } = useTelegram();
-  const isMobile =
-    tg.platform !== "tdesktop" &&
-    tg.platform !== "weba" &&
-    tg.platform !== "macos" &&
-    tg.platform !== "webk" &&
-    !tg.platform.startsWith("web");
 
   useEffect(() => {
     tg.ready();
@@ -27,14 +22,14 @@ export function RootLayout() {
     );
 
     // Request fullscreen only on mobile devices
-    if (isMobile) {
+    if (isMobileWebApp) {
       try {
         tg.requestFullscreen();
       } catch (error) {
         console.warn("Fullscreen request not supported:", error);
       }
     }
-  }, [tg, theme.palette.mode, isMobile]);
+  }, [tg, theme.palette.mode, isMobileWebApp]);
 
   // Scroll to top after navigating to a new page
   useEffect(() => {
@@ -54,6 +49,7 @@ export function RootLayout() {
             background: theme.palette.background.default,
           }}
         >
+          <LevelProgressBarBlock />
           <Fade in>
             <Box
               sx={{
@@ -62,7 +58,7 @@ export function RootLayout() {
                 width: "100%",
                 padding: "15px 22px",
                 margin: "0 auto",
-                paddingTop: isMobile ? "100px" : "20px",
+                paddingTop: isMobileWebApp ? "100px" : "20px",
               }}
             >
               <Outlet />

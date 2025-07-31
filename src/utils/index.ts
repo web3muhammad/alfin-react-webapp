@@ -1,4 +1,11 @@
 // Helper function to format numbers with spaces
+export const isMobileWebApp =
+  Telegram.WebApp.platform !== "tdesktop" &&
+  Telegram.WebApp.platform !== "weba" &&
+  Telegram.WebApp.platform !== "macos" &&
+  Telegram.WebApp.platform !== "webk" &&
+  !Telegram.WebApp.platform.startsWith("web");
+
 export const formatNumber = (value: string) => {
   return value.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 };

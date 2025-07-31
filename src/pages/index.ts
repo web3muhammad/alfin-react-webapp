@@ -13,3 +13,5 @@ export * from "./referral/withdrawl";
 export * from "./home";
 export * from "./about";
 export * from "./success-payment";
+export * from "./foreign-card/choose";
+export * from "./foreign-card/apply";

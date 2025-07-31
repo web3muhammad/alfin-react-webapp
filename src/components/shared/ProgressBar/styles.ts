@@ -32,7 +32,7 @@ export const getFillStyle = (
 
 // Define thresholds and text values
 export const textValues = [
-  { threshold: 100000, text: "100K • 5%" },
+  { threshold: 1000000, text: "1МЛН • 5%" },
   { threshold: 3000000, text: "3МЛН • 10%" },
   { threshold: 10000000, text: "10МЛН • 15%" },
   { threshold: 20000000, text: "20МЛН • 20%" },

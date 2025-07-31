@@ -16,6 +16,8 @@ import {
   SuccessPaymentPage,
   TransactionHistoryPage,
   WithdrawlPage,
+  ForeignCardChoosePage,
+  ForeignCardApplyFormPage,
 } from "./pages";
 
 function App() {
@@ -39,6 +41,8 @@ function App() {
         { path: "/aml-result", element: <AmlResultPage /> },
         { path: "/service-payment", element: <ServicePaymentPage /> },
         { path: "/success-payment", element: <SuccessPaymentPage /> },
+        { path: "/foreign-card", element: <ForeignCardChoosePage /> },
+        { path: "/foreign-card/apply", element: <ForeignCardApplyFormPage /> },
       ],
     },
   ]);

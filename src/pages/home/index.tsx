@@ -4,9 +4,11 @@ import {
   Aml,
   ApplePayBlock,
   CurrencyExchangeWidget,
+  ForeignCardBlock,
   OfflineExchangeLocationsCard,
   RatesBlock,
   ServicesPayment,
+  SwiftBlock,
 } from "../../components/pages/home";
 import { UserWelcomeBanner } from "../../components/shared";
 import { useTheme } from "@mui/material/styles";
@@ -63,9 +65,13 @@ export function Home() {
       </Box>
       <CurrencyExchangeWidget />
       <RatesBlock />
-      <Box sx={{ display: "flex", gap: "25px" }}>
+      <Box
+        sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}
+      >
         <ServicesPayment />
         <Aml />
+        <SwiftBlock />
+        <ForeignCardBlock />
       </Box>
 
       <ApplePayBlock />
