@@ -21,6 +21,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useMutation, useQuery } from "react-query";
 import { getAllCurrencies } from "../../../../services/currencies";
 import { getCurrenciesPairs } from "../../../../services/currencies/pairs";
+import { SelectArrowsIcon } from "../../../../icons";
 
 import { debounce } from "lodash";
 import {
@@ -31,35 +32,35 @@ import { enqueueSnackbar } from "notistack";
 import { ScheduleInfoBlock } from "../../../shared/ScheduleInfoBlock";
 
 // Плавные Tabs для выбора способа оплаты
-const AnimatedTabs = styled(Tabs)(({ theme }) => ({
-  borderRadius: "999px",
-  backgroundColor: theme.palette.secondary.light,
-  padding: 4,
-  marginBottom: "6px",
-  minHeight: "36px",
-  "& .MuiTabs-indicator": {
-    display: "flex",
-    justifyContent: "center",
-    backgroundColor: "transparent",
-    transition: "all 0.3s ease",
-  },
-}));
+// const AnimatedTabs = styled(Tabs)(({ theme }) => ({
+//   borderRadius: "999px",
+//   backgroundColor: theme.palette.secondary.light,
+//   padding: 4,
+//   marginBottom: "6px",
+//   minHeight: "36px",
+//   "& .MuiTabs-indicator": {
+//     display: "flex",
+//     justifyContent: "center",
+//     backgroundColor: "transparent",
+//     transition: "all 0.3s ease",
+//   },
+// }));
 
-const AnimatedTab = styled((props: TabProps) => (
-  <Tab disableRipple {...props} />
-))(({ theme }) => ({
-  textTransform: "none",
-  flex: 1,
-  padding: "8px 12px !important",
-  color: theme.palette.text.secondary,
-  transition: "color 0.3s, background-color 0.3s",
-  minHeight: "28px",
-  borderRadius: "30px",
-  "&.Mui-selected": {
-    backgroundColor: theme.palette.mode === "dark" ? "#2C2C2E" : "#ffffff9c",
-    color: theme.palette.mode === "dark" ? "#fff" : "#000",
-  },
-}));
+// const AnimatedTab = styled((props: TabProps) => (
+//   <Tab disableRipple {...props} />
+// ))(({ theme }) => ({
+//   textTransform: "none",
+//   flex: 1,
+//   padding: "8px 12px !important",
+//   color: theme.palette.text.secondary,
+//   transition: "color 0.3s, background-color 0.3s",
+//   minHeight: "28px",
+//   borderRadius: "30px",
+//   "&.Mui-selected": {
+//     backgroundColor: theme.palette.mode === "dark" ? "#2C2C2E" : "#ffffff9c",
+//     color: theme.palette.mode === "dark" ? "#fff" : "#000",
+//   },
+// }));
 
 export const CurrencyExchangeWidget: React.FC = () => {
   const [inputAmount1, setInputAmount1] = useState("");
@@ -73,6 +74,12 @@ export const CurrencyExchangeWidget: React.FC = () => {
 
   const [anchorEl1, setAnchorEl1] = useState<null | HTMLElement>(null);
   const [anchorEl2, setAnchorEl2] = useState<null | HTMLElement>(null);
+  const [anchorElPayment1, setAnchorElPayment1] = useState<null | HTMLElement>(
+    null
+  );
+  const [anchorElPayment2, setAnchorElPayment2] = useState<null | HTMLElement>(
+    null
+  );
   const [selectedMainCurrency, setSelectedMainCurrency] = useState("RUB");
   const [selectedExchangeCurrency, setSelectedExchangeCurrency] =
     useState("USDT");
@@ -86,16 +93,23 @@ export const CurrencyExchangeWidget: React.FC = () => {
   const [shouldRequestManager, setShouldRequestManager] =
     useState<boolean>(false);
   const [requestManagerError, setRequestManagerError] = useState("");
-  const [paymentType, setPaymentType] = useState<"CARD" | "CASH">("CARD");
+  const [paymentType, setPaymentType] = useState<"CARD" | "CASH">("CASH");
+  const [receiveMethod, setReceiveMethod] = useState<"CARD" | "CASH">("CARD");
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const theme = useTheme();
 
   const handlePaymentChange = (_: React.SyntheticEvent, newType: string) => {
-    if (selectedMainCurrency === "USDT") {
-      enqueueSnackbar("Операции с USDT обрабатываются только переводом", {
-        variant: "warning",
-      });
+    const mainCurrency = allCurrenciesData?.find(
+      (currency) => currency.symbol === selectedMainCurrency
+    );
+    if (mainCurrency?.currency_type === "CRYPTO") {
+      enqueueSnackbar(
+        `Операции с ${selectedMainCurrency} обрабатываются только переводом`,
+        {
+          variant: "warning",
+        }
+      );
       return;
     }
     if (newType && (newType === "CARD" || newType === "CASH")) {
@@ -103,7 +117,6 @@ export const CurrencyExchangeWidget: React.FC = () => {
     }
   };
 
-  // При изменении способа оплаты пересылаем запрос с актуальным paymentType
   useEffect(() => {
     if (!inputAmount1 && !inputAmount2) return;
 
@@ -211,7 +224,6 @@ export const CurrencyExchangeWidget: React.FC = () => {
     }
   );
 
-  // Debounce для уменьшения количества запросов (с учётом, какой input изменился)
   const debouncedFetchRate = useRef(
     debounce(
       async (
@@ -372,8 +384,18 @@ export const CurrencyExchangeWidget: React.FC = () => {
     setDiscountPercentage(0);
     setBuyAmountWithoutPercentage(0);
 
-    if (selectedExchangeCurrency === "USDT") {
+    const willBeMainCurrency = allCurrenciesData?.find(
+      (currency) => currency.symbol === selectedExchangeCurrency
+    );
+    if (willBeMainCurrency?.currency_type === "CRYPTO") {
       setPaymentType("CARD");
+    }
+    
+    const willBeReceiveCurrency = allCurrenciesData?.find(
+      (currency) => currency.symbol === selectedMainCurrency
+    );
+    if (willBeReceiveCurrency?.currency_type === "CRYPTO") {
+      setReceiveMethod("CARD");
     }
 
     setSelectedMainCurrency(selectedExchangeCurrency);
@@ -392,17 +414,32 @@ export const CurrencyExchangeWidget: React.FC = () => {
     setAnchorEl2(e.currentTarget);
   const handleMenu2Close = () => setAnchorEl2(null);
 
+  const handlePaymentMenu1Open = (e: React.MouseEvent<HTMLElement>) =>
+    setAnchorElPayment1(e.currentTarget);
+  const handlePaymentMenu1Close = () => setAnchorElPayment1(null);
+  const handlePaymentMenu2Open = (e: React.MouseEvent<HTMLElement>) =>
+    setAnchorElPayment2(e.currentTarget);
+  const handlePaymentMenu2Close = () => setAnchorElPayment2(null);
+
   const handleCurrencyChange = (
     newMainCurrency: string,
     newExchangeCurrency: string,
     menuTriggered: 1 | 2
   ) => {
-    // Сброс старой ошибки лимита
     setMainLimitError(false);
 
-    // Если новая основная валюта — USDT, переключаем способ оплаты на CARD
-    if (newMainCurrency === "USDT") {
+    const mainCurrency = allCurrenciesData?.find(
+      (currency) => currency.symbol === newMainCurrency
+    );
+    if (mainCurrency?.currency_type === "CRYPTO") {
       setPaymentType("CARD");
+    }
+
+    const receiveCurrency = allCurrenciesData?.find(
+      (currency) => currency.symbol === newExchangeCurrency
+    );
+    if (receiveCurrency?.currency_type === "CRYPTO") {
+      setReceiveMethod("CARD");
     }
 
     setJustChangedInputId(menuTriggered);
@@ -412,11 +449,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
     setInput2Error("");
     setShouldRequestManager(false);
 
-    // Ранний выход, если поле, из которого будем считать, пустое
     if (menuTriggered === 1 && !inputAmount1) return;
     if (menuTriggered === 2 && !inputAmount2) return;
 
-    // Для запросов всегда используем sellAmount из первого поля
     const sellAmt = Number(inputAmount1.replace(/\s/g, ""));
 
     fetchRate({
@@ -434,13 +469,11 @@ export const CurrencyExchangeWidget: React.FC = () => {
         buy_amount_without_discount,
       } = data as FetchExchangeRateResponse & { buy_min_amount?: number };
 
-      // Общие обновления
       setExchangeRate(rate);
       setShowRate(show_rate);
       setDiscountPercentage(discount_percentage);
       setBuyAmountWithoutPercentage(buy_amount_without_discount);
 
-      // Сохраняем текущий лимит исходя из того, из какого поля вызов
       setMainCurrencySellLimit(
         menuTriggered === 1
           ? sell_min_amount
@@ -448,7 +481,6 @@ export const CurrencyExchangeWidget: React.FC = () => {
       );
 
       if (menuTriggered === 1) {
-        // Пользователь менял первую валюту (sell)
         const converted = (sellAmt * rate).toFixed(0);
         setInputAmount2(formatNumber(converted));
         setMainLimitError(sell_min_amount > sellAmt);
@@ -479,19 +511,47 @@ export const CurrencyExchangeWidget: React.FC = () => {
       {/* Input section */}
       <Box sx={{ display: "flex", alignItems: "center", marginTop: "8px" }}>
         <Box sx={{ position: "relative", flex: 1 }}>
-          <Box sx={{ display: "flex", gap: "4px", alignItems: "center" }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: "4px",
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
             <Typography>Вы платите</Typography>
-            {allCurrenciesData && (
-              <Box
-                component="img"
-                src={
-                  allCurrenciesData?.find(
-                    (currency) => currency.symbol === selectedMainCurrency
-                  )?.icon
-                }
-                sx={{ width: "32px", height: "16px" }}
-              />
-            )}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                cursor: "pointer",
+                color: "primary.main",
+              }}
+              onClick={handlePaymentMenu1Open}
+            >
+              <Typography
+                sx={{ fontSize: "14px", paddingRight: "3px", fontWeight: 500, color: 'primary.main' }}
+              >
+                {paymentType === "CASH" ? "наличными" : "переводом"}
+              </Typography>
+              {paymentType === "CASH" && (
+                <Box
+                  sx={{
+                    padding: "2px 4px",
+                    backgroundColor: "#00CA481A",
+                    borderRadius: "4px",
+                    marginRight: "4px",
+                  }}
+                >
+                  <Typography
+                    sx={{ fontSize: "11px", fontWeight: 600, color: "#00CA48" }}
+                  >
+                    +1.5%
+                  </Typography>
+                </Box>
+              )}
+              <SelectArrowsIcon />
+            </Box>
             <Typography>
               {justChangedInputId === 2 &&
                 showRate !== 0 &&
@@ -588,37 +648,44 @@ export const CurrencyExchangeWidget: React.FC = () => {
 
       <Box sx={{ display: "flex", alignItems: "center", marginTop: "8px" }}>
         <Box sx={{ position: "relative", flex: 1 }}>
-          <Box sx={{ display: "flex", gap: "4px", alignItems: "center" }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: "4px",
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
             <Typography>Вы получите</Typography>
-            {currenciesPairsData && (
-              <Box
-                component="img"
-                src={
-                  allCurrenciesData?.find(
-                    (currency) => currency.symbol === selectedExchangeCurrency
-                  )?.icon ||
-                  currenciesPairsData?.find(
-                    (currency) => currency.symbol === selectedExchangeCurrency
-                  )?.icon
-                }
-                sx={{ width: "32px", height: "16px" }}
-              />
+            {justChangedInputId === 1 && showRate !== 0 && (
+              <Typography
+                sx={{
+                  color:
+                    paymentType === "CASH" &&
+                    !isLoading &&
+                    inputAmount2 !== "" &&
+                    !shouldRequestManager
+                      ? "#00CA48"
+                      : "text.primary",
+                }}
+              >
+                за {showRate.toFixed(2)}₽
+              </Typography>
             )}
-            <Typography
+            <Box
               sx={{
-                color:
-                  paymentType === "CASH" &&
-                  !isLoading &&
-                  inputAmount2 !== "" &&
-                  !shouldRequestManager
-                    ? "#00CA48"
-                    : "text.primary",
+                display: "flex",
+                alignItems: "center",
+                cursor: "pointer",
+                color: "primary.main",
               }}
+              onClick={handlePaymentMenu2Open}
             >
-              {justChangedInputId === 1 &&
-                showRate !== 0 &&
-                showRate.toFixed(2)}
-            </Typography>
+              <Typography sx={{ fontSize: "14px", paddingRight: "3px", fontWeight: 500, color: 'primary.main' }}>
+                {receiveMethod === "CASH" ? "наличными" : "переводом"}
+              </Typography>
+              <SelectArrowsIcon />
+            </Box>
           </Box>
           <TextField
             multiline={shouldRequestManager}
@@ -696,11 +763,10 @@ export const CurrencyExchangeWidget: React.FC = () => {
         </Box>
       </Box>
 
-      <Box sx={{ marginBottom: "16px" }}>
-        <ScheduleInfoBlock />
-      </Box>
+      <ScheduleInfoBlock />
 
-      <AnimatedTabs
+      {/* Tabs for payment type */}
+      {/* <AnimatedTabs
         value={paymentType}
         onChange={handlePaymentChange}
         variant="fullWidth"
@@ -728,7 +794,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
           }
         />
         <AnimatedTab label="Переводом" value="CARD" />
-      </AnimatedTabs>
+      </AnimatedTabs> */}
 
       {/* Action button */}
       <Button
@@ -749,8 +815,9 @@ export const CurrencyExchangeWidget: React.FC = () => {
               selectedExchangeCurrency,
               inputAmount1,
               inputAmount2,
-              exchangeRate,
               paymentType,
+              receiveMethod,
+              exchangeRate,
               buyAmountWithoutPercentage,
               discountPercentage,
             },
@@ -795,7 +862,6 @@ export const CurrencyExchangeWidget: React.FC = () => {
                 const newMainCurrency = currency.symbol;
                 handleMenu1Close();
 
-                // Обновляем валюту и пересчитываем значения
                 handleCurrencyChange(
                   newMainCurrency,
                   selectedExchangeCurrency,
@@ -895,7 +961,6 @@ export const CurrencyExchangeWidget: React.FC = () => {
                 const newExchangeCurrency = currency.symbol;
                 handleMenu2Close();
 
-                // Обновляем валюту и пересчитываем значения
                 handleCurrencyChange(
                   selectedMainCurrency,
                   newExchangeCurrency,
@@ -970,6 +1035,183 @@ export const CurrencyExchangeWidget: React.FC = () => {
             )}
           </Box>
         ))}
+      </Menu>
+
+      {/* Payment Method Menu (First Input) */}
+      <Menu
+        MenuListProps={{
+          sx: {
+            backgroundColor: "secondary.main",
+            paddingBlock: "0 !important",
+          },
+        }}
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: "16px",
+              margin: "0",
+            },
+          },
+        }}
+        anchorEl={anchorElPayment1}
+        open={Boolean(anchorElPayment1)}
+        onClose={handlePaymentMenu1Close}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        <MenuItem
+          onClick={() => {
+            const mainCurrency = allCurrenciesData?.find(
+              (currency) => currency.symbol === selectedMainCurrency
+            );
+            if (mainCurrency?.currency_type === "CRYPTO") {
+              enqueueSnackbar(
+                `Операции с ${selectedMainCurrency} обрабатываются только переводом`,
+                {
+                  variant: "warning",
+                }
+              );
+              handlePaymentMenu1Close();
+              return;
+            }
+            setPaymentType("CASH");
+            handlePaymentMenu1Close();
+          }}
+          sx={{
+            paddingBlock: "0",
+            marginBlock: "0",
+            minHeight: "40px",
+          }}
+        >
+          <Typography>Наличными</Typography>
+          <Box
+            sx={{
+              padding: "2px 4px",
+              backgroundColor: "#00CA481A",
+              borderRadius: "4px",
+              marginLeft: "8px",
+            }}
+          >
+            <Typography
+              sx={{ fontSize: "11px", fontWeight: 600, color: "#00CA48" }}
+            >
+              +1.5%
+            </Typography>
+          </Box>
+        </MenuItem>
+        <Divider
+          sx={{
+            margin: "0 !important",
+            borderColor: `${
+              theme.palette.mode === "dark" ? "#3C3C3F" : "#EFEFF3"
+            }`,
+          }}
+        />
+        <MenuItem
+          onClick={() => {
+            setPaymentType("CARD");
+            handlePaymentMenu1Close();
+          }}
+          sx={{
+            paddingBlock: "0",
+            marginBlock: "0",
+            minHeight: "40px",
+          }}
+        >
+          <Typography>Переводом</Typography>
+        </MenuItem>
+      </Menu>
+
+      {/* Receive Method Menu (Second Input) */}
+      <Menu
+        MenuListProps={{
+          sx: {
+            backgroundColor: "secondary.main",
+            paddingBlock: "0 !important",
+          },
+        }}
+        slotProps={{
+          paper: {
+            sx: {
+              borderRadius: "16px",
+              margin: "0",
+            },
+          },
+        }}
+        anchorEl={anchorElPayment2}
+        open={Boolean(anchorElPayment2)}
+        onClose={handlePaymentMenu2Close}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
+        <MenuItem
+          onClick={() => {
+            const receiveCurrency = allCurrenciesData?.find(
+              (currency) => currency.symbol === selectedExchangeCurrency
+            );
+            if (receiveCurrency?.currency_type === "CRYPTO") {
+              enqueueSnackbar(
+                `${selectedExchangeCurrency} можно получить только переводом`,
+                {
+                  variant: "warning",
+                }
+              );
+              handlePaymentMenu2Close();
+              return;
+            }
+            setReceiveMethod("CASH");
+            handlePaymentMenu2Close();
+          }}
+          sx={{
+            paddingBlock: "0",
+            marginBlock: "0",
+            minHeight: "40px",
+          }}
+        >
+          <Typography>Наличными</Typography>
+          <Box
+            sx={{
+              padding: "2px 4px",
+              backgroundColor: "#00CA481A",
+              borderRadius: "4px",
+              marginLeft: "8px",
+            }}
+          >
+          </Box>
+        </MenuItem>
+        <Divider
+          sx={{
+            margin: "0 !important",
+            borderColor: `${
+              theme.palette.mode === "dark" ? "#3C3C3F" : "#EFEFF3"
+            }`,
+          }}
+        />
+        <MenuItem
+          onClick={() => {
+            setReceiveMethod("CARD");
+            handlePaymentMenu2Close();
+          }}
+          sx={{
+            paddingBlock: "0",
+            marginBlock: "0",
+            minHeight: "40px",
+          }}
+        >
+          <Typography>Переводом</Typography>
+        </MenuItem>
       </Menu>
     </Block>
   );

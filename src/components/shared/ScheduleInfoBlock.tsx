@@ -24,6 +24,7 @@ export function ScheduleInfoBlock() {
       <Block
         sx={{
           mt: "0px",
+          mb: "16px",
           display: "flex",
           alignItems: "flex-start",
           gap: "12px",

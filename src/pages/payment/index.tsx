@@ -24,6 +24,7 @@ import { useSnackbar } from "notistack";
 import { fetchExchangeRate } from "../../services/exchange-rate";
 import { useTelegram } from "../../hooks";
 import { ScheduleInfoBlock } from "../../components/shared/ScheduleInfoBlock";
+import { getCashCities } from "../../services/orders/cash-cities";
 
 type FormData = {
   name: string;
@@ -169,12 +170,16 @@ export function PaymentForm() {
     selectedMainCurrency,
     selectedExchangeCurrency,
     exchangeRate,
+    paymentType,
+    receiveMethod,
   } = state || {};
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [anchorElCity, setAnchorElCity] = useState<null | HTMLElement>(null);
   const [selectedBankCard, setSelectedBankCard] = useState<string>(
     localStorage.getItem("bankCardName") || ""
   );
+  const [selectedCity, setSelectedCity] = useState<string>("");
 
   const {
     register,
@@ -214,6 +219,14 @@ export function PaymentForm() {
     queryKey: ["all-cards"],
   });
 
+  const { data: cashCitiesData, isLoading: isLoadingCities } = useQuery({
+    queryFn: () => getCashCities(selectedExchangeCurrency),
+    queryKey: ["cash-cities", selectedExchangeCurrency],
+    enabled: !!selectedExchangeCurrency && receiveMethod === "CASH",
+  });
+
+  const availableCities = cashCitiesData?.cities || [];
+
   const filteredCardsBySelectedCurrency = allBankCards?.filter(
     (bankCard) => bankCard.currency === selectedExchangeCurrency
   );
@@ -229,9 +242,11 @@ export function PaymentForm() {
       buy_amount: parseFloat(inputAmount2.replace(/\s/g, "")),
       rate: exchangeRate,
       payment_method: state.paymentType,
+      receive_method: receiveMethod === "CASH" ? "CASH" : "TRANSFER",
+      receive_city: receiveMethod === "CASH" ? selectedCity : undefined,
       status: "NEW",
       comment: data.comment,
-      account_id: data.accountId,
+      account_id: receiveMethod === "CARD" ? data.accountId : null,
       phone_number: data.phone,
       buy_amount_without_discount: state.buyAmountWithoutPercentage,
       discount_percentage: state.discountPercentage,
@@ -262,11 +277,25 @@ export function PaymentForm() {
     handleMenuClose();
   };
 
-  // Check if all required fields are filled
+  const handleCityMenuOpen = (event: MouseEvent<HTMLElement>) => {
+    setAnchorElCity(event.currentTarget);
+  };
+
+  const handleCityMenuClose = () => {
+    setAnchorElCity(null);
+  };
+
+  const handleCitySelection = (city: string) => {
+    setSelectedCity(city);
+    handleCityMenuClose();
+  };
+
   const isButtonDisabled = !(
     name &&
     isPhoneComplete(phone) &&
-    selectedBankCard
+    (receiveMethod === "CARD" 
+      ? selectedBankCard 
+      : selectedCity && !isLoadingCities)
   );
 
   return (
@@ -348,6 +377,7 @@ export function PaymentForm() {
           <ScheduleInfoBlock />
         </Box>
 
+        {/* Блок 1: Данные, которые пользователь отправляет */}
         <Block sx={{ marginTop: ".75rem" }}>
           <Box component="form">
             {/* Name Input */}
@@ -390,7 +420,7 @@ export function PaymentForm() {
                 alignItems: "flex-end",
               }}
             >
-              <Typography>Телефон</Typography>
+              <Typography>Номер телефона</Typography>
               <InputMask
                 mask="+7 (999) 999-99-99"
                 value={localStorage.getItem("phoneNumber") || phone}
@@ -418,33 +448,70 @@ export function PaymentForm() {
             </Box>
             <Divider sx={{ margin: "12px 0px" }} />
 
-            {/* Banks Menu Select */}
+            {/* Payment Method */}
             <Box
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "flex-end",
-                marginTop: "1rem",
               }}
             >
               <Typography>Способ оплаты</Typography>
-              <Typography>
-                {state.paymentType === "CARD" ? "Переводом" : "Наличными"}
-              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                <Typography>
+                  {paymentType === "CASH" ? "Наличные" : "Перевод"}
+                </Typography>
+                {paymentType === "CASH" && (
+                  <Box
+                    sx={{
+                      padding: "2px 4px",
+                      backgroundColor: "#00CA481A",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    <Typography
+                      sx={{ fontSize: "11px", fontWeight: 600, color: "#00CA48" }}
+                    >
+                      +1.5%
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            </Box>
+          </Box>
+        </Block>
+
+        {/* Блок 2: Данные получения */}
+        <Block sx={{ marginTop: ".75rem" }}>
+          <Box component="form">
+            {/* Receive Method */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-end",
+              }}
+            >
+              <Typography>Способ получения</Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                <Typography>
+                  {receiveMethod === "CASH" ? "Наличные" : "Перевод"}
+                </Typography>
+              </Box>
             </Box>
             <Divider sx={{ margin: "12px 0px" }} />
 
-            {/* Bank Card Menu Select */}
-            <>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-end",
-                  marginTop: "1rem",
-                }}
-              >
-                <Typography>Куда зачислить средства</Typography>
+            {/* Bank Card Menu Select or City Select */}
+            {receiveMethod === "CARD" ? (
+              <>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-end",
+                  }}
+                >
+                  <Typography>Счет зачисления</Typography>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                   <Typography
                     sx={{
@@ -477,17 +544,104 @@ export function PaymentForm() {
                   onSelect={handleSelection}
                 />
               </Box>
+              </>
+            ) : (
+              /* City Select for Cash Receive */
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-end",
+                }}
+              >
+                <Typography>Город получения</Typography>
+                {isLoadingCities ? (
+                  <Typography sx={{ color: "text.secondary" }}>...</Typography>
+                ) : availableCities.length > 0 ? (
+                  <>
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Typography
+                        sx={{
+                          cursor: "pointer",
+                          color: "primary.main",
+                          paddingRight: "3px",
+                        }}
+                        onClick={handleCityMenuOpen}
+                      >
+                        {selectedCity || "Выберите город"}
+                      </Typography>
+                      <SelectArrowsIcon />
+                    </Box>
+                    <Menu
+                      id="city-menu"
+                      anchorEl={anchorElCity}
+                      open={Boolean(anchorElCity)}
+                      onClose={handleCityMenuClose}
+                      MenuListProps={{
+                        sx: {
+                          backgroundColor: "secondary.main",
+                          paddingBlock: "0 !important",
+                        },
+                      }}
+                      slotProps={{
+                        paper: { sx: { borderRadius: "16px", margin: "0" } },
+                      }}
+                      anchorOrigin={{ vertical: "center", horizontal: "right" }}
+                      transformOrigin={{ vertical: "top", horizontal: "left" }}
+                    >
+                      {availableCities.map((city: string, index: number) => (
+                        <Box key={index}>
+                          <MenuItem
+                            sx={{ paddingBlock: "0", marginBlock: "0" }}
+                            onClick={() => handleCitySelection(city)}
+                          >
+                            <Typography>{city}</Typography>
+                          </MenuItem>
+                          {index < availableCities.length - 1 && (
+                            <Divider
+                              sx={{
+                                margin: "0 !important",
+                                borderColor: `${
+                                  Telegram.WebApp.colorScheme === "dark"
+                                    ? "#3C3C3F"
+                                    : "#EFEFF3"
+                                }`,
+                              }}
+                            />
+                          )}
+                        </Box>
+                      ))}
+                    </Menu>
+                  </>
+                ) : (
+                  <Typography
+                    sx={{
+                      color: "primary.main",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      Telegram.WebApp.openTelegramLink(
+                        "https://t.me/alfin_manager"
+                      );
+                    }}
+                  >
+                    Свяжитесь с менеджером
+                  </Typography>
+                )}
+              </Box>
+            )}
+          </Box>
+        </Block>
 
-              <Divider sx={{ margin: "12px 0px" }} />
-            </>
-
+        {/* Блок 3: Дополнительные поля перед отправкой заявки */}
+        <Block sx={{ marginTop: ".75rem" }}>
+          <Box component="form">
             {/* Promocode Input */}
-            {/* <Box
+            <Box
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "flex-end",
-                marginTop: "1rem",
               }}
             >
               <Typography>Промокод</Typography>
@@ -506,17 +660,17 @@ export function PaymentForm() {
                 error={!!errors.promocode}
                 fullWidth
               />
-            </Box> */}
+            </Box>
+            <Divider sx={{ margin: "12px 0px" }} />
 
             <Box
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "flex-end",
-                marginTop: "1rem",
               }}
             >
-              <Typography>Коментарий</Typography>
+              <Typography>Комментарий</Typography>
               <TextField
                 placeholder="Если есть"
                 sx={{

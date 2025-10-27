@@ -9,10 +9,12 @@ export interface CreateOrderRequestTypes {
   buy_amount: number;
   rate: number;
   payment_method: string;
+  receive_method?: string;
+  receive_city?: string;
   comment?: string;
   status: string;
   promo_code_id?: number;
-  account_id: number | string | null;
+  account_id?: number | string | null;
   phone_number: string;
   buy_amount_without_discount: number;
   discount_percentage: number;
