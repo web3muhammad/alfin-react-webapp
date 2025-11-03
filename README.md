@@ -1,4 +1,4 @@
-# Hayat Crypto Web App
+# Alfin Web App
 
 A modern Telegram Web App for seamless cryptocurrency exchange and financial services.
 
