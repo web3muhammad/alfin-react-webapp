@@ -85,4 +85,4 @@ We continuously improve our service with regular updates and new features to pro
 
 ---
 
-© 2025 Hayat Crypto. All rights reserved.
+© 2025 Alfin. All rights reserved.
