@@ -22,6 +22,7 @@ export interface FetchExchangeRateRequest {
   sellAmount?: number;
   buyAmount?: number;
   paymentType?: "CARD" | "CASH";
+  receiveMethod?: "CARD" | "CASH";
 }
 
 export async function fetchExchangeRate({
@@ -30,11 +31,13 @@ export async function fetchExchangeRate({
   sellAmount,
   buyAmount,
   paymentType = "CARD",
+  receiveMethod = "CARD",
 }: FetchExchangeRateRequest): Promise<FetchExchangeRateResponse> {
   const payload: Record<string, any> = {
     from_currency: fromCurrency,
     to_currency: toCurrency,
     payment_type: paymentType,
+    receive_method: receiveMethod,
   };
 
   if (sellAmount != null) {

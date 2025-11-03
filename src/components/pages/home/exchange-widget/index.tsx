@@ -165,7 +165,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
           else setInput2Error(detail);
         }
       });
-  }, [paymentType]);
+  }, [paymentType, receiveMethod]);
 
   const { mutateAsync: fetchRate, isLoading } = useMutation(
     async ({
@@ -185,6 +185,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
         ...(sellAmount != null ? { sellAmount } : {}),
         ...(buyAmount != null ? { buyAmount } : {}),
         paymentType,
+        receiveMethod,
       });
     },
     {

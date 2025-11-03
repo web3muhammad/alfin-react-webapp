@@ -49,7 +49,7 @@ export function RootLayout() {
             background: theme.palette.background.default,
           }}
         >
-          <LevelProgressBarBlock />
+          {/* <LevelProgressBarBlock /> */}
           <Fade in>
             <Box
               sx={{
