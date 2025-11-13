@@ -51,6 +51,7 @@ export function ForeignCardBlock() {
           </Typography>
           <Box>
             <Button
+              disableGlassEffect
               onClick={() => navigate("/foreign-card")}
               sx={{
                 bgcolor: theme.palette.mode === "dark" ? "#3C3C3F" : "#e0e0e0",

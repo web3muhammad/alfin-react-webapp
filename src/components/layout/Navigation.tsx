@@ -63,42 +63,40 @@ export function Navigation() {
     }
   };
 
-  const bottomPadding = isIOS ? "env(safe-area-inset-bottom)" : "0px";
+  const bottomPadding = isIOS ? "env(safe-area-inset-bottom)" : "20px";
 
   return (
     <>
-      {/* Blur layer */}
+      {/* Bottom gradient overlay */}
       <Box
         sx={{
           position: "fixed",
           bottom: 0,
           left: 0,
           right: 0,
-          zIndex: 99997,
-          height: `calc(90px + ${bottomPadding})`,
-          backdropFilter: "blur(10px)",
-          WebkitBackdropFilter: "blur(10px)",
+          height: `calc(${bottomPadding} + 62px + 15px + 60px)`,
+          zIndex: 99996,
+          background: "linear-gradient(0deg, rgba(0, 0, 0, 0.60) 0%, rgba(0, 0, 0, 0.00) 100%)",
+          pointerEvents: "none",
           transform: isNavigationVisible ? "translateY(0)" : "translateY(100%)",
           transition: "transform 0.3s ease-in-out",
         }}
       />
-      {/* Background layer */}
+      {/* Blur layer */}
       <Box
-        component="nav"
         sx={{
           position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: 99998,
-          height: `calc(90px + ${bottomPadding})`,
-          bgcolor:
-            theme.palette.mode === "dark"
-              ? "rgba(28, 28, 29, 0.75)"
-              : "rgba(255, 255, 255, 0.75)",
-          borderTop: `1px solid ${
-            theme.palette.mode === "dark" ? "#3C3C3F" : "rgba(0, 0, 0, 0.1)"
-          }`,
+          bottom: `calc(${bottomPadding} + 5px)`,
+          left: 32,
+          right: 32,
+          zIndex: 99997,
+          minHeight: `61px`,
+          borderRadius: "60px;",
+          background: "rgba(20, 20, 21, 0.40);",
+
+          boxShadow:
+            "0 5px 30px 0 rgba(0, 0, 0, 0.25), -0.5px 0.5px 1px 0 rgba(0, 0, 0, 0.30) inset, 0.5px -0.5px 1px 0 rgba(0, 0, 0, 0.30) inset, 0.5px 0.5px 1px 0 rgba(255, 255, 255, 0.30) inset, -0.5px -0.5px 1px 0 rgba(255, 255, 255, 0.30) inset;",
+          backdropFilter: "blur(7.5px);",
           transform: isNavigationVisible ? "translateY(0)" : "translateY(100%)",
           transition: "transform 0.3s ease-in-out",
         }}
@@ -108,17 +106,19 @@ export function Navigation() {
         component="nav"
         sx={{
           position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
+
+          bottom: `calc(${bottomPadding} + 5px)`,
+
+          left: "32px",
+          right: "32px",
           zIndex: 99999,
-          height: `calc(90px + ${bottomPadding})`,
+          height: `61px`,
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          px: 2,
-          pb: isIOS ? `calc(24px + ${bottomPadding})` : "16px",
-          pt: 3,
+          px: "4px",
+          paddingTop: "0px",
+          marginTop: "0px",
           background: "transparent",
           transform: isNavigationVisible ? "translateY(0)" : "translateY(100%)",
           transition: "transform 0.3s ease-in-out",
@@ -132,11 +132,11 @@ export function Navigation() {
             sx={{
               display: "flex",
               flexDirection: "column",
-              gap: "8px",
+              gap: "6px",
               color: "inherit",
               padding: "8px",
-              minWidth: "64px",
-              height: "58px",
+              minWidth: "82px",
+              height: "54px",
               borderRadius: "14px",
               transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
               position: "relative",
@@ -155,21 +155,19 @@ export function Navigation() {
                 bottom: 0,
                 background:
                   theme.palette.mode === "dark"
-                    ? "rgba(255, 255, 255, 0.05)"
+                    ? "rgba(125, 125, 130, 0.20)"
                     : "rgba(0, 0, 0, 0.05)",
-                borderRadius: "0px",
+                borderRadius: "40px",
+                paddingInline: "8px",
                 opacity: link.isSelected ? 1 : 0,
-                transform: link.isSelected ? "scale(1)" : "scale(0.8)",
                 transition:
                   "opacity 0.2s ease-in-out, transform 0.2s ease-in-out",
                 willChange: "opacity, transform",
               },
               "@media (hover: hover)": {
                 "&:hover": {
-                  transform: "translateY(-2px) translateZ(0)",
                   "&::before": {
                     opacity: 1,
-                    transform: "scale(1)",
                   },
                 },
               },
@@ -183,16 +181,22 @@ export function Navigation() {
             <Box
               className="nav-icon"
               sx={{
+                height: "24px",
+                width: "24px",
                 transition: "transform 0.2s ease-in-out",
-                transform: link.isSelected
-                  ? "scale(1.1) translateZ(0)"
-                  : "scale(1) translateZ(0)",
+                transform: "scale(1) translateZ(0)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 willChange: "transform",
                 opacity: 1,
-                pt: 0.5,
+                flexShrink: 0,
+                "& svg": {
+                  maxHeight: "100%",
+                  maxWidth: "100%",
+                  width: "auto",
+                  height: "auto",
+                },
               }}
             >
               {link.icon}
@@ -200,14 +204,15 @@ export function Navigation() {
             <Typography
               variant="caption"
               sx={{
+                fontWeight: 500,
                 fontSize: "10px",
+                lineHeight: "12px",
                 color: link.isSelected
                   ? "primary.main"
                   : theme.palette.mode === "dark"
                   ? "rgba(235, 235, 245, 0.6)"
                   : "rgba(0, 0, 0, 0.6)",
                 transition: "color 0.2s ease-in-out",
-                fontWeight: link.isSelected ? 500 : 400,
                 display: "block",
                 opacity: 1,
                 pb: 0.5,

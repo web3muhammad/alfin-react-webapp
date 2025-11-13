@@ -5,7 +5,6 @@ import { useTelegram, useTelegramTheme } from "../../hooks";
 import { getAccessToken } from "../../services/login";
 import { Navigation } from "./Navigation";
 import { NavigationProvider } from "../../contexts/NavigationContext";
-import { LevelProgressBarBlock } from "../shared/ProgressBar/LevelProgressBarBlock";
 import { isMobileWebApp } from "../../utils";
 
 export function RootLayout() {

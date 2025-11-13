@@ -56,6 +56,7 @@ export function ServicesPayment() {
             </Typography>
             <Box>
               <Button
+                disableGlassEffect
                 onClick={() => navigate("/service-payment")}
                 sx={{
                   bgcolor:

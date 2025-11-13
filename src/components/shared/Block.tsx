@@ -9,7 +9,7 @@ export const Block: React.FC<IBlockProps> = (props) => {
       sx={{
         width: "100%",
         backgroundColor: "secondary.main",
-        borderRadius: "16px",
+        borderRadius: "24px",
         padding: "16px",
         ...props.sx,
       }}

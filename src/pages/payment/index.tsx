@@ -358,7 +358,7 @@ export function PaymentForm() {
                 sx={{
                   padding: "2px 6px",
                   backgroundColor: "#00CA481A",
-                  borderRadius: "5px",
+                  borderRadius: "10000px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -466,7 +466,7 @@ export function PaymentForm() {
                     sx={{
                       padding: "2px 4px",
                       backgroundColor: "#00CA481A",
-                      borderRadius: "4px",
+                      borderRadius: "1000px",
                     }}
                   >
                     <Typography

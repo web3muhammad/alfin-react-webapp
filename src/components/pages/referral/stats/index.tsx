@@ -33,6 +33,7 @@ export function ReferralStats({
           пригласили друзей
         </Typography>
         <Button
+          disableGlassEffect
           onClick={onInviteFriend}
           sx={{
             fontSize: "12px",
@@ -69,6 +70,7 @@ export function ReferralStats({
           ваш баланс
         </Typography>
         <Button
+          disableGlassEffect
           onClick={onWithdrawFunds}
           sx={{
             fontSize: "12px",

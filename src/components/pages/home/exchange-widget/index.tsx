@@ -391,7 +391,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
     if (willBeMainCurrency?.currency_type === "CRYPTO") {
       setPaymentType("CARD");
     }
-    
+
     const willBeReceiveCurrency = allCurrenciesData?.find(
       (currency) => currency.symbol === selectedMainCurrency
     );
@@ -531,7 +531,12 @@ export const CurrencyExchangeWidget: React.FC = () => {
               onClick={handlePaymentMenu1Open}
             >
               <Typography
-                sx={{ fontSize: "14px", paddingRight: "3px", fontWeight: 500, color: 'primary.main' }}
+                sx={{
+                  fontSize: "14px",
+                  paddingRight: "3px",
+                  fontWeight: 500,
+                  color: "primary.main",
+                }}
               >
                 {paymentType === "CASH" ? "наличными" : "переводом"}
               </Typography>
@@ -629,14 +634,20 @@ export const CurrencyExchangeWidget: React.FC = () => {
         <IconButton
           disabled={isDisabledSwap}
           sx={{
+            boxShadow:
+              "-0.5px 0.5px 1px 0 rgba(0, 0, 0, 0.30) inset, 0.5px -0.5px 1px 0 rgba(0, 0, 0, 0.30) inset, 0.5px 0.5px 1px 0 rgba(255, 255, 255, 0.30) inset, -0.5px -0.5px 1px 0 rgba(255, 255, 255, 0.30) inset",
+
+            filter: "drop-shadow(0 5px 10px rgba(0, 0, 0, 0.20))",
+
+            backdropFilter: "blur(5px)",
             position: "absolute",
             right: "16px",
-            backgroundColor: "secondary.main",
+            backgroundColor: "rgba(75, 75, 78, 0.40)",
             border: `1px solid ${
               theme.palette.mode === "dark" ? "#3C3C3F" : "#EFEFF3"
             }`,
             ":hover": {
-              backgroundColor: "secondary.main",
+              backgroundColor: "rgba(75, 75, 78, 0.40)",
             },
             transition: "transform 0.25s ease-in-out",
             transform: isRotated ? "rotate(180deg)" : "rotate(0deg)",
@@ -682,7 +693,14 @@ export const CurrencyExchangeWidget: React.FC = () => {
               }}
               onClick={handlePaymentMenu2Open}
             >
-              <Typography sx={{ fontSize: "14px", paddingRight: "3px", fontWeight: 500, color: 'primary.main' }}>
+              <Typography
+                sx={{
+                  fontSize: "14px",
+                  paddingRight: "3px",
+                  fontWeight: 500,
+                  color: "primary.main",
+                }}
+              >
                 {receiveMethod === "CASH" ? "наличными" : "переводом"}
               </Typography>
               <SelectArrowsIcon />
@@ -1189,8 +1207,7 @@ export const CurrencyExchangeWidget: React.FC = () => {
               borderRadius: "4px",
               marginLeft: "8px",
             }}
-          >
-          </Box>
+          ></Box>
         </MenuItem>
         <Divider
           sx={{

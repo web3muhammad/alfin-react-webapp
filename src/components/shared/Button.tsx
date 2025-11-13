@@ -1,8 +1,15 @@
 import { Button as MuiButton, ButtonProps } from "@mui/material";
 
-interface IButtonProps extends ButtonProps {}
+interface IButtonProps extends ButtonProps {
+  disableGlassEffect?: boolean;
+}
 
 export const Button: React.FC<IButtonProps> = (props) => {
+  const { disableGlassEffect, ...rest } = props;
+  const boxShadow = disableGlassEffect ? "none" : 
+    "-0.5px 0.5px 1px 0 rgba(51, 119, 255, 0.60) inset, 0.5px -0.5px 1px 0 rgba(51, 119, 255, 0.60) inset, 0.5px 0.5px 1px 0 #FFF inset, -0.5px -0.5px 1px 0 #FFF inset, 0 5px 30px 0 rgba(0, 0, 0, 0.25)";
+  const hoverBoxShadow = disableGlassEffect ? "none" : 
+    "-0.5px 0.5px 1px 0 rgba(51, 119, 255, 0.60) inset, 0.5px -0.5px 1px 0 rgba(51, 119, 255, 0.60) inset, 0.5px 0.5px 1px 0 #FFF inset, -0.5px -0.5px 1px 0 #FFF inset, 0 5px 30px 0 rgba(0, 0, 0, 0.25)";
   return (
     <MuiButton
       variant="contained"
@@ -10,16 +17,18 @@ export const Button: React.FC<IButtonProps> = (props) => {
       sx={{
         fontFamily: "Inter",
         width: "100%",
-        padding: "8px 10px",
+        padding: "10px 10px",
         minHeight: "40px",
         backgroundColor: "primary.main",
-        borderRadius: "8px",
+        borderRadius: "40px",
         color: "#fff",
+        fontSize: "15px",
+        fontWeight: 500,
+        letterSpacing: "-0.5px",
         textTransform: "none",
-        fontWeight: "500",
-        boxShadow: "none",
+        boxShadow,
         ":hover": {
-          boxShadow: "none",
+          boxShadow: hoverBoxShadow,
         },
         ...props.sx,
       }}

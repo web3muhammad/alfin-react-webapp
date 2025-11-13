@@ -47,5 +47,6 @@ const darkTheme = createTheme({
 
 // Function to get the appropriate theme based on Telegram's color scheme
 export const getTheme = (isDarkMode: boolean): Theme => {
-  return createTheme(isDarkMode ? darkTheme : lightTheme);
+  // return createTheme(isDarkMode ? darkTheme : lightTheme);
+  return createTheme(darkTheme);
 };
