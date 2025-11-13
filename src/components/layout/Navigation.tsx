@@ -63,7 +63,7 @@ export function Navigation() {
     }
   };
 
-  const bottomPadding = isIOS ? "env(safe-area-inset-bottom)" : "20px";
+  const bottomPadding = isIOS ? "calc(env(safe-area-inset-bottom) + 20px)" : "20px";
 
   return (
     <>
