@@ -63,7 +63,9 @@ export function Navigation() {
     }
   };
 
-  const bottomPadding = isIOS ? "calc(env(safe-area-inset-bottom) + 20px)" : "20px";
+  const bottomPadding = isIOS
+    ? "calc(env(safe-area-inset-bottom) + 20px)"
+    : "20px";
 
   return (
     <>
@@ -76,7 +78,8 @@ export function Navigation() {
           right: 0,
           height: `calc(${bottomPadding} + 62px + 15px + 60px)`,
           zIndex: 99996,
-          background: "linear-gradient(0deg, rgba(0, 0, 0, 0.60) 0%, rgba(0, 0, 0, 0.00) 100%)",
+          background:
+            "linear-gradient(0deg, rgba(0, 0, 0, 0.60) 0%, rgba(0, 0, 0, 0.00) 100%)",
           pointerEvents: "none",
           transform: isNavigationVisible ? "translateY(0)" : "translateY(100%)",
           transition: "transform 0.3s ease-in-out",
@@ -116,12 +119,13 @@ export function Navigation() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          px: "4px",
+          px: { xs: "2px", sm: "4px" },
           paddingTop: "0px",
           marginTop: "0px",
           background: "transparent",
           transform: isNavigationVisible ? "translateY(0)" : "translateY(100%)",
           transition: "transform 0.3s ease-in-out",
+          gap: { xs: "2px", sm: "4px" },
         }}
       >
         {navLinks.map((link) => (
@@ -134,8 +138,7 @@ export function Navigation() {
               flexDirection: "column",
               gap: "6px",
               color: "inherit",
-              padding: "8px",
-              minWidth: "82px",
+              padding: { xs: "6px 8px", sm: "8px 16px" },
               height: "54px",
               borderRadius: "14px",
               transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -146,6 +149,8 @@ export function Navigation() {
               userSelect: "none",
               willChange: "transform, opacity",
               transform: "translateZ(0)",
+              flex: { xs: "1 1 0", sm: "0 0 auto" },
+              minWidth: 0,
               "&::before": {
                 content: '""',
                 position: "absolute",
@@ -206,7 +211,7 @@ export function Navigation() {
               sx={{
                 fontWeight: 500,
                 fontSize: "10px",
-                lineHeight: "12px",
+                lineHeight: { xs: "11px", sm: "12px" },
                 color: link.isSelected
                   ? "primary.main"
                   : theme.palette.mode === "dark"
@@ -216,6 +221,9 @@ export function Navigation() {
                 display: "block",
                 opacity: 1,
                 pb: 0.5,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
               }}
             >
               {link.label}
