@@ -13,7 +13,7 @@ import {
   TabProps,
   useTheme,
 } from "@mui/material";
-import { BorderRight, SwapVertRounded } from "@mui/icons-material";
+import { SwapVertRounded } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { Block, Button } from "../../../shared";
 import { formatNumber } from "../../../../utils";
@@ -378,12 +378,16 @@ export const CurrencyExchangeWidget: React.FC = () => {
   };
 
   const handleSwapClick = () => {
-    setInputAmount1("");
-    setInputAmount2("");
+    const tempAmount = inputAmount1;
+    setInputAmount1(inputAmount2);
+    setInputAmount2(tempAmount);
+
     setShowRate(0);
     setShouldRequestManager(false);
     setDiscountPercentage(0);
     setBuyAmountWithoutPercentage(0);
+    setInput1Error("");
+    setInput2Error("");
 
     const willBeMainCurrency = allCurrenciesData?.find(
       (currency) => currency.symbol === selectedExchangeCurrency
@@ -399,11 +403,62 @@ export const CurrencyExchangeWidget: React.FC = () => {
       setReceiveMethod("CARD");
     }
 
-    setSelectedMainCurrency(selectedExchangeCurrency);
-    setSelectedExchangeCurrency(selectedMainCurrency);
+    const newMainCurrency = selectedExchangeCurrency;
+    const newExchangeCurrency = selectedMainCurrency;
+
+    setSelectedMainCurrency(newMainCurrency);
+    setSelectedExchangeCurrency(newExchangeCurrency);
 
     setIsRotated((prev) => !prev);
     setMainLimitError(false);
+
+    if (inputAmount2) {
+      const sellAmount = Number(inputAmount2.replace(/\s/g, ""));
+
+      fetchRate({
+        sellCurrency: newMainCurrency,
+        buyCurrency: newExchangeCurrency,
+        sellAmount: sellAmount,
+      })
+        .then((data) => {
+          const {
+            rate,
+            buy_amount,
+            show_rate,
+            discount_percentage,
+            buy_amount_without_discount,
+            sell_min_amount,
+          } = data as FetchExchangeRateResponse & { sell_min_amount?: number };
+
+          setExchangeRate(rate);
+          setShowRate(show_rate);
+          setDiscountPercentage(discount_percentage);
+          setBuyAmountWithoutPercentage(buy_amount_without_discount);
+          setMainCurrencySellLimit(sell_min_amount || 0);
+
+          if (buy_amount != null) {
+            setInputAmount2(formatNumber(String(buy_amount)));
+          }
+
+          if (sell_min_amount && sellAmount > 0) {
+            setMainLimitError(sell_min_amount > sellAmount);
+          }
+        })
+        .catch((e: any) => {
+          if (e.status === 404) {
+            setShouldRequestManager(true);
+            setRequestManagerError(
+              e.response?.data?.detail ?? "Ошибка запроса"
+            );
+          }
+          if (e.status === 400) {
+            const detail = e.response?.data?.detail || "Ошибка лимита";
+            enqueueSnackbar(detail, { variant: "error" });
+            setInputAmount2("");
+            setInput1Error(detail);
+          }
+        });
+    }
 
     if (inputRef.current) inputRef.current.focus();
   };
