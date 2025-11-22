@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["./node_modules/telegram-webapps"],
+    "types": ["./node_modules/telegram-webapps", "node"],
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
