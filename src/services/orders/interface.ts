@@ -9,6 +9,7 @@ export interface CreateOrderRequestTypes {
   buy_amount: number;
   rate: number;
   payment_method: string;
+  payment_city?: string;
   receive_method?: string;
   receive_city?: string;
   comment?: string;

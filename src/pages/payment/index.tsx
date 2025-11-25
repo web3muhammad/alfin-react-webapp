@@ -163,7 +163,10 @@ export function PaymentForm() {
   const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}");
 
   const userPhone = userInfo.phone_number;
-  const userName = userInfo.first_name + " " + userInfo.last_name;
+  const userName = [userInfo.first_name, userInfo.last_name]
+    .filter(name => name && name !== "null" && name !== null)
+    .join(" ")
+    .trim();
   const {
     inputAmount1,
     inputAmount2,
@@ -175,11 +178,13 @@ export function PaymentForm() {
   } = state || {};
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [anchorElCity, setAnchorElCity] = useState<null | HTMLElement>(null);
+  const [anchorElPaymentCity, setAnchorElPaymentCity] = useState<null | HTMLElement>(null);
+  const [anchorElReceiveCity, setAnchorElReceiveCity] = useState<null | HTMLElement>(null);
   const [selectedBankCard, setSelectedBankCard] = useState<string>(
     localStorage.getItem("bankCardName") || ""
   );
-  const [selectedCity, setSelectedCity] = useState<string>("");
+  const [selectedPaymentCity, setSelectedPaymentCity] = useState<string>("");
+  const [selectedReceiveCity, setSelectedReceiveCity] = useState<string>("");
 
   const {
     register,
@@ -219,13 +224,22 @@ export function PaymentForm() {
     queryKey: ["all-cards"],
   });
 
-  const { data: cashCitiesData, isLoading: isLoadingCities } = useQuery({
+  // Запрос городов для оплаты (когда paymentType === "CASH")
+  const { data: paymentCitiesData, isLoading: isLoadingPaymentCities } = useQuery({
+    queryFn: () => getCashCities(selectedMainCurrency),
+    queryKey: ["payment-cash-cities", selectedMainCurrency],
+    enabled: !!selectedMainCurrency && paymentType === "CASH",
+  });
+
+  // Запрос городов для получения (когда receiveMethod === "CASH")
+  const { data: receiveCitiesData, isLoading: isLoadingReceiveCities } = useQuery({
     queryFn: () => getCashCities(selectedExchangeCurrency),
-    queryKey: ["cash-cities", selectedExchangeCurrency],
+    queryKey: ["receive-cash-cities", selectedExchangeCurrency],
     enabled: !!selectedExchangeCurrency && receiveMethod === "CASH",
   });
 
-  const availableCities = cashCitiesData?.cities || [];
+  const availablePaymentCities = paymentCitiesData?.cities || [];
+  const availableReceiveCities = receiveCitiesData?.cities || [];
 
   const filteredCardsBySelectedCurrency = allBankCards?.filter(
     (bankCard) => bankCard.currency === selectedExchangeCurrency
@@ -242,8 +256,9 @@ export function PaymentForm() {
       buy_amount: parseFloat(inputAmount2.replace(/\s/g, "")),
       rate: exchangeRate,
       payment_method: state.paymentType,
+      payment_city: paymentType === "CASH" ? selectedPaymentCity : undefined,
       receive_method: receiveMethod === "CASH" ? "CASH" : "TRANSFER",
-      receive_city: receiveMethod === "CASH" ? selectedCity : undefined,
+      receive_city: receiveMethod === "CASH" ? selectedReceiveCity : undefined,
       status: "NEW",
       comment: data.comment,
       account_id: receiveMethod === "CARD" ? data.accountId : null,
@@ -277,25 +292,41 @@ export function PaymentForm() {
     handleMenuClose();
   };
 
-  const handleCityMenuOpen = (event: MouseEvent<HTMLElement>) => {
-    setAnchorElCity(event.currentTarget);
+  const handlePaymentCityMenuOpen = (event: MouseEvent<HTMLElement>) => {
+    setAnchorElPaymentCity(event.currentTarget);
   };
 
-  const handleCityMenuClose = () => {
-    setAnchorElCity(null);
+  const handlePaymentCityMenuClose = () => {
+    setAnchorElPaymentCity(null);
   };
 
-  const handleCitySelection = (city: string) => {
-    setSelectedCity(city);
-    handleCityMenuClose();
+  const handlePaymentCitySelection = (city: string) => {
+    setSelectedPaymentCity(city);
+    handlePaymentCityMenuClose();
+  };
+
+  const handleReceiveCityMenuOpen = (event: MouseEvent<HTMLElement>) => {
+    setAnchorElReceiveCity(event.currentTarget);
+  };
+
+  const handleReceiveCityMenuClose = () => {
+    setAnchorElReceiveCity(null);
+  };
+
+  const handleReceiveCitySelection = (city: string) => {
+    setSelectedReceiveCity(city);
+    handleReceiveCityMenuClose();
   };
 
   const isButtonDisabled = !(
     name &&
     isPhoneComplete(phone) &&
+    // Проверка для способа оплаты
+    (paymentType === "CARD" || (selectedPaymentCity && !isLoadingPaymentCities)) &&
+    // Проверка для способа получения
     (receiveMethod === "CARD" 
       ? selectedBankCard 
-      : selectedCity && !isLoadingCities)
+      : selectedReceiveCity && !isLoadingReceiveCities)
   );
 
   return (
@@ -478,6 +509,95 @@ export function PaymentForm() {
                 )}
               </Box>
             </Box>
+
+            {/* Payment City Select - показываем только если paymentType === "CASH" */}
+            {paymentType === "CASH" && (
+              <>
+                <Divider sx={{ margin: "12px 0px" }} />
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-end",
+                  }}
+                >
+                  <Typography>Город оплаты</Typography>
+                  {isLoadingPaymentCities ? (
+                    <Typography sx={{ color: "text.secondary" }}>...</Typography>
+                  ) : availablePaymentCities.length > 0 ? (
+                    <>
+                      <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <Typography
+                          sx={{
+                            cursor: "pointer",
+                            color: "primary.main",
+                            paddingRight: "3px",
+                          }}
+                          onClick={handlePaymentCityMenuOpen}
+                        >
+                          {selectedPaymentCity || "Выберите город"}
+                        </Typography>
+                        <SelectArrowsIcon />
+                      </Box>
+                      <Menu
+                        id="payment-city-menu"
+                        anchorEl={anchorElPaymentCity}
+                        open={Boolean(anchorElPaymentCity)}
+                        onClose={handlePaymentCityMenuClose}
+                        MenuListProps={{
+                          sx: {
+                            backgroundColor: "secondary.main",
+                            paddingBlock: "0 !important",
+                          },
+                        }}
+                        slotProps={{
+                          paper: { sx: { borderRadius: "16px", margin: "0" } },
+                        }}
+                        anchorOrigin={{ vertical: "center", horizontal: "right" }}
+                        transformOrigin={{ vertical: "top", horizontal: "left" }}
+                      >
+                        {availablePaymentCities.map((city: string, index: number) => (
+                          <Box key={index}>
+                            <MenuItem
+                              sx={{ paddingBlock: "0", marginBlock: "0" }}
+                              onClick={() => handlePaymentCitySelection(city)}
+                            >
+                              <Typography>{city}</Typography>
+                            </MenuItem>
+                            {index < availablePaymentCities.length - 1 && (
+                              <Divider
+                                sx={{
+                                  margin: "0 !important",
+                                  borderColor: `${
+                                    Telegram.WebApp.colorScheme === "dark"
+                                      ? "#3C3C3F"
+                                      : "#EFEFF3"
+                                  }`,
+                                }}
+                              />
+                            )}
+                          </Box>
+                        ))}
+                      </Menu>
+                    </>
+                  ) : (
+                    <Typography
+                      sx={{
+                        color: "primary.main",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        Telegram.WebApp.openTelegramLink(
+                          "https://t.me/alfin_manager"
+                        );
+                      }}
+                    >
+                      Свяжитесь с менеджером
+                    </Typography>
+                  )}
+                </Box>
+              </>
+            )}
           </Box>
         </Block>
 
@@ -555,9 +675,9 @@ export function PaymentForm() {
                 }}
               >
                 <Typography>Город получения</Typography>
-                {isLoadingCities ? (
+                {isLoadingReceiveCities ? (
                   <Typography sx={{ color: "text.secondary" }}>...</Typography>
-                ) : availableCities.length > 0 ? (
+                ) : availableReceiveCities.length > 0 ? (
                   <>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography
@@ -566,17 +686,17 @@ export function PaymentForm() {
                           color: "primary.main",
                           paddingRight: "3px",
                         }}
-                        onClick={handleCityMenuOpen}
+                        onClick={handleReceiveCityMenuOpen}
                       >
-                        {selectedCity || "Выберите город"}
+                        {selectedReceiveCity || "Выберите город"}
                       </Typography>
                       <SelectArrowsIcon />
                     </Box>
                     <Menu
-                      id="city-menu"
-                      anchorEl={anchorElCity}
-                      open={Boolean(anchorElCity)}
-                      onClose={handleCityMenuClose}
+                      id="receive-city-menu"
+                      anchorEl={anchorElReceiveCity}
+                      open={Boolean(anchorElReceiveCity)}
+                      onClose={handleReceiveCityMenuClose}
                       MenuListProps={{
                         sx: {
                           backgroundColor: "secondary.main",
@@ -589,15 +709,15 @@ export function PaymentForm() {
                       anchorOrigin={{ vertical: "center", horizontal: "right" }}
                       transformOrigin={{ vertical: "top", horizontal: "left" }}
                     >
-                      {availableCities.map((city: string, index: number) => (
+                      {availableReceiveCities.map((city: string, index: number) => (
                         <Box key={index}>
                           <MenuItem
                             sx={{ paddingBlock: "0", marginBlock: "0" }}
-                            onClick={() => handleCitySelection(city)}
+                            onClick={() => handleReceiveCitySelection(city)}
                           >
                             <Typography>{city}</Typography>
                           </MenuItem>
-                          {index < availableCities.length - 1 && (
+                          {index < availableReceiveCities.length - 1 && (
                             <Divider
                               sx={{
                                 margin: "0 !important",
