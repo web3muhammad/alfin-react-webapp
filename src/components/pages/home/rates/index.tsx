@@ -12,6 +12,8 @@ export function RatesBlock() {
     queryFn: () => getRates(),
   });
 
+  const rates = Array.isArray(data) ? data : [];
+
   return (
     <Block
       sx={{
@@ -34,7 +36,7 @@ export function RatesBlock() {
           <CircularProgress size={30} />
         </Box>
       ) : (
-        data?.map((rate) => (
+        rates.map((rate) => (
           <RateCard
             key={rate.id}
             title={rate.title}

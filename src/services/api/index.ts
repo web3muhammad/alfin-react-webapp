@@ -1,8 +1,16 @@
 import axios from "axios";
 
+const getBaseURL = () => {
+  const envURL = process.env.REACT_APP_API_BASE_URL;
+  if (envURL && !envURL.endsWith("/api/v1")) {
+    const cleanURL = envURL.replace(/\/$/, "");
+    return `${cleanURL}/api/v1`;
+  }
+  return envURL;
+};
+
 export const api = axios.create({
-  // baseURL: "https://24alfin.ru/api/v1", // Test API
-  baseURL: process.env.API_BASE_URL, // Production API
+  baseURL: getBaseURL(),
 });
 
 api.interceptors.request.use(
