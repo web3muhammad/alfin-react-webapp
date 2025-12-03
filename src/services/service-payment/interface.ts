@@ -24,6 +24,4 @@ export interface Payment {
   amount_rub: number;
   expires_at: string;
   confirmation_token: string;
-  yookassa_shop_id: string;
-  yookassa_client_key: string;
 }
